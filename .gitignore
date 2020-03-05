@@ -1,0 +1,54 @@
+HELP.md
+community.vpp.*
+
+!.mvn/wrapper/maven-wrapper.jar
+
+.DS_Store
+
+### Data ###
+/data
+
+
+### 应用相关 ###
+logs/
+/log/
+/cache/
+/target/
+/temp/
+
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+
+### Ebook ###
+/src/main/resources/application.properties
+/src/main/java/site/pyyf/utils/OssUpload.java
+/src/main/java/site/pyyf/utils/FtpUtil.java
+
+### cloudpan ###
+/src/main/resources/application.yml
+/src/main/resources/qqconnectconfig.properties

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.7/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.bootcss.com/prism/1.15.0/themes/prism.css" rel="stylesheet">
+    <link href="https://cdn.bootcss.com/prism/1.15.0/plugins/line-numbers/prism-line-numbers.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.7/ebook/typo.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.6/css/fileinput.css" media="all" rel="stylesheet"
+          type="text/css" crossorigin="anonymous"/>
+    <style type="text/css">/*文档内嵌样式表*/
+    body {
+        background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/greek-vase.png");
+    }
+    </style>
+</head>
+<body>
+<!--<div class="navbar navbar-duomi navbar-static-top" role="navigation">-->
+<!--    <div class="container-fluid">-->
+<!--    </div>-->
+<!--</div>-->
+<div class="container-fluid">
+
+    <div class="row" style="margin-top: 20px">
+        <div class="col-md-3">
+
+            <form name="search" th:action="@{/ebook/goupdate}" method="post">
+                <input type="hidden" id="contentId" name="contentId">
+                <div style="margin-top:10px;margin-left: 10px;float: left;position: fixed;">
+                    <button type="submit"
+                            class="btn btn-success">
+                        <i class="fa fa-edit"></i>&nbsp; 编辑
+                    </button>
+                </div>
+
+
+            </form>
+
+            <ul id="main-nav" class="nav nav-tabs nav-stacked" style="position: fixed;margin-top: 50px">
+                <li th:each="header:${headers.getAllNode()}" style="text-align:left">
+                    <!--                       onclick="window.location.href='/content?uuid=${header.getValue().getUuid()}'"-->
+                    <a th:href="@{|#${header.getKey().trim()}|}"
+                       th:onclick="getContent([[${header.getValue().getContentId()}]])" class="nav-header collapsed"
+                       data-toggle="collapse" th:text="${header.getKey()}">
+
+                        系统管理
+                    </a>
+
+                    <th:block
+                            th:replace="ebook/ebook_fragments::headFragment(${header.getValue()},${header.getKey().trim()},20)">
+                    </th:block>
+
+
+                </li>
+
+            </ul>
+
+
+        </div>
+        <div class="col-md-8 ">
+            <div class="nk-container" style="margin-top: 50px">
+                <div id="markdown2" class="typo  typo-selection"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+<script src="https://cdn.bootcss.com/prism/1.15.0/prism.js"></script>
+<script src="https://cdn.bootcss.com/prism/1.15.0/components/prism-java.js"></script>
+<script src="https://cdn.bootcss.com/prism/1.15.0/plugins/line-numbers/prism-line-numbers.js"></script>
+<script type="text/javascript" src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" crossorigin="anonymous"
+        type="text/javascript"></script>
+<link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+<script>
+    function getContent(contentId) {
+        $("#contentId").val(contentId);
+        var formData = new FormData();
+        formData.append('contentId', contentId);
+        $.ajax({
+            url: '/cloudpan/ebook/getcontent',
+            type: 'POST',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                $("#markdown2").html(result.msg);
+                Prism.highlightAll();
+
+
+            },
+            error: function (result) {
+                console.log("错误");
+                var res = $.parseJSON(result);  //用jQuery处理传过来的json值
+                console.log("处理结果" + res);
+                alert(returndata);
+            }
+        });
+    }
+</script>
+
+
+<script>
+    function compile(id) {
+        var code = $('#' + id).text();
+        console.log("code=" + code);
+        var formData = new FormData();
+        formData.append('code', code);
+        $.ajax({
+            url: '/cloudpan/compile',
+            type: 'POST',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                alert(result.msg);
+            },
+            error: function (result) {
+                console.log("错误");
+                var res = $.parseJSON(result);  //用jQuery处理传过来的json值
+                console.log("处理结果" + res);
+                alert(returndata);
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

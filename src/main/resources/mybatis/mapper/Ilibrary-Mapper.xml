@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.pyyf.mapper.IlibraryMapper">
+    <sql id="selectFields">
+        id, ebook_name,ebook_id,header
+    </sql>
+
+    <sql id="insertFields">
+        ebook_name,ebook_id,header
+    </sql>
+    <update id="updateEbookNameByBookId">
+        update library
+        set ebook_name=#{ebookName}
+        where ebook_id=#{ebookId}
+    </update>
+    <delete id="deleteByBookId">
+        delete
+        from library
+        where ebook_id=#{ebookId}
+
+    </delete>
+    <select id="selectByBookId" resultType="site.pyyf.entity.Ebook">
+        select
+        <include refid="selectFields"></include>
+        from library
+        where ebook_id=#{ebookId}
+    </select>
+
+    <select id="selectHeaderByBookId" resultType="java.lang.String">
+            select header
+            from library
+            where ebook_id = #{ebookId}
+
+    </select>
+
+    <insert id="insertEbook">
+        insert into library(<include refid="insertFields"></include>)
+        values(#{ebookName},#{ebookId},#{header})
+    </insert>
+
+</mapper>
