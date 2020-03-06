@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.mapper.MyFileMapper">
+<mapper namespace="site.pyyf.cloudpan.mapper.MyFileMapper">
   <!--开启二级缓存,使用Ehcache缓存框架-->
   <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
-  <resultMap id="BaseResultMap" type="site.pyyf.entity.MyFile">
+  <resultMap id="BaseResultMap" type="site.pyyf.cloudpan.entity.MyFile">
     <id column="my_file_id" jdbcType="INTEGER" property="myFileId" />
     <result column="my_file_name" jdbcType="VARCHAR" property="myFileName" />
     <result column="file_store_id" jdbcType="INTEGER" property="fileStoreId" />
@@ -101,7 +101,7 @@
     </if>
   </sql>
 
-  <insert id="addFileByFileStoreId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.entity.MyFile" useGeneratedKeys="true">
+  <insert id="addFileByFileStoreId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.cloudpan.entity.MyFile" useGeneratedKeys="true">
     insert into my_file
     <trim prefix="(" suffix=")" suffixOverrides=",">
         <include refid="Base_Insert_Key_List"></include>
@@ -111,7 +111,7 @@
     </trim>
   </insert>
 
-  <update id="updateFileByFileId" parameterType="site.pyyf.entity.MyFile">
+  <update id="updateFileByFileId" parameterType="site.pyyf.cloudpan.entity.MyFile">
     update my_file
     <set>
         <include refid="Base_Update_List"></include>
@@ -157,7 +157,7 @@
     where file_store_id = #{storeId} and type = #{type};
   </select>
 
-  <select id="getCountStatistics" resultType="site.pyyf.entity.FileStoreStatistics">
+  <select id="getCountStatistics" resultType="site.pyyf.cloudpan.entity.FileStoreStatistics">
    select sum(type = 1) doc,sum(type = 2) image,sum(type = 3) video,
       sum(type = 4) music,sum(type = 5) other,count(*) fileCount from my_file
       where file_store_id = #{id}

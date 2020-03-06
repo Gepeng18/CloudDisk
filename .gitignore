@@ -46,8 +46,8 @@ logs/
 
 ### Ebook ###
 /src/main/resources/application.properties
-/src/main/java/site/pyyf/utils/OssUpload.java
-/src/main/java/site/pyyf/utils/FtpUtil.java
+/src/main/java/site/pyyf/cloudpan/utils/OssUpload.java
+/src/main/java/site/pyyf/cloudpan/utils/FtpUtil.java
 
 ### cloudpan ###
 /src/main/resources/application.yml

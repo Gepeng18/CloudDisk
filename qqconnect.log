@@ -1,0 +1,545 @@
+18567 DEBUG [2020-03-06 11:48:06]  {conn-10005, pstmt-20002, rs-50007} closed
+18567 DEBUG [2020-03-06 11:48:06]  {conn-10005, pstmt-20002} clearParameters. 
+18568 DEBUG [2020-03-06 11:48:06]  {conn-10005} pool-recycle
+32189 DEBUG [2020-03-06 11:48:20]  {conn-10005} pool-connect
+32189 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+32189 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+32276 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002} executed. 86.7784 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+32276 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002, rs-50008} open
+32277 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002, rs-50008} Header: [setting]
+32277 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002, rs-50008} Result: [1]
+32278 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002, rs-50008} closed
+32278 DEBUG [2020-03-06 11:48:20]  {conn-10005, pstmt-20002} clearParameters. 
+32279 DEBUG [2020-03-06 11:48:20]  {conn-10005} pool-recycle
+34873 DEBUG [2020-03-06 11:48:22]  {conn-10005} pool-connect
+34874 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+34874 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+34947 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002} executed. 73.1058 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+34947 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002, rs-50009} open
+34947 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002, rs-50009} Header: [setting]
+34948 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002, rs-50009} Result: [1]
+34948 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002, rs-50009} closed
+34949 DEBUG [2020-03-06 11:48:23]  {conn-10005, pstmt-20002} clearParameters. 
+34949 DEBUG [2020-03-06 11:48:23]  {conn-10005} pool-recycle
+58846 DEBUG [2020-03-06 11:48:46]  {conn-10005} pool-connect
+58847 DEBUG [2020-03-06 11:48:46]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+58847 DEBUG [2020-03-06 11:48:46]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+58947 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002} executed. 101.1828 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+58947 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002, rs-50010} open
+58947 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002, rs-50010} Header: [setting]
+58947 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002, rs-50010} Result: [1]
+58948 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002, rs-50010} closed
+58948 DEBUG [2020-03-06 11:48:47]  {conn-10005, pstmt-20002} clearParameters. 
+58949 DEBUG [2020-03-06 11:48:47]  {conn-10005} pool-recycle
+62087 DEBUG [2020-03-06 11:48:50]  {conn-10005} pool-connect
+62089 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+62089 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+62212 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002} executed. 123.3382 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+62212 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002, rs-50011} open
+62212 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002, rs-50011} Header: [setting]
+62213 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002, rs-50011} Result: [1]
+62213 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002, rs-50011} closed
+62214 DEBUG [2020-03-06 11:48:50]  {conn-10005, pstmt-20002} clearParameters. 
+62214 DEBUG [2020-03-06 11:48:50]  {conn-10005} pool-recycle
+68668 DEBUG [2020-03-06 11:48:56]  {conn-10005} pool-connect
+68669 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+68669 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+68759 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002} executed. 89.9657 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+68759 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002, rs-50012} open
+68759 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002, rs-50012} Header: [setting]
+68760 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002, rs-50012} Result: [1]
+68760 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002, rs-50012} closed
+68760 DEBUG [2020-03-06 11:48:56]  {conn-10005, pstmt-20002} clearParameters. 
+68761 DEBUG [2020-03-06 11:48:56]  {conn-10005} pool-recycle
+104558 DEBUG [2020-03-06 11:49:32]  {conn-10005} pool-connect
+104559 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+104559 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+104628 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002} executed. 69.1363 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+104628 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002, rs-50013} open
+104628 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002, rs-50013} Header: [setting]
+104628 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002, rs-50013} Result: [1]
+104629 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002, rs-50013} closed
+104629 DEBUG [2020-03-06 11:49:32]  {conn-10005, pstmt-20002} clearParameters. 
+104629 DEBUG [2020-03-06 11:49:32]  {conn-10005} pool-recycle
+166341 DEBUG [2020-03-06 11:50:34]  {conn-10001} closed
+166343 DEBUG [2020-03-06 11:50:34]  {conn-10002} closed
+166345 DEBUG [2020-03-06 11:50:34]  {conn-10003} closed
+166347 DEBUG [2020-03-06 11:50:34]  {conn-10004} closed
+166347 DEBUG [2020-03-06 11:50:34]  {conn-10005, pstmt-20000} closed
+166347 DEBUG [2020-03-06 11:50:34]  {conn-10005, pstmt-20001} closed
+166348 DEBUG [2020-03-06 11:50:34]  {conn-10005, pstmt-20002} closed
+166349 DEBUG [2020-03-06 11:50:34]  {conn-10005} closed
+0    DEBUG [2020-03-06 11:50:59]  {conn-10001,procId-129} connected
+911  DEBUG [2020-03-06 11:51:00]  {conn-10002,procId-130} connected
+1787 DEBUG [2020-03-06 11:51:00]  {conn-10003,procId-131} connected
+2596 DEBUG [2020-03-06 11:51:01]  {conn-10004,procId-132} connected
+3366 DEBUG [2020-03-06 11:51:02]  {conn-10005,procId-133} connected
+3551 DEBUG [2020-03-06 11:51:02]  {conn-10005} pool-connect
+3905 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000} created. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3958 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000} Parameters : [245]
+3958 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000} Types : [INTEGER]
+4061 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000} executed. 113.1006 millis. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+4068 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000, rs-50000} open
+4072 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000, rs-50000} Header: [id, ebook_name, ebook_id, header]
+4100 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000, rs-50000} Result: [8, test.md, 245, {"allNode":{"我是三级标题1":{"allNode":{"我是四级标题":{"allNode":{"我是五级标题1":{"allNode":{},"content":"我是五级标题1的内容\n","contentId":"5e13098a0a6e43ad8dfbb3330087883c"}},"content":"我是四级标题的内容\n","contentId":"0566b2879a5845828abf0dcc44d3331e"}},"content":"我是三级标题1的内容\n","contentId":"8e7dd8c608df462b9f99e785429afde9"},"我是三级标题2":{"allNode":{"我是五级标题2":{"allNode":{},"content":"我是五级标题2的内容\n","contentId":"2509022b359c437aa8d27edc46f6ee61"}},"content":"我是三级标题2的内容\n","contentId":"2b26def28b2b4a539f8a2b8d7da6211a"}}}]
+4105 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000, rs-50000} closed
+4109 DEBUG [2020-03-06 11:51:03]  {conn-10005, pstmt-20000} clearParameters. 
+4113 DEBUG [2020-03-06 11:51:03]  {conn-10005} pool-recycle
+7076 DEBUG [2020-03-06 11:51:06]  {conn-10005} pool-connect
+7079 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001} created. select content
+        from ebook_content
+        where content_id like ?
+7082 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001} Parameters : [8e7dd8c608df462b9f99e785429afde9]
+7082 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7147 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001} executed. 65.2794 millis. select content
+        from ebook_content
+        where content_id like ?
+7147 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001, rs-50001} open
+7148 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001, rs-50001} Header: [content]
+7148 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001, rs-50001} Result: [我是三级标题1的内容
+]
+7150 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001, rs-50001} closed
+7151 DEBUG [2020-03-06 11:51:06]  {conn-10005, pstmt-20001} clearParameters. 
+7151 DEBUG [2020-03-06 11:51:06]  {conn-10005} pool-recycle
+8072 DEBUG [2020-03-06 11:51:07]  {conn-10005} pool-connect
+8073 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} Parameters : [0566b2879a5845828abf0dcc44d3331e]
+8073 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+8136 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} executed. 63.0081 millis. select content
+        from ebook_content
+        where content_id like ?
+8136 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001, rs-50002} open
+8136 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001, rs-50002} Header: [content]
+8137 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001, rs-50002} Result: [我是四级标题的内容
+]
+8137 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001, rs-50002} closed
+8138 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} clearParameters. 
+8138 DEBUG [2020-03-06 11:51:07]  {conn-10005} pool-recycle
+8731 DEBUG [2020-03-06 11:51:07]  {conn-10005} pool-connect
+8732 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} Parameters : [5e13098a0a6e43ad8dfbb3330087883c]
+8732 DEBUG [2020-03-06 11:51:07]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+8817 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001} executed. 85.1502 millis. select content
+        from ebook_content
+        where content_id like ?
+8817 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001, rs-50003} open
+8817 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001, rs-50003} Header: [content]
+8818 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001, rs-50003} Result: [我是五级标题1的内容
+```java
+public class CommunityUtil {
+	public static void main(String[] args) {
+			System.out.println("我爱你");
+		}
+	}
+```
+]
+8818 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001, rs-50003} closed
+8819 DEBUG [2020-03-06 11:51:08]  {conn-10005, pstmt-20001} clearParameters. 
+8819 DEBUG [2020-03-06 11:51:08]  {conn-10005} pool-recycle
+16449 DEBUG [2020-03-06 11:51:15]  {conn-10001} closed
+16452 DEBUG [2020-03-06 11:51:15]  {conn-10002} closed
+16454 DEBUG [2020-03-06 11:51:15]  {conn-10003} closed
+16456 DEBUG [2020-03-06 11:51:15]  {conn-10004} closed
+16457 DEBUG [2020-03-06 11:51:15]  {conn-10005, pstmt-20000} closed
+16457 DEBUG [2020-03-06 11:51:15]  {conn-10005, pstmt-20001} closed
+16458 DEBUG [2020-03-06 11:51:15]  {conn-10005} closed
+0    DEBUG [2020-03-06 11:51:34]  {conn-10001,procId-134} connected
+788  DEBUG [2020-03-06 11:51:35]  {conn-10002,procId-135} connected
+1664 DEBUG [2020-03-06 11:51:36]  {conn-10003,procId-136} connected
+2502 DEBUG [2020-03-06 11:51:37]  {conn-10004,procId-137} connected
+3437 DEBUG [2020-03-06 11:51:38]  {conn-10005,procId-138} connected
+3641 DEBUG [2020-03-06 11:51:38]  {conn-10005} pool-connect
+3802 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000} created. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3829 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000} Parameters : [245]
+3829 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000} Types : [INTEGER]
+3923 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000} executed. 98.6597 millis. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3929 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000, rs-50000} open
+3933 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000, rs-50000} Header: [id, ebook_name, ebook_id, header]
+3948 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000, rs-50000} Result: [8, test.md, 245, {"allNode":{"我是三级标题1":{"allNode":{"我是四级标题":{"allNode":{"我是五级标题1":{"allNode":{},"content":"我是五级标题1的内容\n","contentId":"5e13098a0a6e43ad8dfbb3330087883c"}},"content":"我是四级标题的内容\n","contentId":"0566b2879a5845828abf0dcc44d3331e"}},"content":"我是三级标题1的内容\n","contentId":"8e7dd8c608df462b9f99e785429afde9"},"我是三级标题2":{"allNode":{"我是五级标题2":{"allNode":{},"content":"我是五级标题2的内容\n","contentId":"2509022b359c437aa8d27edc46f6ee61"}},"content":"我是三级标题2的内容\n","contentId":"2b26def28b2b4a539f8a2b8d7da6211a"}}}]
+3952 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000, rs-50000} closed
+3955 DEBUG [2020-03-06 11:51:38]  {conn-10005, pstmt-20000} clearParameters. 
+3957 DEBUG [2020-03-06 11:51:38]  {conn-10005} pool-recycle
+6167 DEBUG [2020-03-06 11:51:41]  {conn-10005} pool-connect
+6169 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} created. select content
+        from ebook_content
+        where content_id like ?
+6172 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} Parameters : [8e7dd8c608df462b9f99e785429afde9]
+6172 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+6242 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} executed. 70.5027 millis. select content
+        from ebook_content
+        where content_id like ?
+6243 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50001} open
+6243 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50001} Header: [content]
+6243 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50001} Result: [我是三级标题1的内容
+]
+6244 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50001} closed
+6245 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} clearParameters. 
+6245 DEBUG [2020-03-06 11:51:41]  {conn-10005} pool-recycle
+6823 DEBUG [2020-03-06 11:51:41]  {conn-10005} pool-connect
+6824 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} Parameters : [0566b2879a5845828abf0dcc44d3331e]
+6824 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+6917 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} executed. 92.6034 millis. select content
+        from ebook_content
+        where content_id like ?
+6917 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50002} open
+6917 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50002} Header: [content]
+6918 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50002} Result: [我是四级标题的内容
+]
+6918 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001, rs-50002} closed
+6918 DEBUG [2020-03-06 11:51:41]  {conn-10005, pstmt-20001} clearParameters. 
+6919 DEBUG [2020-03-06 11:51:41]  {conn-10005} pool-recycle
+7432 DEBUG [2020-03-06 11:51:42]  {conn-10005} pool-connect
+7433 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001} Parameters : [5e13098a0a6e43ad8dfbb3330087883c]
+7433 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7498 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001} executed. 65.3912 millis. select content
+        from ebook_content
+        where content_id like ?
+7498 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001, rs-50003} open
+7498 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001, rs-50003} Header: [content]
+7499 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001, rs-50003} Result: [我是五级标题1的内容
+```java
+public class CommunityUtil {
+	public static void main(String[] args) {
+			System.out.println("我爱你");
+		}
+	}
+```
+]
+7500 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001, rs-50003} closed
+7500 DEBUG [2020-03-06 11:51:42]  {conn-10005, pstmt-20001} clearParameters. 
+7500 DEBUG [2020-03-06 11:51:42]  {conn-10005} pool-recycle
+8348 DEBUG [2020-03-06 11:51:43]  {conn-10005} pool-connect
+8349 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002} created. select  
+        setting
+     
+        from site_setting
+        where description = ?
+8350 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+8350 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+8437 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002} executed. 86.3153 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+8437 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002, rs-50004} open
+8437 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002, rs-50004} Header: [setting]
+8437 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002, rs-50004} Result: [1]
+8438 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002, rs-50004} closed
+8438 DEBUG [2020-03-06 11:51:43]  {conn-10005, pstmt-20002} clearParameters. 
+8439 DEBUG [2020-03-06 11:51:43]  {conn-10005} pool-recycle
+128098 DEBUG [2020-03-06 11:53:43]  {conn-10001} closed
+128101 DEBUG [2020-03-06 11:53:43]  {conn-10002} closed
+128106 DEBUG [2020-03-06 11:53:43]  {conn-10003} closed
+128113 DEBUG [2020-03-06 11:53:43]  {conn-10004} closed
+128114 DEBUG [2020-03-06 11:53:43]  {conn-10005, pstmt-20000} closed
+128114 DEBUG [2020-03-06 11:53:43]  {conn-10005, pstmt-20001} closed
+128114 DEBUG [2020-03-06 11:53:43]  {conn-10005, pstmt-20002} closed
+128117 DEBUG [2020-03-06 11:53:43]  {conn-10005} closed
+0    DEBUG [2020-03-06 11:54:08]  {conn-10001,procId-139} connected
+801  DEBUG [2020-03-06 11:54:09]  {conn-10002,procId-140} connected
+1528 DEBUG [2020-03-06 11:54:10]  {conn-10003,procId-141} connected
+2299 DEBUG [2020-03-06 11:54:10]  {conn-10004,procId-142} connected
+3047 DEBUG [2020-03-06 11:54:11]  {conn-10005,procId-143} connected
+3223 DEBUG [2020-03-06 11:54:11]  {conn-10005} pool-connect
+3467 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000} created. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3498 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000} Parameters : [245]
+3499 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000} Types : [INTEGER]
+3603 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000} executed. 114.5083 millis. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3609 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000, rs-50000} open
+3612 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000, rs-50000} Header: [id, ebook_name, ebook_id, header]
+3632 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000, rs-50000} Result: [8, test.md, 245, {"allNode":{"我是三级标题1":{"allNode":{"我是四级标题":{"allNode":{"我是五级标题1":{"allNode":{},"content":"我是五级标题1的内容\n","contentId":"5e13098a0a6e43ad8dfbb3330087883c"}},"content":"我是四级标题的内容\n","contentId":"0566b2879a5845828abf0dcc44d3331e"}},"content":"我是三级标题1的内容\n","contentId":"8e7dd8c608df462b9f99e785429afde9"},"我是三级标题2":{"allNode":{"我是五级标题2":{"allNode":{},"content":"我是五级标题2的内容\n","contentId":"2509022b359c437aa8d27edc46f6ee61"}},"content":"我是三级标题2的内容\n","contentId":"2b26def28b2b4a539f8a2b8d7da6211a"}}}]
+3636 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000, rs-50000} closed
+3639 DEBUG [2020-03-06 11:54:12]  {conn-10005, pstmt-20000} clearParameters. 
+3642 DEBUG [2020-03-06 11:54:12]  {conn-10005} pool-recycle
+5899 DEBUG [2020-03-06 11:54:14]  {conn-10005} pool-connect
+5901 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001} created. select content
+        from ebook_content
+        where content_id like ?
+5903 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001} Parameters : [8e7dd8c608df462b9f99e785429afde9]
+5903 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+5979 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001} executed. 75.6529 millis. select content
+        from ebook_content
+        where content_id like ?
+5979 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001, rs-50001} open
+5980 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001, rs-50001} Header: [content]
+5980 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001, rs-50001} Result: [我是三级标题1的内容
+]
+5982 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001, rs-50001} closed
+5982 DEBUG [2020-03-06 11:54:14]  {conn-10005, pstmt-20001} clearParameters. 
+5983 DEBUG [2020-03-06 11:54:14]  {conn-10005} pool-recycle
+6405 DEBUG [2020-03-06 11:54:15]  {conn-10005} pool-connect
+6407 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} Parameters : [0566b2879a5845828abf0dcc44d3331e]
+6407 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+6459 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} executed. 52.2833 millis. select content
+        from ebook_content
+        where content_id like ?
+6459 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50002} open
+6460 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50002} Header: [content]
+6460 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50002} Result: [我是四级标题的内容
+]
+6460 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50002} closed
+6461 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} clearParameters. 
+6461 DEBUG [2020-03-06 11:54:15]  {conn-10005} pool-recycle
+6904 DEBUG [2020-03-06 11:54:15]  {conn-10005} pool-connect
+6904 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} Parameters : [5e13098a0a6e43ad8dfbb3330087883c]
+6905 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+6961 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} executed. 56.4918 millis. select content
+        from ebook_content
+        where content_id like ?
+6961 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50003} open
+6962 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50003} Header: [content]
+6962 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50003} Result: [我是五级标题1的内容
+```java
+public class CommunityUtil {
+	public static void main(String[] args) {
+			System.out.println("我爱你");
+		}
+	}
+```
+]
+6962 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001, rs-50003} closed
+6963 DEBUG [2020-03-06 11:54:15]  {conn-10005, pstmt-20001} clearParameters. 
+6963 DEBUG [2020-03-06 11:54:15]  {conn-10005} pool-recycle
+87846 DEBUG [2020-03-06 11:55:36]  {conn-10001} closed
+87848 DEBUG [2020-03-06 11:55:36]  {conn-10002} closed
+87850 DEBUG [2020-03-06 11:55:36]  {conn-10003} closed
+87851 DEBUG [2020-03-06 11:55:36]  {conn-10004} closed
+87852 DEBUG [2020-03-06 11:55:36]  {conn-10005, pstmt-20000} closed
+87852 DEBUG [2020-03-06 11:55:36]  {conn-10005, pstmt-20001} closed
+87853 DEBUG [2020-03-06 11:55:36]  {conn-10005} closed
+0    DEBUG [2020-03-06 11:56:04]  {conn-10001,procId-144} connected
+845  DEBUG [2020-03-06 11:56:05]  {conn-10002,procId-145} connected
+1668 DEBUG [2020-03-06 11:56:06]  {conn-10003,procId-146} connected
+2549 DEBUG [2020-03-06 11:56:06]  {conn-10004,procId-147} connected
+3346 DEBUG [2020-03-06 11:56:07]  {conn-10005,procId-148} connected
+3564 DEBUG [2020-03-06 11:56:07]  {conn-10005} pool-connect
+3746 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000} created. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3787 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000} Parameters : [245]
+3789 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000} Types : [INTEGER]
+3881 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000} executed. 114.7275 millis. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+3888 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000, rs-50000} open
+3894 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000, rs-50000} Header: [id, ebook_name, ebook_id, header]
+3911 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000, rs-50000} Result: [8, test.md, 245, {"allNode":{"我是三级标题1":{"allNode":{"我是四级标题":{"allNode":{"我是五级标题1":{"allNode":{},"content":"我是五级标题1的内容\n","contentId":"5e13098a0a6e43ad8dfbb3330087883c"}},"content":"我是四级标题的内容\n","contentId":"0566b2879a5845828abf0dcc44d3331e"}},"content":"我是三级标题1的内容\n","contentId":"8e7dd8c608df462b9f99e785429afde9"},"我是三级标题2":{"allNode":{"我是五级标题2":{"allNode":{},"content":"我是五级标题2的内容\n","contentId":"2509022b359c437aa8d27edc46f6ee61"}},"content":"我是三级标题2的内容\n","contentId":"2b26def28b2b4a539f8a2b8d7da6211a"}}}]
+3916 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000, rs-50000} closed
+3919 DEBUG [2020-03-06 11:56:08]  {conn-10005, pstmt-20000} clearParameters. 
+3922 DEBUG [2020-03-06 11:56:08]  {conn-10005} pool-recycle
+6731 DEBUG [2020-03-06 11:56:11]  {conn-10005} pool-connect
+6733 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} created. select content
+        from ebook_content
+        where content_id like ?
+6734 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} Parameters : [8e7dd8c608df462b9f99e785429afde9]
+6735 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+6795 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} executed. 60.9613 millis. select content
+        from ebook_content
+        where content_id like ?
+6796 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50001} open
+6796 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50001} Header: [content]
+6797 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50001} Result: [我是三级标题1的内容
+]
+6798 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50001} closed
+6798 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} clearParameters. 
+6798 DEBUG [2020-03-06 11:56:11]  {conn-10005} pool-recycle
+7351 DEBUG [2020-03-06 11:56:11]  {conn-10005} pool-connect
+7352 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} Parameters : [0566b2879a5845828abf0dcc44d3331e]
+7352 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7415 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} executed. 62.6546 millis. select content
+        from ebook_content
+        where content_id like ?
+7415 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50002} open
+7415 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50002} Header: [content]
+7416 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50002} Result: [我是四级标题的内容
+]
+7416 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001, rs-50002} closed
+7416 DEBUG [2020-03-06 11:56:11]  {conn-10005, pstmt-20001} clearParameters. 
+7417 DEBUG [2020-03-06 11:56:11]  {conn-10005} pool-recycle
+7897 DEBUG [2020-03-06 11:56:12]  {conn-10005} pool-connect
+7898 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001} Parameters : [5e13098a0a6e43ad8dfbb3330087883c]
+7898 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7969 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001} executed. 70.77 millis. select content
+        from ebook_content
+        where content_id like ?
+7969 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001, rs-50003} open
+7969 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001, rs-50003} Header: [content]
+7970 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001, rs-50003} Result: [我是五级标题1的内容
+```java
+public class CommunityUtil {
+	public static void main(String[] args) {
+			System.out.println("我爱你");
+		}
+	}
+```
+]
+7970 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001, rs-50003} closed
+7971 DEBUG [2020-03-06 11:56:12]  {conn-10005, pstmt-20001} clearParameters. 
+7971 DEBUG [2020-03-06 11:56:12]  {conn-10005} pool-recycle
+132686 DEBUG [2020-03-06 11:58:17]  {conn-10001} closed
+132688 DEBUG [2020-03-06 11:58:17]  {conn-10002} closed
+132690 DEBUG [2020-03-06 11:58:17]  {conn-10003} closed
+132693 DEBUG [2020-03-06 11:58:17]  {conn-10004} closed
+132693 DEBUG [2020-03-06 11:58:17]  {conn-10005, pstmt-20000} closed
+132693 DEBUG [2020-03-06 11:58:17]  {conn-10005, pstmt-20001} closed
+132695 DEBUG [2020-03-06 11:58:17]  {conn-10005} closed
+0    DEBUG [2020-03-06 11:58:36]  {conn-10001,procId-149} connected
+826  DEBUG [2020-03-06 11:58:37]  {conn-10002,procId-150} connected
+1829 DEBUG [2020-03-06 11:58:38]  {conn-10003,procId-151} connected
+2698 DEBUG [2020-03-06 11:58:39]  {conn-10004,procId-152} connected
+3614 DEBUG [2020-03-06 11:58:40]  {conn-10005,procId-153} connected
+3834 DEBUG [2020-03-06 11:58:40]  {conn-10005} pool-connect
+4120 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000} created. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+4184 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000} Parameters : [245]
+4185 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000} Types : [INTEGER]
+4288 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000} executed. 112.7437 millis. select
+         
+        id, ebook_name,ebook_id,header
+     
+        from library
+        where ebook_id=?
+4294 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000, rs-50000} open
+4298 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000, rs-50000} Header: [id, ebook_name, ebook_id, header]
+4322 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000, rs-50000} Result: [8, test.md, 245, {"allNode":{"我是三级标题1":{"allNode":{"我是四级标题":{"allNode":{"我是五级标题1":{"allNode":{},"content":"我是五级标题1的内容\n","contentId":"5e13098a0a6e43ad8dfbb3330087883c"}},"content":"我是四级标题的内容\n","contentId":"0566b2879a5845828abf0dcc44d3331e"}},"content":"我是三级标题1的内容\n","contentId":"8e7dd8c608df462b9f99e785429afde9"},"我是三级标题2":{"allNode":{"我是五级标题2":{"allNode":{},"content":"我是五级标题2的内容\n","contentId":"2509022b359c437aa8d27edc46f6ee61"}},"content":"我是三级标题2的内容\n","contentId":"2b26def28b2b4a539f8a2b8d7da6211a"}}}]
+4329 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000, rs-50000} closed
+4339 DEBUG [2020-03-06 11:58:40]  {conn-10005, pstmt-20000} clearParameters. 
+4342 DEBUG [2020-03-06 11:58:40]  {conn-10005} pool-recycle
+7019 DEBUG [2020-03-06 11:58:43]  {conn-10005} pool-connect
+7022 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001} created. select content
+        from ebook_content
+        where content_id like ?
+7024 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001} Parameters : [8e7dd8c608df462b9f99e785429afde9]
+7024 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7110 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001} executed. 86.3847 millis. select content
+        from ebook_content
+        where content_id like ?
+7110 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001, rs-50001} open
+7111 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001, rs-50001} Header: [content]
+7111 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001, rs-50001} Result: [我是三级标题1的内容
+]
+7112 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001, rs-50001} closed
+7113 DEBUG [2020-03-06 11:58:43]  {conn-10005, pstmt-20001} clearParameters. 
+7113 DEBUG [2020-03-06 11:58:43]  {conn-10005} pool-recycle
+7525 DEBUG [2020-03-06 11:58:44]  {conn-10005} pool-connect
+7525 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} Parameters : [0566b2879a5845828abf0dcc44d3331e]
+7526 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+7590 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} executed. 64.6974 millis. select content
+        from ebook_content
+        where content_id like ?
+7591 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50002} open
+7591 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50002} Header: [content]
+7591 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50002} Result: [我是四级标题的内容
+]
+7592 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50002} closed
+7592 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} clearParameters. 
+7592 DEBUG [2020-03-06 11:58:44]  {conn-10005} pool-recycle
+8163 DEBUG [2020-03-06 11:58:44]  {conn-10005} pool-connect
+8164 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} Parameters : [5e13098a0a6e43ad8dfbb3330087883c]
+8164 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} Types : [VARCHAR]
+8241 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} executed. 76.4632 millis. select content
+        from ebook_content
+        where content_id like ?
+8241 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50003} open
+8241 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50003} Header: [content]
+8241 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50003} Result: [我是五级标题1的内容
+```java
+public class CommunityUtil {
+	public static void main(String[] args) {
+			System.out.println("我爱你");
+		}
+	}
+```
+]
+8242 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001, rs-50003} closed
+8242 DEBUG [2020-03-06 11:58:44]  {conn-10005, pstmt-20001} clearParameters. 
+8243 DEBUG [2020-03-06 11:58:44]  {conn-10005} pool-recycle
+8772 DEBUG [2020-03-06 11:58:45]  {conn-10005} pool-connect
+8773 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002} created. select  
+        setting
+     
+        from site_setting
+        where description = ?
+8774 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002} Parameters : [允许在线编译]
+8774 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002} Types : [VARCHAR]
+8849 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002} executed. 74.9583 millis. select  
+        setting
+     
+        from site_setting
+        where description = ?
+8850 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002, rs-50004} open
+8850 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002, rs-50004} Header: [setting]
+8850 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002, rs-50004} Result: [1]
+8851 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002, rs-50004} closed
+8851 DEBUG [2020-03-06 11:58:45]  {conn-10005, pstmt-20002} clearParameters. 
+8852 DEBUG [2020-03-06 11:58:45]  {conn-10005} pool-recycle
+14564 DEBUG [2020-03-06 11:58:51]  {conn-10001} closed
+14566 DEBUG [2020-03-06 11:58:51]  {conn-10002} closed
+14569 DEBUG [2020-03-06 11:58:51]  {conn-10003} closed
+14571 DEBUG [2020-03-06 11:58:51]  {conn-10004} closed
+14571 DEBUG [2020-03-06 11:58:51]  {conn-10005, pstmt-20000} closed
+14571 DEBUG [2020-03-06 11:58:51]  {conn-10005, pstmt-20001} closed
+14571 DEBUG [2020-03-06 11:58:51]  {conn-10005, pstmt-20002} closed
+14572 DEBUG [2020-03-06 11:58:51]  {conn-10005} closed
