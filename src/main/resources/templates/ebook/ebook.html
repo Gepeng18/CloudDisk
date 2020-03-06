@@ -22,22 +22,52 @@
 <!--</div>-->
 <div class="container-fluid">
 
+    <form id="goupdate" th:action="@{/ebook/goupdate}" method="post">
+        <input type="hidden" id="contentId" name="contentId">
+
+    </form>
+
     <div class="row" style="margin-top: 20px">
         <div class="col-md-3">
 
-            <form name="search" th:action="@{/ebook/goupdate}" method="post">
-                <input type="hidden" id="contentId" name="contentId">
-                <div style="margin-top:10px;margin-left: 10px;float: left;position: fixed;">
-                    <button type="submit"
-                            class="btn btn-success">
-                        <i class="fa fa-edit"></i>&nbsp; 编辑
-                    </button>
-                </div>
+
+            <div class="dropdown" style="margin-top:10px;margin-left: 10px;float: left;position: fixed; z-index: 8">
+                <button type="button" class="btn dropdown-toggle" id="dropdownMenu1"
+                        data-toggle="dropdown">
+                    文件
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                    <li role="presentation">
+
+                        <a role="menuitem" tabindex="-1" href="#" id="btngoupdate">更新</a>
+
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" href="#">打开</a>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" href="#">更新</a>
+                    </li>
+                    <li role="presentation" class="divider"></li>
+                    <li role="presentation">
+                        <a role="menuitem" tabindex="-1" href="#">待续</a>
+                    </li>
+                </ul>
+
+            </div>
 
 
-            </form>
+            <!--                <div >-->
+            <!--                    <button type="submit"-->
+            <!--                            class="btn btn-success">-->
+            <!--                        <i class="fa fa-edit"></i>&nbsp; 编辑-->
+            <!--                    </button>-->
+            <!--                </div>-->
 
-            <ul id="main-nav" class="nav nav-tabs nav-stacked" style="position: fixed;margin-top: 50px;overflow:scroll;">
+
+            <ul id="main-nav" class="nav nav-tabs nav-stacked"
+                style="position: fixed;margin-top: 50px;overflow:scroll;">
                 <li th:each="header:${headers.getSubNodes()}" style="text-align:left">
                     <!--                       onclick="window.location.href='/content?uuid=${header.getValue().getUuid()}'"-->
                     <a th:href="@{|#${header.getContentId()}|}"
@@ -59,7 +89,7 @@
 
         </div>
         <div class="col-md-8 ">
-            <div class="nk-container" style="margin-top: 50px">
+            <div class="nk-container" style="margin-top: 50px;margin-left:20px">
                 <div id="markdown2" class="typo  typo-selection"></div>
             </div>
         </div>
@@ -78,11 +108,11 @@
 <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
 <script>
-    $(function(){
+    $(function () {
         let height = $(window).height();
         let width = $(window).width();
-        $("#main-nav").css("height",height/10*9);
-        $("#main-nav").css("width",width/12*3);
+        $("#main-nav").css("height", height / 10 * 9);
+        $("#main-nav").css("width", width / 12 * 3);
     })
 </script>
 <script>
@@ -90,6 +120,7 @@
         $("#contentId").val(contentId);
         var formData = new FormData();
         formData.append('contentId', contentId);
+
         $.ajax({
             url: '/cloudpan/ebook/getcontent',
             type: 'POST',
@@ -118,7 +149,7 @@
 
 <script>
     function compile(id) {
-        $("#button" + id ).html('<i class="fa fa-spinner fa-pulse"></i>&nbsp;  运行中\n');
+        $("#button" + id).html('<i class="fa fa-spinner fa-pulse"></i>&nbsp;  运行中\n');
         var code = $('#code' + id).text();
         console.log("code=" + code);
         var formData = new FormData();
@@ -134,7 +165,7 @@
             processData: false,
             success: function (result) {
                 alert(result.msg);
-                $("#button" + id ).html('<i class="fa fa-play"></i>&nbsp;  运行\n');
+                $("#button" + id).html('<i class="fa fa-play"></i>&nbsp;  运行\n');
             },
             error: function (result) {
                 console.log("错误");
@@ -144,6 +175,14 @@
             }
         });
     }
+</script>
+
+<script>
+    $(function () {
+        $("#btngoupdate").click(function () {
+            $("#goupdate").submit();
+        });
+    });
 </script>
 
 
