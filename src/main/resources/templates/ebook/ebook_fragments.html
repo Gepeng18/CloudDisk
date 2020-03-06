@@ -11,16 +11,16 @@
     <div class="row">
         <div class="col-md-2">
 
-            <ul th:fragment="headFragment(headers,key,n)" th:id="${key}" class="nav nav-list collapse secondmenu"
+            <ul th:fragment="headFragment(headers,n)" th:id="${headers.getContentId()}" class="nav nav-list collapse secondmenu"
                 style="height: 0px;">
-                <li th:each="header:${headers.getAllNode()}" th:style="|margin-left:${n}px|"  >
+                <li th:each="header:${headers.getSubNodes()}" th:style="|margin-left:${n}px|"  >
                     <!--                    这一项的key-->
-                    <a th:href="@{|#${header.getKey().trim()}|}" th:onclick="getContent([[${header.getValue().getContentId()}]])" class="nav-header collapsed" data-toggle="collapse"
-                       th:text="${header.getKey()}">
+                    <a th:href="@{|#${header.getContentId()}|}" th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed" data-toggle="collapse"
+                       th:text="${header.getHeader()}" style="word-wrap:break-word;">
                         系统管理
                     </a>
                     <!--                    这一项的value,也就是下一个dir-->
-                    <th:block th:replace="ebook/ebook_fragments::headFragment(${header.getValue()},${header.getKey().trim()},${n}+20)">
+                    <th:block th:replace="ebook/ebook_fragments::headFragment(${header},${n}+10)">
                     </th:block>
 
                 </li>

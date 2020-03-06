@@ -28,8 +28,7 @@ public class BaseController {
     protected ICompilerService iCompilerService;
 
 
-    @Autowired
-    protected ResolveHeaderService resolveHeaderService;
+
 
 
     @Autowired

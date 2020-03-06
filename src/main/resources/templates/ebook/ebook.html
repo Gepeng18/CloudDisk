@@ -37,18 +37,18 @@
 
             </form>
 
-            <ul id="main-nav" class="nav nav-tabs nav-stacked" style="position: fixed;margin-top: 50px">
-                <li th:each="header:${headers.getAllNode()}" style="text-align:left">
+            <ul id="main-nav" class="nav nav-tabs nav-stacked" style="position: fixed;margin-top: 50px;overflow:scroll;">
+                <li th:each="header:${headers.getSubNodes()}" style="text-align:left">
                     <!--                       onclick="window.location.href='/content?uuid=${header.getValue().getUuid()}'"-->
-                    <a th:href="@{|#${header.getKey().trim()}|}"
-                       th:onclick="getContent([[${header.getValue().getContentId()}]])" class="nav-header collapsed"
-                       data-toggle="collapse" th:text="${header.getKey()}">
+                    <a th:href="@{|#${header.getContentId()}|}"
+                       th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed"
+                       data-toggle="collapse" th:text="${header.getHeader()}" style="word-wrap:break-word;">
 
                         系统管理
                     </a>
 
                     <th:block
-                            th:replace="ebook/ebook_fragments::headFragment(${header.getValue()},${header.getKey().trim()},20)">
+                            th:replace="ebook/ebook_fragments::headFragment(${header},10)">
                     </th:block>
 
 
@@ -77,7 +77,14 @@
 <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
-
+<script>
+    $(function(){
+        let height = $(window).height();
+        let width = $(window).width();
+        $("#main-nav").css("height",height/10*9);
+        $("#main-nav").css("width",width/12*3);
+    })
+</script>
 <script>
     function getContent(contentId) {
         $("#contentId").val(contentId);

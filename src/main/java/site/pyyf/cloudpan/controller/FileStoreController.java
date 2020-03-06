@@ -1,12 +1,14 @@
 package site.pyyf.cloudpan.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
 import site.pyyf.cloudpan.entity.FileFolder;
 import site.pyyf.cloudpan.entity.FileStore;
 import site.pyyf.cloudpan.entity.MyFile;
 import site.pyyf.cloudpan.entity.PicUploadResult;
+import site.pyyf.cloudpan.service.ResolveHeaderService;
 import site.pyyf.cloudpan.utils.*;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,6 +38,9 @@ import java.util.regex.Pattern;
 public class FileStoreController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(FileStoreController.class);
+
+    @Autowired
+    protected ResolveHeaderService resolveHeaderService;
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
