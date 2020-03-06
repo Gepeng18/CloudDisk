@@ -52,3 +52,6 @@ logs/
 ### cloudpan ###
 /src/main/resources/application.yml
 /src/main/resources/qqconnectconfig.properties
+
+*.log
+*.log.*
