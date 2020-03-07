@@ -8,6 +8,10 @@
 使用：
 请修改所有sample文件后进行部署
 
+
+2020.3.7
+- 引入QQ登录模块   输入任意页面（包含项目前缀）被LoginHandlerInterceptor重定向到/路径，MvcConfig将/映射为index登录页面，然后点击/login后，重定向new Oauth().getAuthorizeURL(request)，这里即根据qqconnectconfig中的信息请求QQ互联，QQ互联将QQ信息回调给redirect_URI（即QQ互联回调域及qqconnectconfig中的redirect_URI），所以redirect_URI不能被拦截，且这里使用controller进行接收，至此登录完成。
+
 2020.3.7
 - 将jquery.contextMenu.min.js中的 top: t.clientY + 2改为 top: t.clientY + $(window).scrollTop()+2以修复当页面下拉时出现菜单显示位置错误
 
@@ -23,3 +27,5 @@
 
 2020.3.5
 - 修改下载逻辑，不利用应用服务器进行转存，节省应用服务器流量并且提高大文件下载响应度
+
+
