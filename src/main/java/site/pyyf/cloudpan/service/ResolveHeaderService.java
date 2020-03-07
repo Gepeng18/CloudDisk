@@ -9,8 +9,6 @@ package site.pyyf.cloudpan.service;
  */
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import net.sf.jsqlparser.statement.select.PivotVisitorAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,6 +20,7 @@ import site.pyyf.cloudpan.entity.EbookConent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,8 +32,6 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
 
     @Autowired
     private IebookContentMapper iebookContentMapper;
-
-
     @Autowired
     private LibraryService libraryService;
 
@@ -42,13 +39,38 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
     private int ebookId;
     private int firstLevelHeader;
     private String preContentId;
-    private StringBuilder tmp = new StringBuilder();
+    private StringBuilder preContent = new StringBuilder();
     private Directory root;//树根（相当于链表的头指针）
     private boolean detect = true;
 
-    public Directory getRoot()//获取树根
-    {
-        return root;
+    private Map<String, Directory> records = new HashMap<>();
+    private void insertHeader(Directory head, int level) {
+        if(level==firstLevelHeader){
+            if (records.containsKey("" + level))
+                records.remove("" + level);
+            /* ------------------- 更新记录和插入节点 ----------------- */
+            root.addSubNode(head);
+            records.put(""+level,head);
+            return ;
+        }
+
+        /* ------------------- 找到要插入的节点 ----------------- */
+        int preLevel = 0;
+        for (preLevel = level - 1; preLevel > 0; preLevel--) {
+            if (records.containsKey("" + preLevel))
+                break;
+        }
+
+        /* ------------------- 后面节点全部失效 ----------------- */
+        for (int i = preLevel + 1; i < 7; i++) {
+            if (records.containsKey("" + i))
+                records.remove("" + i);
+        }
+
+        /* ------------------- 更新记录和插入节点 ----------------- */
+        Directory preList = records.get("" + preLevel);
+        preList.addSubNode(head);
+        records.put(""+level,head);
     }
 
     public ResolveHeaderService() {
@@ -67,7 +89,6 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
         }
 
     }
-//    public Map<String, Directory> directoryMap = new LinkedHashMap<>();
 
     public void resolveHeader(String buffer) {
         boolean isHeaderLine = false;
@@ -98,14 +119,14 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                 /* ------------------- 第2次检测到标题时对其上面所有的内容进行封存 ----------------- */
                 if (root.getSubNodes().size() > 0) {
                     /* ------------------- 插入内容表(插入上一次的） ----------------- */
-                    final String content = tmp.toString();
+                    final String content = preContent.toString();
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setEbookId(ebookId);
                     ebookConent.setContent(content);
                     iebookContentMapper.insertEbookContent(ebookConent);
 
-                    tmp = new StringBuilder();
+                    preContent = new StringBuilder();
                 }
 
                 /* ------------------- 标题加入root队伍 ----------------- */
@@ -113,46 +134,32 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                 final String contentId = UUID.randomUUID().toString().replaceAll("-", "");
                 newDir.setHeader(buffer.substring(firstLevelHeader));
                 newDir.setContentId(contentId);
-                root.addSubNode(newDir);
+
+                insertHeader(newDir,firstLevelHeader);
                 preContentId = contentId;
             }
 
             /* ------------------- 处理除firstLevel级标题外的其他标题 ----------------- */
-            Directory preList = root;
             for (int i = firstLevelHeader + 1; i < 7; i++) {
                 if (isNHeader(buffer, i)) {
                     isHeaderLine = true;
-                    int times = i - firstLevelHeader;
-                    for (int tmpTimes = times; tmpTimes > 0; tmpTimes--) {
-                        preList = root;
-                        try {
-                            while (tmpTimes-- != 0) {
-                                preList = preList.getSubNodes().get(preList.getSubNodes().size() - 1);
-                            }
-                            break;
-                        } catch (IndexOutOfBoundsException e) {
-                        }
-                    }
-
-
 
                     /* -------------------  插入内容表(插入上一次的）----------------- */
-                    final String content = tmp.toString();
+                    final String content = preContent.toString();
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setContent(content);
                     ebookConent.setEbookId(ebookId);
                     iebookContentMapper.insertEbookContent(ebookConent);
-                    tmp = new StringBuilder();
+                    preContent = new StringBuilder();
 
                     /* ------------------- 标题加入root队伍 ----------------- */
                     final String contentId = UUID.randomUUID().toString().replaceAll("-", "");
                     final Directory newDir = new Directory();
                     newDir.setHeader(buffer.substring(i));
                     newDir.setContentId(contentId);
-                    preList.addSubNode(newDir);
                     preContentId = contentId;
-
+                    insertHeader(newDir, i);
                     break;
                 }
             }
@@ -161,7 +168,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
         if (buffer.contains("```"))
             detect = !detect;
         if (!isHeaderLine)
-            tmp.append(buffer).append("\n");
+            preContent.append(buffer).append("\n");
     }
 
 
@@ -184,7 +191,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
 
 
         /* ------------------- 插入内容表 ----------------- */
-        final String content = tmp.toString();
+        final String content = preContent.toString();
         EbookConent ebookConent = new EbookConent();
         ebookConent.setContentId(preContentId);
         ebookConent.setContent(content);
@@ -192,7 +199,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
         iebookContentMapper.insertEbookContent(ebookConent);
 
         /* ------------------- 将标题的所有内容插入标题表中 ----------------- */
-        eBook.setHeader(JSON.toJSONString(getRoot()));
+        eBook.setHeader(JSON.toJSONString(root));
         libraryService.insertEbook(eBook);
 
     }

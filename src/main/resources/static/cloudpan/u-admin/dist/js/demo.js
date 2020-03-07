@@ -5,7 +5,7 @@ var skin = function(color) {
 	if(color == 'default') return;
 	$("head").append($("<link/>", {
 		rel: 'stylesheet',
-		href: 'https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.10/cloudpan/u-admin/dist/css/skins/' + color + '.css',
+		href: 'https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.11/cloudpan/u-admin/dist/css/skins/' + color + '.css',
 		id: 'skin-css'
 	}));
 }
