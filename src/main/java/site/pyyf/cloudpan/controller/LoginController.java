@@ -27,22 +27,22 @@ import java.util.Date;
 public class LoginController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(LoginController.class);
-
-    /**
-     * @Description 免登陆用户入口
-     * @Author xw
-     * @Date 15:17 2020/2/26
-     * @Param []
-     * @return java.lang.String
-     **/
-    @GetMapping("/admin")
-    public String adminLogin(){
-        User user = userService.getUserByOpenId("123456789");
-        logger.info("登录成功！"+user);
-        session.setAttribute("loginUser", user);
-        return "redirect:/index";
-
-    }
+//
+//    /**
+//     * @Description 免登陆用户入口
+//     * @Author xw
+//     * @Date 15:17 2020/2/26
+//     * @Param []
+//     * @return java.lang.String
+//     **/
+//    @GetMapping("/admin")
+//    public String adminLogin(){
+//        User user = userService.getUserByOpenId("123456789");
+//        logger.info("登录成功！"+user);
+//        session.setAttribute("loginUser", user);
+//        return "redirect:/index";
+//
+//    }
 
     /**
      * @Description 请求QQ登录
