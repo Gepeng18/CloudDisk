@@ -476,8 +476,11 @@ public class FileStoreController extends BaseController {
                 final StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
                 final String code = ifilePreviewService.preview(supportPreviewLang.get(suffix), fileContentByMyFile);
                 // 其他语言 启动mardown显示
-
+                System.out.println(code);
                 final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
+                System.out.println("------------------------------------------------------------");
+                System.out.println(htmlContent);
+                System.out.println("------------------------------------------------------------");
 
                 model.addAttribute("code", htmlContent);
                 return "show-code";
