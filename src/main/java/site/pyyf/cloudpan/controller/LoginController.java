@@ -27,7 +27,7 @@ import java.util.Date;
 public class LoginController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(LoginController.class);
-//
+
 //    /**
 //     * @Description 免登陆用户入口
 //     * @Author xw
