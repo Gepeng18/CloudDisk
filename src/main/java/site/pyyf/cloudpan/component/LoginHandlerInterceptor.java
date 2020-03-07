@@ -27,7 +27,7 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
         Object loginUser = request.getSession().getAttribute("loginUser");
         if (loginUser==null){
             //未登录,返回登录页面
-            response.sendRedirect("/cloudpan/admin");
+            response.sendRedirect("/cloudpan/");
             return false;
         }else {
             //已登录,放行

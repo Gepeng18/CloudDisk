@@ -28,47 +28,21 @@ public class LoginController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(LoginController.class);
 
-    /**
-     * @Description 免登陆用户入口
-     * @Author xw
-     * @Date 15:17 2020/2/26
-     * @Param []
-     * @return java.lang.String
-     **/
-    @GetMapping("/admin")
-    public String adminLogin(){
+//    /**
+//     * @Description 免登陆用户入口
+//     * @Author xw
+//     * @Date 15:17 2020/2/26
+//     * @Param []
+//     * @return java.lang.String
+//     **/
+//    @GetMapping("/admin")
+//    public String adminLogin(){
 //        User user = userService.getUserByOpenId("123456789");
 //        logger.info("登录成功！"+user);
 //        session.setAttribute("loginUser", user);
 //        return "redirect:/index";
-
-        User user = userService.getUserByOpenId("123456789");
-        if (user == null){
-            user = User.builder()
-                    .openId("123456789").userName(removeNonBmpUnicode("gp"))
-                    .imagePath("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cloud.png").
-                            registerTime(new Date()).build();
-            if (userService.insert(user)){
-                logger.info("注册用户成功！当前注册用户" + user);
-                FileStore store = FileStore.builder().userId(user.getUserId()).build();
-                if (fileStoreService.addFileStore(store) == 1){
-                    user.setFileStoreId(store.getFileStoreId());
-                    userService.update(user);
-                    logger.info("注册仓库成功！当前注册仓库" + store);
-                }
-            } else {
-                logger.error("注册用户失败！");
-            }
-        }else {
-            user.setUserName(removeNonBmpUnicode("gp"));
-            user.setImagePath("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cloud.png");
-            userService.update(user);
-        }
-        logger.info("QQ用户登录成功！"+user);
-        session.setAttribute("loginUser", user);
-        return "redirect:/index";
-
-    }
+//
+//    }
 
     /**
      * @Description 请求QQ登录
