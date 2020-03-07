@@ -10,6 +10,7 @@
 
 2020.3.7
 - 将jquery.contextMenu.min.js中的 top: t.clientY + 2改为 top: t.clientY + $(window).scrollTop()+2以修复当页面下拉时出现菜单显示位置错误
+
 2020.3.6
 - 修改前端ebook界面，使得界面左右可以分别滑动，侧边栏上下滑动，左右超出区域分行显示，且侧边栏以contentid作为id(之前是header)
 - 后端重新改了数据结构，改为普通的树结构
