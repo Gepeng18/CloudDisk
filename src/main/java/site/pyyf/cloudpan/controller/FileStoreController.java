@@ -8,6 +8,7 @@ import site.pyyf.cloudpan.entity.FileFolder;
 import site.pyyf.cloudpan.entity.FileStore;
 import site.pyyf.cloudpan.entity.MyFile;
 import site.pyyf.cloudpan.entity.PicUploadResult;
+import site.pyyf.cloudpan.service.IfilePreviewService;
 import site.pyyf.cloudpan.service.ResolveHeaderService;
 import site.pyyf.cloudpan.utils.*;
 import org.slf4j.Logger;
@@ -156,7 +157,6 @@ public class FileStoreController extends BaseController {
             //去FTP上拉取
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
             System.out.println("开始下载");
-            System.out.println(fileName);
             response.setCharacterEncoding("utf-8");
             // 设置返回类型
             response.setContentType("multipart/form-data");
@@ -423,7 +423,6 @@ public class FileStoreController extends BaseController {
             //去FTP上拉取
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
             System.out.println("开始下载");
-            System.out.println(fileName);
             response.setCharacterEncoding("utf-8");
             // 设置返回类型
             response.setContentType("multipart/form-data");
@@ -451,38 +450,31 @@ public class FileStoreController extends BaseController {
         supportPreviewLang.put("java", "java");
         supportPreviewLang.put("html", "html");
         supportPreviewLang.put("py", "python");
-        supportPreviewLang.put("md", "");
 
 
         final MyFile file = myFileService.getFileByFileId(id);
         final String fileName = file.getMyFileName();
         final String suffix = StringUtils.substringAfterLast(fileName, ".");
+        if (suffix.equals("md"))
+            return "redirect:/ebook/getbook/" + id;
         if (supportPreviewLang.containsKey(suffix)) {
-            if (suffix.equals("md"))
-                return "redirect:/ebook/getbook/" + id;
-            else if (suffix.equals("java")) {
+             if (suffix.equals("java")) {
                 final StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                final String code = ifilePreviewService.preview(supportPreviewLang.get(suffix), fileContentByMyFile);
-                // 其他语言 启动mardown显示
-
+                final String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
 
-                final String addJavaCompileHtml = iCompilerService.addJavaCompileHtml(new StringBuilder(htmlContent), "java").toString();
+                final StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
 
-
-                model.addAttribute("code", addJavaCompileHtml);
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml,Arrays.asList("java"));
+                model.addAttribute("code", newCode.toString());
                 return "show-code";
             } else {
                 final StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                final String code = ifilePreviewService.preview(supportPreviewLang.get(suffix), fileContentByMyFile);
+                final String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 // 其他语言 启动mardown显示
-                System.out.println(code);
                 final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
-                System.out.println("------------------------------------------------------------");
-                System.out.println(htmlContent);
-                System.out.println("------------------------------------------------------------");
-
-                model.addAttribute("code", htmlContent);
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent),new ArrayList<>(supportPreviewLang.values()));
+                model.addAttribute("code", newCode.toString());
                 return "show-code";
             }
         }

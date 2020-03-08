@@ -45,4 +45,17 @@
         where ebook_id=#{bookId}
     </delete>
 
+    <insert id="insertAllEbookContent" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into ebook_content
+        (<include refid="insertContentFields"></include>)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.contentId},
+            #{item.content},
+            #{item.ebookId}
+            )
+        </foreach>
+    </insert>
+
 </mapper>

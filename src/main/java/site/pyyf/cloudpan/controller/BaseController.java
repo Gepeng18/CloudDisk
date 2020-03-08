@@ -24,12 +24,6 @@ import javax.servlet.http.HttpSession;
 public class BaseController {
 
     protected OssUpload uploadInstance = OssUpload.getInstance();
-    @Autowired
-    protected ICompilerService iCompilerService;
-
-
-
-
 
     @Autowired
     protected IfilePreviewService ifilePreviewService;

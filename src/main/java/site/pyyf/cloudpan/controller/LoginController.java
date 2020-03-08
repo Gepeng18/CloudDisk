@@ -28,21 +28,46 @@ public class LoginController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(LoginController.class);
 
-//    /**
-//     * @Description 免登陆用户入口
-//     * @Author xw
-//     * @Date 15:17 2020/2/26
-//     * @Param []
-//     * @return java.lang.String
-//     **/
-//    @GetMapping("/admin")
-//    public String adminLogin(){
-//        User user = userService.getUserByOpenId("123456789");
-//        logger.info("登录成功！"+user);
-//        session.setAttribute("loginUser", user);
-//        return "redirect:/index";
-//
-//    }
+    /**
+     * @Description 免登陆用户入口
+     * @Author xw
+     * @Date 15:17 2020/2/26
+     * @Param []
+     * @return java.lang.String
+     **/
+    @GetMapping("/test")
+    public String adminLogin(){
+        String testOpenID = "12345678";
+        String testNickName = "测试用户";
+        String testAvatar = "https://s2.ax1x.com/2020/03/08/3vsmw9.png";
+        //设置用户信息
+        User user = userService.getUserByOpenId(testOpenID);
+        if (user == null){
+            user = User.builder()
+                    .openId(testOpenID).userName(testNickName)
+                    .imagePath(testAvatar).
+                            registerTime(new Date()).build();
+            if (userService.insert(user)){
+                logger.info("测试用户注册成功");
+                FileStore store = FileStore.builder().userId(user.getUserId()).build();
+                if (fileStoreService.addFileStore(store) == 1){
+                    user.setFileStoreId(store.getFileStoreId());
+                    userService.update(user);
+                    logger.info("注册仓库成功！当前注册仓库" + store);
+                }
+            } else {
+                logger.error("注册用户失败！");
+            }
+        }else {
+            user.setUserName(testNickName);
+            user.setImagePath(testAvatar);
+            userService.update(user);
+        }
+        logger.info("测试用户登录成功");
+        session.setAttribute("loginUser", user);
+        return "redirect:/index";
+
+    }
 
     /**
      * @Description 请求QQ登录

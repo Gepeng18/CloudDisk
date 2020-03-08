@@ -4,6 +4,8 @@ package site.pyyf.cloudpan.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import site.pyyf.cloudpan.entity.EbookConent;
 
+import java.util.List;
+
 @Mapper
 public interface IebookContentMapper {
 
@@ -17,4 +19,7 @@ public interface IebookContentMapper {
 
 
     void deleteByBookId(int bookId);
+
+    int insertAllEbookContent(List<EbookConent> allContent);
+
 }

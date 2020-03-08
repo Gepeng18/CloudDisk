@@ -9,6 +9,8 @@ package site.pyyf.cloudpan.service;
  */
 
 import com.alibaba.fastjson.JSON;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -20,21 +22,21 @@ import site.pyyf.cloudpan.entity.EbookConent;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
 @Scope("prototype")
 public class ResolveHeaderService//存储指定文件夹所有文件名的 树类
 {
+    private static final Logger logger= LoggerFactory.getLogger(ResolveHeaderService.class);
 
     @Autowired
     private IebookContentMapper iebookContentMapper;
     @Autowired
     private LibraryService libraryService;
 
+    private List<EbookConent> allContent= new ArrayList<>();
     private boolean jugleFirstLevelHeader = false;
     private int ebookId;
     private int firstLevelHeader;
@@ -124,7 +126,8 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                     ebookConent.setContentId(preContentId);
                     ebookConent.setEbookId(ebookId);
                     ebookConent.setContent(content);
-                    iebookContentMapper.insertEbookContent(ebookConent);
+                    allContent.add(ebookConent);
+
 
                     preContent = new StringBuilder();
                 }
@@ -150,7 +153,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                     ebookConent.setContentId(preContentId);
                     ebookConent.setContent(content);
                     ebookConent.setEbookId(ebookId);
-                    iebookContentMapper.insertEbookContent(ebookConent);
+                    allContent.add(ebookConent);
                     preContent = new StringBuilder();
 
                     /* ------------------- 标题加入root队伍 ----------------- */
@@ -177,6 +180,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
      * 作用：实现将指定文件夹的所有文件存入树中
      */
     public void readFile(InputStream in, String ebookName, int id) throws Exception {
+        logger.info("开始处理markdown文件");
         ebookId = id;
         final Ebook eBook = new Ebook();
         eBook.setEbookId(ebookId);
@@ -196,11 +200,14 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
         ebookConent.setContentId(preContentId);
         ebookConent.setContent(content);
         ebookConent.setEbookId(ebookId);
-        iebookContentMapper.insertEbookContent(ebookConent);
+        allContent.add(ebookConent);
+
+        iebookContentMapper.insertAllEbookContent(allContent);
 
         /* ------------------- 将标题的所有内容插入标题表中 ----------------- */
         eBook.setHeader(JSON.toJSONString(root));
         libraryService.insertEbook(eBook);
+        logger.info("markdown文件处理完毕");
 
     }
 

@@ -10,12 +10,15 @@ import site.pyyf.cloudpan.entity.Directory;
 import site.pyyf.cloudpan.entity.Ebook;
 import site.pyyf.cloudpan.entity.EbookConent;
 import site.pyyf.cloudpan.service.EbookContentService;
+import site.pyyf.cloudpan.service.IfilePreviewService;
 import site.pyyf.cloudpan.service.LibraryService;
 import site.pyyf.cloudpan.utils.CommunityUtil;
 import site.pyyf.cloudpan.utils.MarkdownUtils;
 
+import java.util.Arrays;
+
 @Controller
-public class EBookContentController extends BaseController{
+public class EBookContentController extends BaseController {
 
     @Autowired
     public EbookContentService ebookContentService;
@@ -53,8 +56,8 @@ public class EBookContentController extends BaseController{
             i++;
         }
 
-        final StringBuilder addJavaCompileHtml = iCompilerService.addJavaCompileHtml(processedContent, "java");
-        return CommunityUtil.getJSONString(200, addJavaCompileHtml.toString());
+        StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(ifilePreviewService.addHtmlCompileModule(processedContent, "java"), Arrays.asList("java","cpp","python","html"));
+        return CommunityUtil.getJSONString(200, newCode.toString());
     }
 
     @RequestMapping(value = "/ebook/goupdate", method = RequestMethod.POST)
