@@ -8,6 +8,9 @@
 使用：
 请修改所有sample文件后进行部署
 
+2020.3.8
+- markdown的内容分解后批量进行上传，同时云OSS存储采用多线程进行上传。
+- 前端进行了改进，预览代码支持更多的语言且显示括号和行号
 
 2020.3.7
 - 引入QQ登录模块   输入任意页面（包含项目前缀）被LoginHandlerInterceptor重定向到/路径，MvcConfig将/映射为index登录页面，然后点击/login后，重定向new Oauth().getAuthorizeURL(request)，这里即根据qqconnectconfig中的信息请求QQ互联，QQ互联将QQ信息回调给redirect_URI（即QQ互联回调域及qqconnectconfig中的redirect_URI），所以redirect_URI不能被拦截，且这里使用controller进行接收，至此登录完成。
