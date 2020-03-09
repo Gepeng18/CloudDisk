@@ -71,7 +71,7 @@ public class Path2Oss {
             }
             p2 = p1;
         }
-        final File file = new File(new File(filePath).getParent() + "//" + fileNameWithoutSuffix + "_ossmd" + "." + suffix);
+        File file = new File(new File(filePath).getParent() + "//" + fileNameWithoutSuffix + "_ossmd" + "." + suffix);
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(file));
         bw.write(result.toString());

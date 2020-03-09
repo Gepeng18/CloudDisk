@@ -49,7 +49,7 @@ public class OssUpload_sample {
     }
 
     // 允许上传的格式
-    private static final String[] IMAGE_TYPE = new String[]{".bmp", ".jpg",
+    private static String[] IMAGE_TYPE = new String[]{".bmp", ".jpg",
             ".jpeg", ".gif", ".png"};
 
 

@@ -1,15 +1,5 @@
 package site.pyyf.cloudpan.utils;
-
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.EAN;
-import site.pyyf.cloudpan.entity.PicUploadResult;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -35,7 +25,7 @@ public class multiThreadUploadUtil {
 
     private List<List<File>> splitImages(String folderPath, int partNum) {
         List<List<File>> lists = new ArrayList<>();
-        final File[] files = new File(folderPath).listFiles();
+        File[] files = new File(folderPath).listFiles();
         int everyPartNum = (int) Math.ceil(1.0d * files.length / partNum);
         for (int i = 0; i < partNum - 1; i++) {
             ArrayList<File> list = new ArrayList<>();
@@ -63,14 +53,15 @@ public class multiThreadUploadUtil {
     private void multiThread(String folderPath,int threadNum) throws InterruptedException {
         List<Thread> threads = Collections.synchronizedList(new ArrayList<>());
         long startTime = new Date().getTime();
-        final List<List<File>> lists = new multiThreadUploadUtil().splitImages(folderPath, threadNum);
-        final OssUpload instance = OssUpload.getInstance();
+        List<List<File>> lists = new multiThreadUploadUtil().splitImages(folderPath, threadNum);
+        OssUpload instance = OssUpload.getInstance();
+
         for (int i = 0; i < threadNum; i++) {
             Thread thread = new Thread(new Uploadthread(lists.get(i), instance));
             thread.start();
             threads.add(thread);
-
         }
+
         for(Thread thread:threads)
             thread.join();
         long endTime = new Date().getTime();
@@ -80,8 +71,8 @@ public class multiThreadUploadUtil {
 
     public void singleThread(String folderPath){
         long startTime = new Date().getTime();
-        final File[] files = new File(folderPath).listFiles();
-        final OssUpload instance = OssUpload.getInstance();
+        File[] files = new File(folderPath).listFiles();
+        OssUpload instance = OssUpload.getInstance();
         for(File file:files){
             instance.upload(file);
         }
