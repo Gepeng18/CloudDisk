@@ -156,67 +156,48 @@
             <version>0.10.0</version>
         </dependency>
 
-        <!--音乐解码为mp3-->
 
-        <!-- Java音频视频编码器 -->
+        <!--音乐解码为mp3
+        不过本来都是2.4.2版本，被我改为2.4.5版本-->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-all-deps</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.5</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-core -->
-<!--        <dependency>-->
-<!--            <groupId>ws.schild</groupId>-->
-<!--            <artifactId>jave-core</artifactId>-->
-<!--            <version>2.4.2</version>-->
-<!--        </dependency>-->
-        <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging-api -->
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
             <version>1.1</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-native-win64 -->
-<!--        <dependency>-->
-<!--            <groupId>ws.schild</groupId>-->
-<!--            <artifactId>jave-native-win64</artifactId>-->
-<!--            <version>2.4.2</version>-->
-<!--        </dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-native-osx64 -->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-native-osx64</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.5</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-native-linux64 -->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-native-linux64</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.5</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-native-win32 -->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-native-win32</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.5</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/ws.schild/jave-native-linux32 -->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-native-linux32</artifactId>
-            <version>2.4.2</version>
+            <version>2.4.5</version>
         </dependency>
 
+<!--        视频解码-->
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-core</artifactId>
