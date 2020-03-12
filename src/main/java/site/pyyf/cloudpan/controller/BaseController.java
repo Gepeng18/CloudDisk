@@ -26,6 +26,8 @@ public class BaseController {
     protected OssUpload uploadInstance = OssUpload.getInstance();
 
     @Autowired
+    protected  IMediaTranfer iMediaTranfer;
+    @Autowired
     protected IfilePreviewService ifilePreviewService;
 
     @Autowired

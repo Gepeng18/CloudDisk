@@ -34,14 +34,14 @@
 <div class="main-sidebar" id="sidebar">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="index">莫提网盘</a>
+            <a href="index">鹏圆网盘</a>
         </div>
         <div class="sidebar-user">
             <div class="sidebar-user-picture">
                 <a><img style="width: 50px;height: 50px" alt="image" th:src="${session.loginUser.imagePath}" src="u-admin/dist/img/avatar/avatar-1.jpeg"></a>
             </div>
             <div class="sidebar-user-details">
-                <div class="user-name" th:text="${session.loginUser.userName}">莫提</div>
+                <div class="user-name" th:text="${session.loginUser.userName}">鹏圆</div>
                 <div class="user-role">
                     普通用户
                 </div>
@@ -56,13 +56,14 @@
             <li th:class="${currUri == 'all'?'active':''}">
                 <a href="files"><i class="ion ion-folder"></i> 全部文件</a>
             </li>
-            <li th:class="${currUri == 'upload'?'active':''}">
-                <a href="upload"><i class="ion ion-upload"></i> 上传文件</a>
-            </li>
+<!--            <li th:class="${currUri == 'upload'?'active':''}">-->
+<!--                <a href="upload"><i class="ion ion-upload"></i> 上传文件</a>-->
+<!--            </li>-->
 
             <li th:class="${currUri == 'doc' or currUri == 'image' or currUri == 'video' or currUri == 'music' or currUri == 'other'?'active':''}">
-                <a href="#" class="has-dropdown"><i class="ion ion-cube"></i><span>分类文件</span></a>
-                <ul class="menu-dropdown">
+
+                <a href="#menu" class="nav-header collapsed has-dropdown" data-toggle="collapse"><i class="ion ion-cube"></i><span>分类文件</span></a>
+                <ul id="menu" class="nav nav-list collapse secondmenu menu-dropdown">
                     <li th:class="${currUri == 'doc'?'active':''}">
                         <a href="doc-files"><i class="ion ion-document-text"></i> 我的文档
                             <div th:text="${statistics.doc}" class="badge badge-primary">10</div>
@@ -104,7 +105,7 @@
 </div>
 <footer class="main-footer" id="footer">
     <div class="footer-left">
-        Copyright &copy; 2020 <div class="bullet"></div> 版权所有 莫提网盘 <div class="bullet"></div> 备案号: <a href="http://www.beian.miit.gov.cn/">冀ICP备19025674号-2</a>
+        Copyright &copy; 2020 <div class="bullet"></div> 版权所有 鹏圆网盘 <div class="bullet"></div> 备案号: <a href="http://www.beian.miit.gov.cn/">冀ICP备19025674号-2</a>
     </div>
     <div class="footer-right"></div>
 </footer>

@@ -10,7 +10,7 @@ import lombok.Data;
 /**
  * (MyFile)文件实体类
  *
- * @author 莫提
+ * @author 鹏圆
  * @since 2020-02-25 17:19:04
  */
 @AllArgsConstructor
@@ -57,5 +57,10 @@ public class MyFile implements Serializable {
     * 文件后缀
     */
     private String postfix;
+
+    /**
+     * 转码后的文件
+     * */
+    private String showPath;
 
 }

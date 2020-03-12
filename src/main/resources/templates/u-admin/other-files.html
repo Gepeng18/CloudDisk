@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
-	<title>莫提网盘-其他文件</title>
+	<title>鹏圆网盘-其他文件</title>
 
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/bootstrap/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/ionicons/css/ionicons.min.css">
@@ -120,105 +120,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/plug-ins/context-menu/js/jquery.contextMenu.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/plug-ins/xcConfirm/js/xcConfirm.js"></script>
-<script>
-	$(".files").contextMenu({
-		width: 100, // width
-		itemHeight: 30, // 菜单项height
-		bgColor: "#fff", // 背景颜色
-		color: "#333", // 字体颜色
-		fontSize: 12, // 字体大小
-		hoverBgColor: "#3498db", // hover背景颜色
-		target: function(ele) { // 当前元素
-			console.log(ele);
-		},
-		menu: [{ // 菜单项
-			text: " 下载",
-			callback: function() {
-				let id = $('#tarFile').html();
-				var location = window.location.href;
-				let strings = location.split("cloudpan");
-				if (id != ""){
-					window.location.href = strings[0]+"cloudpan/downloadFile?time="+new Date().getTime()+"&tip="+Math.random()*1000000+"&fId="+id;
-				}else{
-					return;
-				}
-			}
-		},
-			{
-				text: " 分享",
-				callback: function() {
-					var location = window.location.href;
-					let strings = location.split("cloudpan");
-					$.ajax({
-						url:"getQrCode/?id="+$('#tarFile').html()+"&url="+strings[0]+"cloudpan",
-						type:"get",
-						async:false,
-						success:function(data){
-							var txt=  "<img src='"+data['imgPath']+"' style='width: 150px;height: 150px'/><br>" +
-									"<input style='width: 80%;font-size: 14px' value='"+data['url']+"'/>";
-							var option = {
-								title: "分享你的文件",
-							};
-							window.wxc.xcConfirm(txt, "custom", option);
-						}
-					});
-				}
-			},
-			{
-				text: " 重命名",
-				callback: function() {
-					let id = $('.flag td span').html();
-					let name = $('.flag td a').html();
-					let html = $('.flag td').eq(1).html($('' +
-							"<form id='updateFileNameForm' action='updateFileName' method='post'>" +
-							"<input id='updateFileName' name='myFileName' autocomplete='off' type='text' onblur='checkUpdateFile()' value='"+name+"'>" +
-							"<input type='hidden' name='myFileId' value='"+id+"'>" +
-							"</form>" +
-							''));
-				}
-			},
-			{
-				text: " 删除",
-				callback: function() {
-					let id = $('#tarFile').html();
-					var location = window.location.href;
-					let strings = location.split("cloudpan");
-					if (id != ""){
-						window.location.href = strings[0]+"cloudpan/deleteFile?fId="+id+"&folder="+$('#nowF').html();
-					}else{
-						return;
-					}
-				}
-			},
-			{
-				text: " 在线浏览",
-				callback: function() {
-					let id = $('#tarFile').html();
-					let name = $('.flag td a').html();
-					var arr = ["md", "java", "css","cpp","py","php","html"];
-					if(arr.indexOf(name.substring(name.lastIndexOf(".")+1)) > -1)
-					{
-						window.location.href = "/cloudpan/file/preview?fId=" + id;
-					}else{
-						alert("在线预览");
-					}
-				}
-			}
-		]
-
-	});
-	function checkUpdateFile() {
-		var name = $.trim($("#updateFileName").val());
-		var nameReg = /^[^\u4E00-\u9FA5\uF900-\uFA2D\w-_]{2,20}$/;
-		if (!nameReg.test(name)) {
-			alert("文件夹格式错误！【汉字、字母、数字】");
-			var location = window.location.href;
-			window.location.href = location;
-		}else{
-			$('#updateFileNameForm').submit();
-		}
-	}
-</script>
+<th:block th:replace="commons/fragments::contextMenu"></th:block>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/popper.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/tooltip.js"></script>
@@ -234,5 +136,6 @@
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/js/custom.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/js/demo.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/chart.min.js"></script>
-</body>
+
+<th:block th:replace="commons/fragments::share"></th:block></body>
 </html>

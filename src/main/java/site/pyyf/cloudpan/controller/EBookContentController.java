@@ -30,7 +30,7 @@ public class EBookContentController extends BaseController {
     public String getEbook(@PathVariable(value = "bookId") int bookId, Model model) {
 
         Ebook ebook = libraryService.selectByBookId(bookId);
-        final Directory directory = JSONObject.parseObject(ebook.getHeader(), Directory.class, Feature.OrderedField);
+        Directory directory = JSONObject.parseObject(ebook.getHeader(), Directory.class, Feature.OrderedField);
         model.addAttribute("headers", directory);
         return "ebook/ebook";
     }
@@ -39,8 +39,8 @@ public class EBookContentController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/ebook/getcontent", method = RequestMethod.POST)
     public String getcontent(@RequestParam("contentId") String contentId) {
-        final String content = ebookContentService.selectContentByContentId(contentId);
-        final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(content);
+        String content = ebookContentService.selectContentByContentId(contentId);
+        String htmlContent = MarkdownUtils.markdownToHtmlExtensions(content);
         StringBuilder processedContent = new StringBuilder();
         int i = 0;
         char buf;
@@ -63,7 +63,7 @@ public class EBookContentController extends BaseController {
     @RequestMapping(value = "/ebook/goupdate", method = RequestMethod.POST)
     public String goUpdatePage(@RequestParam("contentId") String contentId,
                                Model model) {
-        final String content = ebookContentService.selectContentByContentId(contentId);
+        String content = ebookContentService.selectContentByContentId(contentId);
         model.addAttribute("content", content);
         model.addAttribute("contentId", contentId);
         return "ebook/update";

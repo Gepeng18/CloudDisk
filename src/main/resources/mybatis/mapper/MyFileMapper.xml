@@ -7,6 +7,7 @@
   <resultMap id="BaseResultMap" type="site.pyyf.cloudpan.entity.MyFile">
     <id column="my_file_id" jdbcType="INTEGER" property="myFileId" />
     <result column="my_file_name" jdbcType="VARCHAR" property="myFileName" />
+    <result column="show_path" jdbcType="VARCHAR" property="showPath" />
     <result column="file_store_id" jdbcType="INTEGER" property="fileStoreId" />
     <result column="my_file_path" jdbcType="VARCHAR" property="myFilePath" />
     <result column="download_time" jdbcType="INTEGER" property="downloadTime" />
@@ -17,7 +18,7 @@
   <!--表中所有属性-->
   <sql id="Base_Column_List">
     my_file_id, my_file_name, file_store_id, my_file_path, download_time, upload_time,
-    parent_folder_id,size,type,postfix
+    parent_folder_id,size,type,postfix,show_path
   </sql>
   <!--添加属性sql-->
   <sql id="Base_Insert_Key_List">
@@ -47,6 +48,9 @@
     </if>
     <if test="postfix != null">
       postfix,
+    </if>
+    <if test="showPath != null">
+      show_path,
     </if>
   </sql>
   <!--添加值sql-->
@@ -78,6 +82,9 @@
     <if test="postfix != null">
       #{postfix},
     </if>
+    <if test="showPath != null">
+      #{showPath,jdbcType=VARCHAR},
+    </if>
   </sql>
   <!--修改sql-->
   <sql id="Base_Update_List">
@@ -98,6 +105,9 @@
     </if>
     <if test="type != null">
       type = #{type},
+    </if>
+    <if test="showPath != null">
+      show_path = #{showPath,jdbcType=VARCHAR},
     </if>
   </sql>
 
@@ -129,7 +139,7 @@
     where parent_folder_id = #{id}
   </delete>
 
-  <select id="getFileByFileId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="getFileByFileId" parameterType="java.lang.Integer" resultType="site.pyyf.cloudpan.entity.MyFile">
     select
     <include refid="Base_Column_List" />
     from my_file

@@ -17,7 +17,7 @@ public interface UserMapper {
 
     /**
      * @Description 添加User
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * @param user 实例对象
      * @return 影响行数
@@ -26,7 +26,7 @@ public interface UserMapper {
     
     /**
      * @Description 删除User
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * @param userId 主键
      * @return 影响行数
@@ -35,7 +35,7 @@ public interface UserMapper {
 
     /**
      * @Description 通过ID查询单条数据
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * @param userId 主键
      * @return 实例对象
@@ -53,7 +53,7 @@ public interface UserMapper {
 
     /**
      * @Description 查询全部数据
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * 分页使用MyBatis的插件实现
      * @return 对象列表
@@ -62,7 +62,7 @@ public interface UserMapper {
 
     /**
      * @Description 实体作为筛选条件查询数据
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * @param user 实例对象
      * @return 对象列表
@@ -71,7 +71,7 @@ public interface UserMapper {
 
     /**
      * @Description 修改User
-     * @author 莫提
+     * @author 鹏圆
      * @date 2020-02-25 17:19:31
      * @return 影响行数
      */

@@ -18,10 +18,9 @@ import site.pyyf.cloudpan.mapper.IebookContentMapper;
 import site.pyyf.cloudpan.entity.Directory;
 import site.pyyf.cloudpan.entity.Ebook;
 import site.pyyf.cloudpan.entity.EbookConent;
+import site.pyyf.cloudpan.utils.FtpUtil;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 
@@ -29,14 +28,14 @@ import java.util.*;
 @Scope("prototype")
 public class ResolveHeaderService//存储指定文件夹所有文件名的 树类
 {
-    private static final Logger logger= LoggerFactory.getLogger(ResolveHeaderService.class);
+    private static Logger logger = LoggerFactory.getLogger(ResolveHeaderService.class);
 
     @Autowired
     private IebookContentMapper iebookContentMapper;
     @Autowired
     private LibraryService libraryService;
 
-    private List<EbookConent> allContent= new ArrayList<>();
+    private List<EbookConent> allContent = new ArrayList<>();
     private boolean jugleFirstLevelHeader = false;
     private int ebookId;
     private int firstLevelHeader;
@@ -44,16 +43,17 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
     private StringBuilder preContent = new StringBuilder();
     private Directory root;//树根（相当于链表的头指针）
     private boolean detect = true;
-
     private Map<String, Directory> records = new HashMap<>();
+
+
     private void insertHeader(Directory head, int level) {
-        if(level==firstLevelHeader){
+        if (level == firstLevelHeader) {
             if (records.containsKey("" + level))
                 records.remove("" + level);
             /* ------------------- 更新记录和插入节点 ----------------- */
             root.addSubNode(head);
-            records.put(""+level,head);
-            return ;
+            records.put("" + level, head);
+            return;
         }
 
         /* ------------------- 找到要插入的节点 ----------------- */
@@ -72,7 +72,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
         /* ------------------- 更新记录和插入节点 ----------------- */
         Directory preList = records.get("" + preLevel);
         preList.addSubNode(head);
-        records.put(""+level,head);
+        records.put("" + level, head);
     }
 
     public ResolveHeaderService() {
@@ -82,7 +82,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
     public boolean isNHeader(String buffer, int n) {
 
 
-        final String trimed = buffer.trim();
+        String trimed = buffer.trim();
         try {
             return (trimed.charAt(n - 1) == '#') && (trimed.charAt(n) != '#');
         } catch (IndexOutOfBoundsException e) {
@@ -121,7 +121,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                 /* ------------------- 第2次检测到标题时对其上面所有的内容进行封存 ----------------- */
                 if (root.getSubNodes().size() > 0) {
                     /* ------------------- 插入内容表(插入上一次的） ----------------- */
-                    final String content = preContent.toString();
+                    String content = preContent.toString();
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setEbookId(ebookId);
@@ -133,12 +133,12 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                 }
 
                 /* ------------------- 标题加入root队伍 ----------------- */
-                final Directory newDir = new Directory();
-                final String contentId = UUID.randomUUID().toString().replaceAll("-", "");
+                Directory newDir = new Directory();
+                String contentId = UUID.randomUUID().toString().replaceAll("-", "");
                 newDir.setHeader(buffer.substring(firstLevelHeader));
                 newDir.setContentId(contentId);
 
-                insertHeader(newDir,firstLevelHeader);
+                insertHeader(newDir, firstLevelHeader);
                 preContentId = contentId;
             }
 
@@ -148,7 +148,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                     isHeaderLine = true;
 
                     /* -------------------  插入内容表(插入上一次的）----------------- */
-                    final String content = preContent.toString();
+                    String content = preContent.toString();
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setContent(content);
@@ -157,8 +157,8 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
                     preContent = new StringBuilder();
 
                     /* ------------------- 标题加入root队伍 ----------------- */
-                    final String contentId = UUID.randomUUID().toString().replaceAll("-", "");
-                    final Directory newDir = new Directory();
+                    String contentId = UUID.randomUUID().toString().replaceAll("-", "");
+                    Directory newDir = new Directory();
                     newDir.setHeader(buffer.substring(i));
                     newDir.setContentId(contentId);
                     preContentId = contentId;
@@ -182,7 +182,7 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
     public void readFile(InputStream in, String ebookName, int id) throws Exception {
         logger.info("开始处理markdown文件");
         ebookId = id;
-        final Ebook eBook = new Ebook();
+        Ebook eBook = new Ebook();
         eBook.setEbookId(ebookId);
         eBook.setEbookName(ebookName);
 
@@ -192,10 +192,8 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
             resolveHeader(buffer);
         }
 
-
-
         /* ------------------- 插入内容表 ----------------- */
-        final String content = preContent.toString();
+        String content = preContent.toString();
         EbookConent ebookConent = new EbookConent();
         ebookConent.setContentId(preContentId);
         ebookConent.setContent(content);
@@ -211,6 +209,19 @@ public class ResolveHeaderService//存储指定文件夹所有文件名的 树�
 
     }
 
+
+    public void readFile(String remotePath, String fileName, int id) throws Exception {
+        if(!new File("tmp").exists())
+            new File("tmp").mkdirs();
+        String tmpFilePath = "tmp/"+UUID.randomUUID().toString().replaceAll("-", "");
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpFilePath);
+        FtpUtil.downloadFile("/"+remotePath, fileName, fileOutputStream);
+        FileInputStream fileInputStream = new FileInputStream(tmpFilePath);
+        readFile(fileInputStream, fileName, id);
+        new File(tmpFilePath).delete();
+        fileInputStream.close();
+        fileOutputStream.close();
+    }
 
     /*
      * 函数名：printTree

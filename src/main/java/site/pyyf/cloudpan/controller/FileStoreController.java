@@ -99,128 +99,117 @@ public class FileStoreController extends BaseController {
         int insertType = getType(insertPostfix);
         File srcFile = null;
         InputStream uploadStream = originalFile.getInputStream();
-        try {
-            boolean transferSuccess = true;
-            //音乐文件大于10MB则转码后存储
-            if ((insertType == 4) && (size < 10 * 1024 * 1024)) {
-                String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-                final File tmpFolder = new File(rootPath + "data/audio");
-                if (!tmpFolder.exists())
-                    tmpFolder.mkdirs();
+        boolean transferSuccess = true;
+        //音乐文件，小于10MB，且不是MP3则转码后存储
+        if ((insertType == 4) && (size < 10 * 1024 * 1024) && (!insertPostfix.equals("mp3"))) {
+            String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+            final File tmpFolder = new File(rootPath + "data/audio");
+            if (!tmpFolder.exists())
+                tmpFolder.mkdirs();
 
-                srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
 
-                FileOutputStream fos = new FileOutputStream(srcFile);
-                byte[] b = new byte[1024];
-                int length;
-                while ((length = uploadStream.read(b)) > 0) {
-                    fos.write(b, 0, length);
-                }
-                fos.close();
-
-                logger.info("音乐文件存储成功");
-                File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
-                boolean isSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
-                if (isSuccess) {
-                    FileInputStream dstStream  = new FileInputStream(dstFile);
-                    FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
-                    dstStream.close();
-                    logger.info("转码文件上传完毕");
-                } else {
-                    transferSuccess = false;
-                    logger.info("转码失败");
-                }
-                dstFile.delete();
-            } else if ((insertType == 3) && (size < 10 * 1024 * 1024)) {
-
-                String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-                final File tmpFolder = new File(rootPath + "data/video");
-                if (!tmpFolder.exists())
-                    tmpFolder.mkdirs();
-
-
-                srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
-                FileOutputStream fos = new FileOutputStream(srcFile);
-                byte[] b = new byte[1024];
-                int length;
-                while ((length = uploadStream.read(b)) > 0) {
-                    fos.write(b, 0, length);
-                }
-                fos.close();
-                logger.info("视频文件存储成功");
-
-                File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
-                FileInputStream dstStream = null;
-
-                    boolean isSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
-                    if (isSuccess) {
-                        FileInputStream dstStream  = new FileInputStream(dstFile);
-                        FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
-                        dstStream.close();
-                        logger.info("转码文件上传完毕");
-                    } else {
-                        transferSuccess = false;
-                        logger.info("转码失败");
-                    }
-
-
-                    dstStream = new FileInputStream(dstFile);
-                    FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
-                    logger.info("转码文件上传完毕");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    transferSuccess = false;
-                }
-                dstStream.close();
-                dstFile.delete();
-
-
-            //提交到FTP服务器
-            if (srcFile != null)
-                uploadStream = new FileInputStream(srcFile);
-            boolean b = FtpUtil.uploadFile("/" + path, name, uploadStream);
-            if (b) {
-                //上传成功
-                logger.info("文件上传成功!" + name);
-                MyFile fileItem = null;
-                if (((((insertType == 4) && (size < 10 * 1024 * 1024)) || ((insertType == 3) && (size < 10 * 1024 * 1024)))) && (transferSuccess)) {
-                    fileItem = MyFile.builder()
-                            .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                            .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                    size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(path + "_mp").build();
-                } else {
-                    fileItem = MyFile.builder()
-                            .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                            .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                    size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).build();
-                }
-
-                //向数据库文件表写入数据
-                myFileService.addFileByFileStoreId(fileItem);
-                //更新仓库表的当前大小
-                fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
-
-                //如果是markdown，则再传一份到library表中
-                if (fileItem.getPostfix().equals("md"))
-                    resolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
-
-
-                if (srcFile != null)
-                    srcFile.delete();
-                try {
-                    Thread.sleep(1000);
-                    map.put("code", 200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                logger.error("文件上传失败!" + name);
-                map.put("code", 504);
+            FileOutputStream fos = new FileOutputStream(srcFile);
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = uploadStream.read(buf)) > 0) {
+                fos.write(buf, 0, length);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            fos.close();
+
+            logger.info("音乐文件存储成功");
+
+
+            File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            boolean isSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
+            if (isSuccess) {
+                FileInputStream dstStream = new FileInputStream(dstFile);
+                FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                dstStream.close();
+                logger.info("转码文件上传完毕");
+            } else {
+                transferSuccess = false;
+                logger.info("转码失败");
+            }
+            dstFile.delete();
+
+        } else if ((insertType == 3) && (size < 10 * 1024 * 1024) && (!(insertPostfix.equals("mp4")))) {
+            //视频文件，小于10MB，且不是MP4则转码后存储
+            String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+            final File tmpFolder = new File(rootPath + "data/video");
+            if (!tmpFolder.exists())
+                tmpFolder.mkdirs();
+
+
+            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            FileOutputStream fos = new FileOutputStream(srcFile);
+            byte[] buf = new byte[1024];
+            int length;
+            while ((length = uploadStream.read(buf)) > 0) {
+                fos.write(buf, 0, length);
+            }
+            fos.close();
+            logger.info("视频文件存储成功");
+
+            File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+
+            boolean isSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
+            if (isSuccess) {
+                FileInputStream dstStream = new FileInputStream(dstFile);
+                FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                dstStream.close();
+                logger.info("转码文件上传完毕");
+            } else {
+                transferSuccess = false;
+                logger.info("转码失败");
+            }
+
+            dstFile.delete();
         }
-//        originalFile.getInputStream().close();
+
+
+
+        if (srcFile != null) {
+            uploadStream = new FileInputStream(srcFile);
+            srcFile.delete();
+        }
+        //提交到FTP服务器
+        boolean b = FtpUtil.uploadFile("/" + path, name, uploadStream);
+        if (b) {
+            //上传成功
+            logger.info("文件上传成功!" + name);
+            MyFile fileItem = null;
+            if (((((insertType == 4) && (size < 10 * 1024 * 1024)) || ((insertType == 3) && (size < 10 * 1024 * 1024)))) && (transferSuccess)) {
+                String insertShowPath = null;
+                if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4"))
+                    insertShowPath = path;
+                else
+                    insertShowPath = path + "_mp";
+                fileItem = MyFile.builder()
+                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(insertShowPath).build();
+            } else {
+                fileItem = MyFile.builder()
+                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).build();
+            }
+
+            //向数据库文件表写入数据
+            myFileService.addFileByFileStoreId(fileItem);
+            //更新仓库表的当前大小
+            fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
+
+            //如果是markdown，则再传一份到library表中
+            if (fileItem.getPostfix().equals("md"))
+                resolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
+            map.put("code", 200);
+
+        } else {
+            logger.error("文件上传失败!" + name);
+            map.put("code", 504);
+        }
         return map;
     }
 
@@ -244,14 +233,14 @@ public class FileStoreController extends BaseController {
             }
             //去FTP上拉取
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
-            System.out.println("开始下载");
+            logger.info("开始下载");
             response.setCharacterEncoding("utf-8");
             // 设置返回类型
             response.setContentType("multipart/form-data");
             // 文件名转码一下，不然会出现中文乱码
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
             boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
-            System.out.println("下载完成");
+            logger.info("下载完成");
             if (flag) {
                 myFileService.updateFile(
                         MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
@@ -276,10 +265,22 @@ public class FileStoreController extends BaseController {
         //获得文件信息
         MyFile myFile = myFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
+        String ShowPath = myFile.getShowPath();
         String fileName = myFile.getMyFileName();
         //从FTP文件服务器上删除文件
         boolean b = FtpUtil.deleteFile("/" + remotePath, fileName);
         if (b) {
+
+            if (!(myFile.getShowPath().equals("") || myFile.getShowPath() == null)) {
+                boolean isSuccess = true;
+                if (!(myFile.getPostfix().equals("mp3") || (myFile.getPostfix().equals("mp4"))))
+                    isSuccess = FtpUtil.deleteFile("/" + ShowPath, fileName);
+                if (isSuccess)
+                    logger.info("转存文件的播放文件删除成功");
+                else
+                    logger.info("转存文件的播放文件删除失败");
+            }
+
             if (StringUtils.substringAfterLast(myFile.getMyFileName(), ".").equals("md")) {
 
                 libraryService.deleteByBookId(fId);
@@ -421,11 +422,22 @@ public class FileStoreController extends BaseController {
             if (!oldName.equals(newName)) {
                 boolean b = FtpUtil.reNameFile(myFile.getMyFilePath() + "/" + oldName, myFile.getMyFilePath() + "/" + newName);
                 if (b) {
+
+                    if (!(myFile.getShowPath().equals("") || myFile.getShowPath() == null)) {
+                        boolean isSuccess=true;
+                        if (!(myFile.getPostfix().equals("mp3") || (myFile.getPostfix().equals("mp4"))))
+                            isSuccess = FtpUtil.reNameFile(myFile.getShowPath() + "/" + oldName, myFile.getShowPath() + "/" + newName);
+                        if (isSuccess)
+                            logger.info("转存文件的播放文件更名成功");
+                        else
+                            logger.info("转存文件的播放文件更名失败");
+                    }
+
+
                     Integer integer = myFileService.updateFile(
                             MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
                     if (integer == 1) {
                         if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
-
                             libraryService.updateEbookNameByBookId(myFile.getMyFileId(), newName);
                         }
                         logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
@@ -482,181 +494,6 @@ public class FileStoreController extends BaseController {
         return map;
     }
 
-    /**
-     * @return void
-     * @Description 分享文件
-     * @Author xw
-     * @Date 14:23 2020/2/12
-     * @Param [fId]
-     **/
-    @GetMapping("/file/share")
-    public void shareFile(Integer f, String p, String t) {
-        //获取文件信息
-        MyFile myFile = myFileService.getFileByFileId(f);
-        String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
-        if (t == null) {
-            return;
-        }
-        if (!pwd.equals(p)) {
-            return;
-        }
-        if (myFile == null) {
-            return;
-        }
-        String remotePath = myFile.getMyFilePath();
-        String fileName = myFile.getMyFileName();
-        System.out.println("文件位置" + remotePath + fileName);
-        try {
-
-            //去FTP上拉取
-            OutputStream os = new BufferedOutputStream(response.getOutputStream());
-            System.out.println("开始下载");
-            response.setCharacterEncoding("utf-8");
-            // 设置返回类型
-            response.setContentType("multipart/form-data");
-            // 文件名转码一下，不然会出现中文乱码
-            response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
-            System.out.println("下载完成");
-            if (flag) {
-                myFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
-                os.flush();
-                os.close();
-                logger.info("文件下载成功!" + myFile);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-
-    @ResponseBody
-    @RequestMapping(value = "/getShareUrl", method = RequestMethod.POST)
-    public String getShareUrl(@RequestParam(value = "fId") Integer id,
-                              @RequestParam(value = "type") String type,
-                              Model model) {
-        String pwd = UUID.randomUUID().toString().replaceAll("-", "");
-        String msg = pwd + "-" + type + "-" + id;
-        return CommunityUtil.getJSONString(200, msg);
-
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/share")
-    public String share(@RequestParam(value = "fileFolderId") Integer toFileFolderId,
-                        @RequestParam(value = "typeAndfid") String typeAndfid) {
-        Map<Integer, String> map = new HashMap();
-        map.put(200, "转存完成！");
-        map.put(501, "当前文件已存在!上传失败！");
-        map.put(503, "上传失败!仓库已满！");
-        map.put(504, "文件转存失败！");
-        map.put(500, "应该不会出现这个情况吧！");
-        String[] split = typeAndfid.split("-");
-
-        if (split[1].equals("folder")) {
-            //分享的是文件夹
-            FileFolder fileFolder = fileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[2]));
-            int result = transferSaveFolder(fileFolder, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
-        } else if (split[1].equals("file")) {
-            MyFile shareFile = myFileService.getFileByFileId(Integer.valueOf(split[2]));
-            int result = transferSaveFile(shareFile, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
-
-        } else {
-            System.out.println("传来一个不知名的内容");
-        }
-        return null;
-    }
-
-    //将文件夹fileFolder放到fileFolderId中
-    public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
-        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
-        List<MyFile> files = myFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
-        //设置文件夹信息
-        FileFolder thisFolder = FileFolder.builder()
-                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).fileStoreId(store.getFileStoreId())
-                .time(new Date()).build();
-        fileFolderService.addFileFolder(thisFolder);
-        for (MyFile file : files) {
-            transferSaveFile(file, thisFolder.getFileFolderId());
-        }
-
-        List<FileFolder> folders = fileFolderService.getFileFolderByParentFolderId(fileFolder.getFileFolderId());
-        for (FileFolder folder : folders) {
-            transferSaveFolder(folder, thisFolder.getFileFolderId());
-        }
-        return 200;
-    }
-
-    //将shareFile放在fileFolderId中
-    public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
-        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
-        //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = null;
-        if (toFileFolderId == 0) {
-            //当前目录为根目录
-            myFiles = myFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
-        } else {
-            //当前目录为其他目录
-            myFiles = myFileService.getFilesByParentFolderId(toFileFolderId);
-        }
-        for (int i = 0; i < myFiles.size(); i++) {
-            if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
-                logger.error("当前文件已存在!上传失败...");
-                return 501;
-            }
-        }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String dateStr = format.format(new Date());
-        String path = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId;
-
-        Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
-        //是否仓库放不下该文件
-        if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
-            logger.error("上传失败!仓库已满。");
-            return 503;
-        }
-
-        try {
-            //提交到FTP服务器
-            boolean b = FtpUtil.transferFile("/" + shareFile.getMyFilePath(), "/" + path, shareFile.getMyFileName());
-            if (b) {
-                //上传成功
-                logger.info("文件转存成功!" + shareFile.getMyFileName());
-                MyFile file = MyFile.builder()
-                        .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
-                                size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).build();
-
-                //向数据库文件表写入数据
-                myFileService.addFileByFileStoreId(file);
-                //更新仓库表的当前大小
-                fileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
-
-                //如果是markdown，则再传一份到library表中
-                if (file.getPostfix().equals(".md"))
-                    resolveHeaderService.readFile(file.getMyFilePath(), file.getMyFileName(), file.getMyFileId());
-                try {
-                    Thread.sleep(1000);
-                    return 200;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                return 504;
-//                return CommunityUtil.getJSONString(");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 500;
-    }
 
     @GetMapping("/file/preview")
     public String preview(@RequestParam(value = "fId") Integer id, Model model) {
@@ -714,7 +551,7 @@ public class FileStoreController extends BaseController {
             return 2;
         } else if ("avi".equals(type) || "mov".equals(type) || "qt".equals(type)
                 || "asf".equals(type) || "rm".equals(type) || "navi".equals(type) || "wav".equals(type)
-                || "mp4".equals(type)) {
+                || "mp4".equals(type) || "flv".equals(type)  ) {
             return 3;
         } else if ("mp3".equals(type) || "wma".equals(type)) {
             return 4;

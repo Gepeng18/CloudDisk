@@ -57,7 +57,7 @@ public class FilePreviewServiceImple implements IfilePreviewService {
 
 
     private int addHtmlClass(StringBuilder code, int index, List<String> languages) {
-        final String original = code.toString();
+        String original = code.toString();
         //判断从index处开始是否是某种语言
         for (int i = 0; i < languages.size(); i++) {
             if (original.substring(index, index+("<pre><code class=\"language-"+languages.get(i)).length()).equals("<pre><code class=\"language-"+languages.get(i))) {
