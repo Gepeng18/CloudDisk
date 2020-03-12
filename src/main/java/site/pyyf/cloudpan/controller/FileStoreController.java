@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.ui.Model;
+import org.springframework.util.ClassUtils;
+import org.springframework.web.bind.annotation.*;
 import site.pyyf.cloudpan.entity.FileFolder;
 import site.pyyf.cloudpan.entity.FileStore;
 import site.pyyf.cloudpan.entity.MyFile;
@@ -14,13 +16,11 @@ import site.pyyf.cloudpan.utils.*;
 import org.slf4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Folder;
 import java.io.*;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -48,17 +48,17 @@ public class FileStoreController extends BaseController {
      * @Description 网盘的文件上传
      * @Author xw
      * @Date 23:10 2020/2/10
-     * @Param [files]
+     * @Param [file]
      **/
     @PostMapping("/uploadFile")
     @ResponseBody
-    public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile files) throws Exception {
+    public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile originalFile) throws Exception {
 //        if(postfix.equals("md"))
-//            resolveHeaderService.readFile(files.getInputStream(), files.getOriginalFilename());
+//            resolveHeaderService.readFile(file.getInputStream(), file.getOriginalFilename());
         Map<String, Object> map = new HashMap<>();
         FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
         Integer folderId = Integer.valueOf(request.getHeader("id"));
-        String name = files.getOriginalFilename().replaceAll(" ", "");
+        String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (folderId == 0) {
@@ -83,43 +83,130 @@ public class FileStoreController extends BaseController {
             map.put("code", 502);
             return map;
         }
-        Integer sizeInt = Math.toIntExact(files.getSize() / 1024);
+        Integer sizeInt = Math.toIntExact(originalFile.getSize() / 1024);
         //是否仓库放不下该文件
         if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
             logger.error("上传失败!仓库已满。");
             map.put("code", 503);
             return map;
         }
+        long size = originalFile.getSize();
         //处理文件大小
-        String size = String.valueOf(files.getSize() / 1024.0);
-        int indexDot = size.lastIndexOf(".");
-        size = size.substring(0, indexDot);
-        int index = name.lastIndexOf(".");
-        String tempName = name.substring(index);
+        String insertSize = StringUtils.substringBeforeLast(String.valueOf(size / 1024.0), ".");
+        String insertPostfix = StringUtils.substringAfterLast(name, ".").toLowerCase();
 
         //获得文件类型
-        int type = getType(tempName.toLowerCase());
-        String postfix = tempName.toLowerCase();
+        int insertType = getType(insertPostfix);
+        File srcFile = null;
+        InputStream uploadStream = originalFile.getInputStream();
         try {
+            boolean transferSuccess = true;
+            //音乐文件大于10MB则转码后存储
+            if ((insertType == 4) && (size < 10 * 1024 * 1024)) {
+                String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+                final File tmpFolder = new File(rootPath + "data/audio");
+                if (!tmpFolder.exists())
+                    tmpFolder.mkdirs();
+
+                srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+
+                FileOutputStream fos = new FileOutputStream(srcFile);
+                byte[] b = new byte[1024];
+                int length;
+                while ((length = uploadStream.read(b)) > 0) {
+                    fos.write(b, 0, length);
+                }
+                fos.close();
+
+                logger.info("音乐文件存储成功");
+                File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+                boolean isSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
+                if (isSuccess) {
+                    FileInputStream dstStream  = new FileInputStream(dstFile);
+                    FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                    dstStream.close();
+                    logger.info("转码文件上传完毕");
+                } else {
+                    transferSuccess = false;
+                    logger.info("转码失败");
+                }
+                dstFile.delete();
+            } else if ((insertType == 3) && (size < 10 * 1024 * 1024)) {
+
+                String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+                final File tmpFolder = new File(rootPath + "data/video");
+                if (!tmpFolder.exists())
+                    tmpFolder.mkdirs();
+
+
+                srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+                FileOutputStream fos = new FileOutputStream(srcFile);
+                byte[] b = new byte[1024];
+                int length;
+                while ((length = uploadStream.read(b)) > 0) {
+                    fos.write(b, 0, length);
+                }
+                fos.close();
+                logger.info("视频文件存储成功");
+
+                File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+                FileInputStream dstStream = null;
+
+                    boolean isSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
+                    if (isSuccess) {
+                        FileInputStream dstStream  = new FileInputStream(dstFile);
+                        FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                        dstStream.close();
+                        logger.info("转码文件上传完毕");
+                    } else {
+                        transferSuccess = false;
+                        logger.info("转码失败");
+                    }
+
+
+                    dstStream = new FileInputStream(dstFile);
+                    FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                    logger.info("转码文件上传完毕");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    transferSuccess = false;
+                }
+                dstStream.close();
+                dstFile.delete();
+
+
             //提交到FTP服务器
-            boolean b = FtpUtil.uploadFile("/" + path, name, files.getInputStream());
+            if (srcFile != null)
+                uploadStream = new FileInputStream(srcFile);
+            boolean b = FtpUtil.uploadFile("/" + path, name, uploadStream);
             if (b) {
                 //上传成功
-                logger.info("文件上传成功!" + files.getOriginalFilename());
-                final MyFile file = MyFile.builder()
-                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                size(Integer.valueOf(size)).type(type).postfix(postfix).build();
+                logger.info("文件上传成功!" + name);
+                MyFile fileItem = null;
+                if (((((insertType == 4) && (size < 10 * 1024 * 1024)) || ((insertType == 3) && (size < 10 * 1024 * 1024)))) && (transferSuccess)) {
+                    fileItem = MyFile.builder()
+                            .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                            .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                                    size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(path + "_mp").build();
+                } else {
+                    fileItem = MyFile.builder()
+                            .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                            .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                                    size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).build();
+                }
 
                 //向数据库文件表写入数据
-                myFileService.addFileByFileStoreId(file);
+                myFileService.addFileByFileStoreId(fileItem);
                 //更新仓库表的当前大小
-                fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(size));
+                fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
 
                 //如果是markdown，则再传一份到library表中
-                if (file.getPostfix().equals(".md"))
-                    resolveHeaderService.readFile(files.getInputStream(), files.getOriginalFilename(), file.getMyFileId());
+                if (fileItem.getPostfix().equals("md"))
+                    resolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
 
+
+                if (srcFile != null)
+                    srcFile.delete();
                 try {
                     Thread.sleep(1000);
                     map.put("code", 200);
@@ -127,12 +214,13 @@ public class FileStoreController extends BaseController {
                     e.printStackTrace();
                 }
             } else {
-                logger.error("文件上传失败!" + files.getOriginalFilename());
+                logger.error("文件上传失败!" + name);
                 map.put("code", 504);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+//        originalFile.getInputStream().close();
         return map;
     }
 
@@ -369,7 +457,7 @@ public class FileStoreController extends BaseController {
             MyFile file = myFileService.getFileByFileId(id);
             if (file != null) {
                 try {
-                    String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "")+"user_img";
+                    String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "") + "user_img";
                     url = url + "/file/share?t=" + UUID.randomUUID().toString().substring(0, 10) + "&f=" + file.getMyFileId() + "&p=" + file.getUploadTime().getTime() + "" + file.getSize();
                     File targetFile = new File(rootPath, "");
                     if (!targetFile.exists()) {
@@ -379,10 +467,10 @@ public class FileStoreController extends BaseController {
                     if (!f.exists()) {
                         //文件不存在,开始生成二维码并保存文件
                         OutputStream os = new FileOutputStream(f);
-                        QRCodeUtil.encode(url, "/static/img/logo.png", os, true);
+                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
                         os.close();
                     }
-                    final PicUploadResult upload = uploadInstance.upload(f);
+                    PicUploadResult upload = uploadInstance.upload(f);
 
                     map.put("imgPath", upload.getName());
                     map.put("url", url);
@@ -440,8 +528,135 @@ public class FileStoreController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 
+
+    @ResponseBody
+    @RequestMapping(value = "/getShareUrl", method = RequestMethod.POST)
+    public String getShareUrl(@RequestParam(value = "fId") Integer id,
+                              @RequestParam(value = "type") String type,
+                              Model model) {
+        String pwd = UUID.randomUUID().toString().replaceAll("-", "");
+        String msg = pwd + "-" + type + "-" + id;
+        return CommunityUtil.getJSONString(200, msg);
+
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/share")
+    public String share(@RequestParam(value = "fileFolderId") Integer toFileFolderId,
+                        @RequestParam(value = "typeAndfid") String typeAndfid) {
+        Map<Integer, String> map = new HashMap();
+        map.put(200, "转存完成！");
+        map.put(501, "当前文件已存在!上传失败！");
+        map.put(503, "上传失败!仓库已满！");
+        map.put(504, "文件转存失败！");
+        map.put(500, "应该不会出现这个情况吧！");
+        String[] split = typeAndfid.split("-");
+
+        if (split[1].equals("folder")) {
+            //分享的是文件夹
+            FileFolder fileFolder = fileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[2]));
+            int result = transferSaveFolder(fileFolder, toFileFolderId);
+            return CommunityUtil.getJSONString(result, map.get(result));
+        } else if (split[1].equals("file")) {
+            MyFile shareFile = myFileService.getFileByFileId(Integer.valueOf(split[2]));
+            int result = transferSaveFile(shareFile, toFileFolderId);
+            return CommunityUtil.getJSONString(result, map.get(result));
+
+        } else {
+            System.out.println("传来一个不知名的内容");
+        }
+        return null;
+    }
+
+    //将文件夹fileFolder放到fileFolderId中
+    public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
+        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        List<MyFile> files = myFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
+        //设置文件夹信息
+        FileFolder thisFolder = FileFolder.builder()
+                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).fileStoreId(store.getFileStoreId())
+                .time(new Date()).build();
+        fileFolderService.addFileFolder(thisFolder);
+        for (MyFile file : files) {
+            transferSaveFile(file, thisFolder.getFileFolderId());
+        }
+
+        List<FileFolder> folders = fileFolderService.getFileFolderByParentFolderId(fileFolder.getFileFolderId());
+        for (FileFolder folder : folders) {
+            transferSaveFolder(folder, thisFolder.getFileFolderId());
+        }
+        return 200;
+    }
+
+    //将shareFile放在fileFolderId中
+    public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
+        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        //获取当前目录下的所有文件，用来判断是否已经存在
+        List<MyFile> myFiles = null;
+        if (toFileFolderId == 0) {
+            //当前目录为根目录
+            myFiles = myFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+        } else {
+            //当前目录为其他目录
+            myFiles = myFileService.getFilesByParentFolderId(toFileFolderId);
+        }
+        for (int i = 0; i < myFiles.size(); i++) {
+            if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
+                logger.error("当前文件已存在!上传失败...");
+                return 501;
+            }
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = format.format(new Date());
+        String path = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId;
+
+        Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
+        //是否仓库放不下该文件
+        if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
+            logger.error("上传失败!仓库已满。");
+            return 503;
+        }
+
+        try {
+            //提交到FTP服务器
+            boolean b = FtpUtil.transferFile("/" + shareFile.getMyFilePath(), "/" + path, shareFile.getMyFileName());
+            if (b) {
+                //上传成功
+                logger.info("文件转存成功!" + shareFile.getMyFileName());
+                MyFile file = MyFile.builder()
+                        .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                        .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
+                                size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).build();
+
+                //向数据库文件表写入数据
+                myFileService.addFileByFileStoreId(file);
+                //更新仓库表的当前大小
+                fileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
+
+                //如果是markdown，则再传一份到library表中
+                if (file.getPostfix().equals(".md"))
+                    resolveHeaderService.readFile(file.getMyFilePath(), file.getMyFileName(), file.getMyFileId());
+                try {
+                    Thread.sleep(1000);
+                    return 200;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                return 504;
+//                return CommunityUtil.getJSONString(");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 500;
+    }
 
     @GetMapping("/file/preview")
     public String preview(@RequestParam(value = "fId") Integer id, Model model) {
@@ -452,28 +667,28 @@ public class FileStoreController extends BaseController {
         supportPreviewLang.put("py", "python");
 
 
-        final MyFile file = myFileService.getFileByFileId(id);
-        final String fileName = file.getMyFileName();
-        final String suffix = StringUtils.substringAfterLast(fileName, ".");
+        MyFile file = myFileService.getFileByFileId(id);
+        String fileName = file.getMyFileName();
+        String suffix = StringUtils.substringAfterLast(fileName, ".");
         if (suffix.equals("md"))
             return "redirect:/ebook/getbook/" + id;
         if (supportPreviewLang.containsKey(suffix)) {
-             if (suffix.equals("java")) {
-                final StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                final String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
-                final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
+            if (suffix.equals("java")) {
+                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
+                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
 
-                final StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
+                StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
 
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml,Arrays.asList("java"));
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml, Arrays.asList("java"));
                 model.addAttribute("code", newCode.toString());
                 return "show-code";
             } else {
-                final StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                final String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
+                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 // 其他语言 启动mardown显示
-                final String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent),new ArrayList<>(supportPreviewLang.values()));
+                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent), new ArrayList<>(supportPreviewLang.values()));
                 model.addAttribute("code", newCode.toString());
                 return "show-code";
             }
@@ -490,18 +705,18 @@ public class FileStoreController extends BaseController {
      * @Param [type]
      **/
     public int getType(String type) {
-        if (".txt".equals(type) || ".doc".equals(type) || ".docx".equals(type)
-                || ".wps".equals(type) || ".word".equals(type) || ".html".equals(type) || ".pdf".equals(type)) {
+        if ("txt".equals(type) || "doc".equals(type) || "docx".equals(type)
+                || "wps".equals(type) || "word".equals(type) || "html".equals(type) || "pdf".equals(type)) {
             return 1;
-        } else if (".bmp".equals(type) || ".gif".equals(type) || ".jpg".equals(type)
-                || ".pic".equals(type) || ".png".equals(type) || ".jepg".equals(type) || ".webp".equals(type)
-                || ".svg".equals(type)) {
+        } else if ("bmp".equals(type) || "gif".equals(type) || "jpg".equals(type)
+                || "pic".equals(type) || "png".equals(type) || "jepg".equals(type) || "webp".equals(type)
+                || "svg".equals(type)) {
             return 2;
-        } else if (".avi".equals(type) || ".mov".equals(type) || ".qt".equals(type)
-                || ".asf".equals(type) || ".rm".equals(type) || ".navi".equals(type) || ".wav".equals(type)
-                || ".mp4".equals(type)) {
+        } else if ("avi".equals(type) || "mov".equals(type) || "qt".equals(type)
+                || "asf".equals(type) || "rm".equals(type) || "navi".equals(type) || "wav".equals(type)
+                || "mp4".equals(type)) {
             return 3;
-        } else if (".mp3".equals(type) || ".wma".equals(type)) {
+        } else if ("mp3".equals(type) || "wma".equals(type)) {
             return 4;
         } else {
             return 5;
@@ -516,7 +731,7 @@ public class FileStoreController extends BaseController {
      * @Param [target]
      **/
     public boolean checkTarget(String target) {
-        final String format = "[^\\u4E00-\\u9FA5\\uF900-\\uFA2D\\w-_.]";
+        String format = "[^\\u4E00-\\u9FA5\\uF900-\\uFA2D\\w-_.]";
         Pattern pattern = Pattern.compile(format);
         Matcher matcher = pattern.matcher(target);
         return !matcher.find();
