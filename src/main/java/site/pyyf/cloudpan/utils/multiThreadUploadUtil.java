@@ -16,7 +16,7 @@ class Uploadthread implements Runnable {
     @Override
     public void run() {
         for (File file : files) {
-            ossUpload.upload(file);
+            ossUpload.upload("ebook",file);
         }
     }
 }
@@ -45,11 +45,6 @@ public class multiThreadUploadUtil {
     }
 
 
-    public static void main(String[] args) throws Exception {
-//        new multiThreadUploadUtil().singleThread("F:\\OneDrive\\笔记\\项目\\imgs\\community");
-        new multiThreadUploadUtil().multiThread("F:\\OneDrive\\笔记\\项目\\imgs\\community",10);
-    }
-
     private void multiThread(String folderPath,int threadNum) throws InterruptedException {
         List<Thread> threads = Collections.synchronizedList(new ArrayList<>());
         long startTime = new Date().getTime();
@@ -74,10 +69,15 @@ public class multiThreadUploadUtil {
         File[] files = new File(folderPath).listFiles();
         OssUpload instance = OssUpload.getInstance();
         for(File file:files){
-            instance.upload(file);
+            instance.upload("ebook",file);
         }
         long endTime = new Date().getTime();
         System.out.println("一共用了： " + (endTime - startTime) / 1000 + "秒"); //一共用了： 129秒
+    }
+
+    public static void main(String[] args) throws Exception {
+//        new multiThreadUploadUtil().singleThread("F:\\OneDrive\\笔记\\项目\\imgs\\community");
+        new multiThreadUploadUtil().multiThread("F:\\OneDrive\\笔记\\项目\\imgs\\community",10);
     }
 
 }

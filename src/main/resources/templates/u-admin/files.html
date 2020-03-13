@@ -31,12 +31,22 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/plug-ins/context-menu/css/contextMenu.css">
 
-    <!--    播放器-->
+    <!--    视频播放器-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.1/mediaelement-master/build/mediaelementplayer.css">
 
-    <!--    播放器-->
+<!--    图片播放器-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.2/viewerjs-master/docs/css/viewer.css">
+<!--    缩略图-->
+    <style>
+        .smallImg {
+            width:32px;
+            height:32px;
+        }
+
+    </style>
+    <!--    视频播放器-->
     <style>
 
         html, body {
@@ -194,14 +204,34 @@
                                                     th:text="${#dates.format(folder.time,'yyyy-MM-dd HH:mm')}"></td>
                                             </tr>
                                             <tr th:each="f:${files}" class="files-items files">
-                                                <td><span style="display: none" th:text="${f.myFileId}"></span>
-                                                    <img th:src="|${(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('cpp')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cpp.png':
-                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('java')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/java.png':
-                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('html')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/html.png':
-                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('md')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/markdown.png':
-                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('py')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/python.png':
-                        										'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/file.png')))))}|"
-                                                         height="30px" alt="Cinque Terre">
+                                                <td>
+                                                    <span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
+                                                    <span id="imgShowPath" style="display: none" th:text="${f.getShowPath()}"></span>
+
+                                                    <img th:src="@{https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/{language}.png(language=${f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1)})}"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==1}">
+
+<!--                                                    <img th:src="|${(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('cpp')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cpp.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('java')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/java.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('html')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/html.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('md')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/markdown.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('py')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/python.png':-->
+<!--                        										'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/file.png')))))}|"-->
+<!--                                                         height="30px" alt="Cinque Terre" th:if="${f.getType()==1}">-->
+
+
+                                                    <span class="thumbnail_img" title="我的图片1" th:if="${f.getType()==2}">
+                                                        <img th:src="@{${f.getShowPath()}}" alt="我的图片1" class="smallImg">
+                                                    </span>
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/video.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==3}">
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/music.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==4}">
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/file.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==5}">
 
                                                     <!--												-->
                                                     <!--												<i style="font-size: 24px;color: #3498db" th:if="${f.type == 1}" class="icon ion-document-text"></i>-->
@@ -214,7 +244,7 @@
                                                     <a href="#" style="font-weight: 700;color: black"
                                                        th:text="${f.myFileName}"></a>
                                                 </td>
-                                                <td style="font-weight: 300" th:if="${f.type == 1}">文档</td>
+                                                <td style="font-weight: 300" th:if="${f.type == 1}">代码</td>
                                                 <td style="font-weight: 300" th:if="${f.type == 2}">图像</td>
                                                 <td style="font-weight: 300" th:if="${f.type == 3}">视频</td>
                                                 <td style="font-weight: 300" th:if="${f.type == 4}">音乐</td>
@@ -250,6 +280,20 @@
                 <span id="preF" style="display: none" th:text="${nowFolder.parentFolderId}"></span>
                 <span id="tarFolder" style="display: none"></span>
                 <span id="tarFile" style="display: none"></span>
+
+                <div class="row" th:if="${files.size() == 0}">
+                    <div class="col-12 col-sm-12 col-lg-12">
+                        <div class="alert alert-primary alert-has-icon alert-dismissible show fade">
+                            <div class="alert-icon"><i class="ion ion-ios-lightbulb-outline"></i></div>
+                            <div class="alert-body">
+                                <button class="close" data-dismiss="alert">
+                                    <span>×</span>
+                                </button>
+                                <div class="alert-title">这里空空的，什么都没有..</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
         <div th:replace="commons/bar::#footer"></div>
@@ -374,6 +418,7 @@
 
 
 </div>
+<!--音乐播放器-->
 <!--如果是这个层次的话sun是跟随father走的啊，因为是嵌套关系啊，就好比杯子里面有水，总不能杯子走了，水还在原地不动吧，道理是一样的。sun一般情况下总是相对于father来动，father在左侧sun也会到左侧，因为sun在father内部，这个我就不多解释了。特殊的情况是sun绝对定位了，例如sun的样式是width:10px;height:10px;position:absolute;top:0px;left:0px;这样就是相对于页面左上角定位了，如果给父亲添加一个position:relative;那么sun不在页面左上角了，而是在father的左上角了。也就是说sun往上层找有没有relative定位的元素，如果没有就直接相对于window窗口定位。因此，absolute一般是和父层的relative来一起使用的。-->
 <!--position:fixed;定位的时候 只要不写top、left、top、right值，他就会默认居于父级进行定位，又不会失去fixed的不动特性，只是位置只能在左上角，要定位在其他地方就在加上margin值处理即可：-->
 <div id="audioPlayerTool" style="width: 275px; height: 40px; background-color: rgb(35, 35, 35); position: fixed; inset: 100px 0px 100px 5px; float: right; z-index: 10;">
@@ -396,79 +441,14 @@
 <span id="audioPlayerPosition"></span>
 
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
-<script>
-    $(function () {
-        $('.folders').dblclick(function () {
-            let id = $(this).children("td").children("span").html();
-            console.log(id);
-            var location = window.location.href;
-            let strings = location.split("?");
-            if (id != "") {
-                window.location.href = strings[0] + "?fId=" + id;
-            } else {
-                return;
-            }
-        });
-        $('.files').dblclick(function () {
-            let id = $(this).children("td").children("span").html();
-            var location = window.location.href;
-            let strings = location.split("cloudpan");
+<th:block th:replace="commons/fragments::hoverAndDblick">
 
-            if (id != "") {
-                window.location.href = strings[0] + "cloudpan/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
-            } else {
-                return;
-            }
-        });
-        $('.folders').hover(function () {
-            let id = $(this).children("td").children("span").html();
-            $('#tarFolder').html(id);
-            $(this).siblings().removeClass('flag');
-            $(this).addClass('flag');
-        }, function () {
-        });
-        $('.files').hover(function () {
-            let id = $(this).children("td").children("span").html();
-            $('#tarFile').html(id);
-            $(this).siblings().removeClass('flag');
-            $(this).addClass('flag');
-        }, function () {
-        });
-    });
-</script>
+</th:block>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/plug-ins/context-menu/js/jquery.contextMenu.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/plug-ins/xcConfirm/js/xcConfirm.js"></script>
 
-<script>
-    function suoxiao() {
-        var postion = $("#audioPlayerPosition").text();
-        if (postion==250) {
-            $("#audioPlayerTool").animate({
-                left: "5px"
-            }, "slow");
-            $('#audioPlayerPosition').html(5);
-            $('#audioPlayerSrc').attr("src","https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/右.png");
-        }else{
-            $("#audioPlayerTool").animate({
-                left: "250px"
-            }, "slow");
-            $('#audioPlayerPosition').html(250);
-            $('#audioPlayerSrc').attr("src","https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/左.png");
-        }
-
-
-
-    }
-
-    function closeAndRefresh() {
-        window.onbeforeunload = function () {
-        };
-        window.location.reload();
-
-    }
-
-
-</script>
+<!--音乐播放器缩小-->
+<th:block th:replace="commons/fragments::someFunction"></th:block>
 <!--    播放器-->
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.1/mediaelement-master/build/mediaelement-and-player.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.1/mediaelement-master/build/renderers/dailymotion.js"></script>
@@ -480,6 +460,11 @@
 
 <!--<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" crossorigin="anonymous" type="text/javascript"></script>-->
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/jquery.min.js"></script>
+
+<!--图片播放器-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>-->
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.2/viewerjs-master/docs/js/viewer.js"></script>
+
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/popper.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" crossorigin="anonymous"
         type="text/javascript"></script>
@@ -496,28 +481,19 @@
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/js/demo.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/chart.min.js"></script>
 
+
+
 <!--不加就凉凉-->
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/nicescroll/jquery.nicescroll.min.js"></script>
 
+
+<th:block th:replace="commons/fragments::thumbnail_script">
+
+</th:block>
+
 <th:block th:replace="commons/fragments::share"></th:block>
-<script>
-    function closeAndPause() {
-        console.log("属性修改开始");
-        var video = document.getElementById('videoPlayer');
-        if (video.play) { //如果已暂停则播放
-            video.pause(); //播放控制
-        }
-        // if(video.paused){ //如果已暂停则播放
-        //     video.play(); //播放控制
-        // }else{ // 已播放点击则暂停
-        //     video.pause(); //暂停控制
-        // }
-        $("#videoElasticframe").slideToggle(300);
-    };
 
-
-</script>
 <!--上传模块-->
 <script>
     var uploader = easyUploader({

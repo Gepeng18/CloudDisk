@@ -83,7 +83,7 @@ public class OssUpload_sample {
             return fileUploadResult;
         }
         fileUploadResult.setStatus("done");
-        fileUploadResult.setName(this.aliyunConfig.getUrlPrefix() + remotePath);
+        fileUploadResult.setUrl(this.aliyunConfig.getUrlPrefix() + remotePath);
         return fileUploadResult;
     }
     private String getFilePath(String fileName,String imgName) {

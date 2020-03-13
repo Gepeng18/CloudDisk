@@ -139,7 +139,8 @@ public class SystemController extends BaseController {
         FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
-        return "u-admin/doc-files";
+        map.put("currUri","doc");
+        return "u-admin/subFiles";
     }
 
     /**
@@ -156,7 +157,8 @@ public class SystemController extends BaseController {
         FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
-        return "u-admin/image-files";
+        map.put("currUri","image");
+        return "u-admin/subFiles";
     }
 
     /**
@@ -173,7 +175,8 @@ public class SystemController extends BaseController {
         FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
-        return "u-admin/video-files";
+        map.put("currUri","video");
+        return "u-admin/subFiles";
     }
 
     /**
@@ -190,7 +193,8 @@ public class SystemController extends BaseController {
         FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
-        return "u-admin/music-files";
+        map.put("currUri","music");
+        return "u-admin/subFiles";
     }
 
     /**
@@ -207,7 +211,8 @@ public class SystemController extends BaseController {
         FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
-        return "u-admin/other-files";
+        map.put("currUri","other");
+        return "u-admin/subFiles";
     }
 
     /**

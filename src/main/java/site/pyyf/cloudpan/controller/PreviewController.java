@@ -1,23 +1,28 @@
 package site.pyyf.cloudpan.controller;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.pyyf.cloudpan.entity.MyFile;
 import site.pyyf.cloudpan.utils.FtpUtil;
+import site.pyyf.cloudpan.utils.MarkdownUtils;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
-public class MediaController extends BaseController {
+public class PreviewController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(MediaController.class);
+    private static final Logger logger = LoggerFactory.getLogger(PreviewController.class);
 
     @RequestMapping("/video")
     public void videoShow(@RequestParam(value = "fId") Integer fId,
@@ -90,6 +95,45 @@ public class MediaController extends BaseController {
         }
 
 
+    }
+
+
+    @GetMapping("/file/preview")
+    public String preview(@RequestParam(value = "fId") Integer id, Model model) {
+        Map<String, String> supportPreviewLang = new HashMap<>();
+        supportPreviewLang.put("cpp", "cpp");
+        supportPreviewLang.put("java", "java");
+        supportPreviewLang.put("html", "html");
+        supportPreviewLang.put("py", "python");
+
+
+        MyFile file = myFileService.getFileByFileId(id);
+        String fileName = file.getMyFileName();
+        String suffix = StringUtils.substringAfterLast(fileName, ".");
+        if (suffix.equals("md"))
+            return "redirect:/ebook/getbook/" + id;
+        if (supportPreviewLang.containsKey(suffix)) {
+            if (suffix.equals("java")) {
+                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
+                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
+
+                StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
+
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml, Arrays.asList("java"));
+                model.addAttribute("code", newCode.toString());
+                return "show-code";
+            } else {
+                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
+                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                // 其他语言 启动mardown显示
+                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
+                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent), new ArrayList<>(supportPreviewLang.values()));
+                model.addAttribute("code", newCode.toString());
+                return "show-code";
+            }
+        }
+        return "redirect:/files";
     }
 }
 

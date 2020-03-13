@@ -25,7 +25,7 @@ public class processMd2Ebook {
 
         File file = new File(imgsPath);
         for (File listFile : file.listFiles()) {
-            upload.upload(listFile);
+            upload.upload("ebook",listFile);
         }
     }
 

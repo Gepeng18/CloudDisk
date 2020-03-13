@@ -35,7 +35,7 @@ public class LoginController extends BaseController {
      * @Param []
      * @return java.lang.String
      **/
-    @GetMapping("/test")
+    @GetMapping("/admin")
     public String adminLogin(){
         String testOpenID = "12345678";
         String testNickName = "测试用户";

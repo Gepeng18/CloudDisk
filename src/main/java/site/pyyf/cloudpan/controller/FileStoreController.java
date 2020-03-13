@@ -10,7 +10,6 @@ import site.pyyf.cloudpan.entity.FileFolder;
 import site.pyyf.cloudpan.entity.FileStore;
 import site.pyyf.cloudpan.entity.MyFile;
 import site.pyyf.cloudpan.entity.PicUploadResult;
-import site.pyyf.cloudpan.service.IfilePreviewService;
 import site.pyyf.cloudpan.service.ResolveHeaderService;
 import site.pyyf.cloudpan.utils.*;
 import org.slf4j.Logger;
@@ -100,7 +99,7 @@ public class FileStoreController extends BaseController {
         File srcFile = null;
         InputStream uploadStream = originalFile.getInputStream();
         boolean transferSuccess = true;
-        //音乐文件，小于10MB，且不是MP3则转码后存储
+        //音乐文件，小于3MB，且不是MP3则转码后存储
         if ((insertType == 4) && (size < 10 * 1024 * 1024) && (!insertPostfix.equals("mp3"))) {
             String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
             final File tmpFolder = new File(rootPath + "data/audio");
@@ -168,6 +167,41 @@ public class FileStoreController extends BaseController {
         }
 
 
+        //图片
+        if((insertType == 2)){
+            String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
+            final File tmpFolder = new File(rootPath + "data/img");
+            if (!tmpFolder.exists())
+                tmpFolder.mkdirs();
+            File tmpFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", "")+originalFile.getOriginalFilename());
+            originalFile.transferTo(tmpFile);
+            final PicUploadResult ossRes = uploadInstance.upload("cloudDisk/imgs",tmpFile);
+            //提交到FTP服务器
+            boolean ftpRes = FtpUtil.uploadFile("/" + path, name, new FileInputStream(tmpFile));
+            if(ossRes.getStatus().equals("done")&&ftpRes)
+            {
+                logger.info("图片上传到OSS和FTP成功");
+                MyFile fileItem = MyFile.builder()
+                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
+                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(ossRes.getUrl()).build();
+                //向数据库文件表写入数据
+                myFileService.addFileByFileStoreId(fileItem);
+                //更新仓库表的当前大小
+                fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
+                map.put("code", 200);
+            }else{
+                logger.info("图片上传到OSS和FTP失败");
+                map.put("code", 504);
+            }
+            if(tmpFile.exists()){
+                tmpFile.delete();
+            }
+            return map;
+        }
+
+        //其他文件照旧
+
 
         if (srcFile != null) {
             uploadStream = new FileInputStream(srcFile);
@@ -227,10 +261,6 @@ public class FileStoreController extends BaseController {
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
         try {
-            File temp = new File("temp");
-            if (!temp.exists()) {
-                temp.mkdirs();
-            }
             //去FTP上拉取
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
             logger.info("开始下载");
@@ -270,8 +300,9 @@ public class FileStoreController extends BaseController {
         //从FTP文件服务器上删除文件
         boolean b = FtpUtil.deleteFile("/" + remotePath, fileName);
         if (b) {
+            logger.info("删除文件成功!" + myFile);
 
-            if (!(myFile.getShowPath().equals("") || myFile.getShowPath() == null)) {
+            if (!(myFile.getShowPath() == null || myFile.getShowPath().equals(""))) {
                 boolean isSuccess = true;
                 if (!(myFile.getPostfix().equals("mp3") || (myFile.getPostfix().equals("mp4"))))
                     isSuccess = FtpUtil.deleteFile("/" + ShowPath, fileName);
@@ -291,7 +322,7 @@ public class FileStoreController extends BaseController {
             //删除文件表对应的数据
             myFileService.deleteByFileId(fId);
         }
-        logger.info("删除文件成功!" + myFile);
+
         return "redirect:/files?fId=" + folder;
     }
 
@@ -482,9 +513,9 @@ public class FileStoreController extends BaseController {
                         QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
                         os.close();
                     }
-                    PicUploadResult upload = uploadInstance.upload(f);
+                    PicUploadResult upload = uploadInstance.upload("cloudDisk/QrCode",f);
 
-                    map.put("imgPath", upload.getName());
+                    map.put("imgPath", upload.getUrl());
                     map.put("url", url);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -492,45 +523,6 @@ public class FileStoreController extends BaseController {
             }
         }
         return map;
-    }
-
-
-    @GetMapping("/file/preview")
-    public String preview(@RequestParam(value = "fId") Integer id, Model model) {
-        Map<String, String> supportPreviewLang = new HashMap<>();
-        supportPreviewLang.put("cpp", "cpp");
-        supportPreviewLang.put("java", "java");
-        supportPreviewLang.put("html", "html");
-        supportPreviewLang.put("py", "python");
-
-
-        MyFile file = myFileService.getFileByFileId(id);
-        String fileName = file.getMyFileName();
-        String suffix = StringUtils.substringAfterLast(fileName, ".");
-        if (suffix.equals("md"))
-            return "redirect:/ebook/getbook/" + id;
-        if (supportPreviewLang.containsKey(suffix)) {
-            if (suffix.equals("java")) {
-                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
-                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
-
-                StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
-
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml, Arrays.asList("java"));
-                model.addAttribute("code", newCode.toString());
-                return "show-code";
-            } else {
-                StringBuilder fileContentByMyFile = fileStoreService.getFileContentByMyFile(file);
-                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
-                // 其他语言 启动mardown显示
-                String htmlContent = MarkdownUtils.markdownToHtmlExtensions(code);
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent), new ArrayList<>(supportPreviewLang.values()));
-                model.addAttribute("code", newCode.toString());
-                return "show-code";
-            }
-        }
-        return "redirect:/files";
     }
 
 
@@ -542,8 +534,10 @@ public class FileStoreController extends BaseController {
      * @Param [type]
      **/
     public int getType(String type) {
-        if ("txt".equals(type) || "doc".equals(type) || "docx".equals(type)
-                || "wps".equals(type) || "word".equals(type) || "html".equals(type) || "pdf".equals(type)) {
+
+
+        if ("html".equals(type) || "css".equals(type) || "js".equals(type)|| "c".equals(type)|| "md".equals(type)
+                || "java".equals(type) || "php".equals(type) || "py".equals(type) || "cpp".equals(type)) {
             return 1;
         } else if ("bmp".equals(type) || "gif".equals(type) || "jpg".equals(type)
                 || "pic".equals(type) || "png".equals(type) || "jepg".equals(type) || "webp".equals(type)
