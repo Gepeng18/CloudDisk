@@ -172,7 +172,6 @@
 
                             console.log("在线播放打开");
                             let id = $('#tarFile').html();
-                            let name = $('.flag td a').html();
 
                             $("#videoElasticframe").css({
                                 position: 'absolute',
@@ -199,8 +198,21 @@
                             }
 
                             var audio = document.getElementById('audioPlayer');
-                            if (audio.play())
+                            if (audio.play()){
                                 audio.pause();
+                            }
+
+                            var preAudioName = $('#preAudioName').html();
+                            if(preAudioName!=null){
+                                $('#preAudioId').html(preAudioName);
+
+                                $('#preAudioId').attr("id","");
+                            }
+
+                            $('#preAudioName').html(name);
+                            $('.flag td a').attr("id","preAudioId");
+                            $('.flag td a').html(name+ "&nbsp; &nbsp; &nbsp; &nbsp; 正在播放中  &nbsp; <i class=\"fa fa-refresh fa-spin\"></i>&nbsp; &nbsp;");
+
                             var location = window.location.href;
                             let strings = location.split("cloudpan");
                             //注意是设置audio的属性，不是source的属性，这里我被折腾了两个小时，哎
@@ -492,7 +504,6 @@
                         });
                     });
                 }
-
 
             }, function () {
             });

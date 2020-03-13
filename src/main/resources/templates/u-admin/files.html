@@ -13,7 +13,7 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/ionicons/css/ionicons.min.css">
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/fontawesome/web-fonts-with-css/css/fontawesome-all.min.css">
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/lib/font-awesome-4.7.0/css/font-awesome.min.css">
 
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/summernote/summernote-lite.css">
@@ -186,6 +186,8 @@
                                                 <th>下载次数</th>
                                                 <th>上传时间</th>
                                             </tr>
+
+<!--                                            遍历文件夹-->
                                             <tr th:each="folder:${folders}" class="files-items folders">
 
                                                 <td><span style="display: none" th:text="${folder.fileFolderId}"></span><img
@@ -203,6 +205,9 @@
                                                 <td style="font-weight: 300"
                                                     th:text="${#dates.format(folder.time,'yyyy-MM-dd HH:mm')}"></td>
                                             </tr>
+
+<!--                                            遍历文件-->
+
                                             <tr th:each="f:${files}" class="files-items files">
                                                 <td>
                                                     <span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
@@ -240,15 +245,16 @@
                                                     <!--												<i style="font-size: 24px;color: #dc3545" th:if="${f.type == 4}" class="icon ion-ios-musical-notes"></i>-->
                                                     <!--												<i style="font-size: 24px;color: #343A40" th:if="${f.type == 5}" class="icon ion-document"></i>-->
                                                 </td>
-                                                <td>
+                                                <td style="width: 300px">
                                                     <a href="#" style="font-weight: 700;color: black"
                                                        th:text="${f.myFileName}"></a>
                                                 </td>
-                                                <td style="font-weight: 300" th:if="${f.type == 1}">代码</td>
-                                                <td style="font-weight: 300" th:if="${f.type == 2}">图像</td>
-                                                <td style="font-weight: 300" th:if="${f.type == 3}">视频</td>
-                                                <td style="font-weight: 300" th:if="${f.type == 4}">音乐</td>
-                                                <td style="font-weight: 300" th:if="${f.type == 5}">其他</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 1}">代码</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 2}">图像</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 3}">视频</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 4}">音乐</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 5}">其他</td>
+
                                                 <td style="font-weight: 300" th:text="${f.postfix}"></td>
                                                 <td style="font-weight: 300" th:if="${f.size > 1024}" id="size1"
                                                     th:text="${f.size/1024 +'MB'}"></td>
@@ -280,8 +286,10 @@
                 <span id="preF" style="display: none" th:text="${nowFolder.parentFolderId}"></span>
                 <span id="tarFolder" style="display: none"></span>
                 <span id="tarFile" style="display: none"></span>
+                <span id="preAudioName" style="display: none"></span>
+                <span id="preAudioId" style="display: none"></span>
 
-                <div class="row" th:if="${files.size() == 0}">
+                <div class="row" th:if="${(files.size() == 0)&&(folders.size()==0)}">
                     <div class="col-12 col-sm-12 col-lg-12">
                         <div class="alert alert-primary alert-has-icon alert-dismissible show fade">
                             <div class="alert-icon"><i class="ion ion-ios-lightbulb-outline"></i></div>
