@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.cloudpan.mapper.MyFileMapper">
+<mapper namespace="site.pyyf.cloudDisk.mapper.MyFileMapper">
   <!--开启二级缓存,使用Ehcache缓存框架-->
   <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
-  <resultMap id="BaseResultMap" type="site.pyyf.cloudpan.entity.MyFile">
+  <resultMap id="BaseResultMap" type="site.pyyf.cloudDisk.entity.MyFile">
     <id column="my_file_id" jdbcType="INTEGER" property="myFileId" />
     <result column="my_file_name" jdbcType="VARCHAR" property="myFileName" />
     <result column="show_path" jdbcType="VARCHAR" property="showPath" />
@@ -111,7 +111,7 @@
     </if>
   </sql>
 
-  <insert id="addFileByFileStoreId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.cloudpan.entity.MyFile" useGeneratedKeys="true">
+  <insert id="addFileByFileStoreId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.cloudDisk.entity.MyFile" useGeneratedKeys="true">
     insert into my_file
     <trim prefix="(" suffix=")" suffixOverrides=",">
         <include refid="Base_Insert_Key_List"></include>
@@ -121,7 +121,7 @@
     </trim>
   </insert>
 
-  <update id="updateFileByFileId" parameterType="site.pyyf.cloudpan.entity.MyFile">
+  <update id="updateFileByFileId" parameterType="site.pyyf.cloudDisk.entity.MyFile">
     update my_file
     <set>
         <include refid="Base_Update_List"></include>
@@ -139,7 +139,7 @@
     where parent_folder_id = #{id}
   </delete>
 
-  <select id="getFileByFileId" parameterType="java.lang.Integer" resultType="site.pyyf.cloudpan.entity.MyFile">
+  <select id="getFileByFileId" parameterType="java.lang.Integer" resultType="site.pyyf.cloudDisk.entity.MyFile">
     select
     <include refid="Base_Column_List" />
     from my_file
@@ -167,7 +167,7 @@
     where file_store_id = #{storeId} and type = #{type};
   </select>
 
-  <select id="getCountStatistics" resultType="site.pyyf.cloudpan.entity.FileStoreStatistics">
+  <select id="getCountStatistics" resultType="site.pyyf.cloudDisk.entity.FileStoreStatistics">
    select sum(type = 1) doc,sum(type = 2) image,sum(type = 3) video,
       sum(type = 4) music,sum(type = 5) other,count(*) fileCount from my_file
       where file_store_id = #{id}

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.cloudpan.mapper.IlibraryMapper">
+<mapper namespace="site.pyyf.cloudDisk.mapper.IlibraryMapper">
     <sql id="selectFields">
         id, ebook_name,ebook_id,header
     </sql>
@@ -21,7 +21,7 @@
         where ebook_id=#{ebookId}
 
     </delete>
-    <select id="selectByBookId" resultType="site.pyyf.cloudpan.entity.Ebook">
+    <select id="selectByBookId" resultType="site.pyyf.cloudDisk.entity.Ebook">
         select
         <include refid="selectFields"></include>
         from library

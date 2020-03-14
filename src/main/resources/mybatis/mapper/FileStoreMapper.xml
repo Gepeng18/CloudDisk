@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.cloudpan.mapper.FileStoreMapper">
+<mapper namespace="site.pyyf.cloudDisk.mapper.FileStoreMapper">
     <!--开启二级缓存,使用Ehcache缓存框架-->
     <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
@@ -13,13 +13,13 @@
     <insert id="addFileStore" useGeneratedKeys="true" keyProperty="fileStoreId">
         insert into file_store(user_id) values (#{userId})
     </insert>
-    <select id="getFileStoreByUserId" resultType="site.pyyf.cloudpan.entity.FileStore">
+    <select id="getFileStoreByUserId" resultType="site.pyyf.cloudDisk.entity.FileStore">
         select <include refid="commonsKey"/> from file_store
         <where>
             user_id = #{userId}
         </where>
     </select>
-    <select id="getFileStoreById" resultType="site.pyyf.cloudpan.entity.FileStore">
+    <select id="getFileStoreById" resultType="site.pyyf.cloudDisk.entity.FileStore">
         select <include refid="commonsKey"/> from file_store
         <where>
             file_store_id = #{fileStoreId}

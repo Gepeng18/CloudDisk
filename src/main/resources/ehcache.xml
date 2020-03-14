@@ -17,7 +17,7 @@
             timeToLiveSeconds="3600"
             overflowToDisk="true"
             diskPersistent="true">
-        <copyStrategy class="site.pyyf.cloudpan.utils.MyCopyStrategy"/>
+        <copyStrategy class="site.pyyf.cloudDisk.utils.MyCopyStrategy"/>
     </defaultCache>
 </ehcache>
         <!--

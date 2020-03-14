@@ -60,13 +60,7 @@
     </script>
 </th:block>
 
-<th:block th:fragment="thumbnail_script">
-    <script>
-        $(function () {
 
-        });
-    </script>
-</th:block>
 
 
 <th:block th:fragment="contextMenu">
@@ -142,9 +136,10 @@
                             window.location.href = "/cloudpan/file/preview?fId=" + id;
                         } else if (supImg.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
                             var image = new Image();
-                            var location = window.location.href;
-                            let strings = location.split("cloudpan");
-                            image.src = strings[0] + "cloudpan/img_preview?fId=" + id;
+                            // var location = window.location.href;
+                            // let strings = location.split("cloudpan");
+                            var showPath = $(".flag td #imgShowPath").html();
+                            image.src = showPath;
 
                             var viewer = new Viewer(image, {
                                 hidden: function () {
