@@ -9,7 +9,7 @@ import site.pyyf.cloudDisk.service.FileFolderService;
 import site.pyyf.cloudDisk.service.FileStoreService;
 import site.pyyf.cloudDisk.service.MyFileService;
 import site.pyyf.cloudDisk.service.UserService;
-import site.pyyf.cloudDisk.utils.OSS.OSSService;
+import site.pyyf.cloudDisk.service.impl.OSSService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

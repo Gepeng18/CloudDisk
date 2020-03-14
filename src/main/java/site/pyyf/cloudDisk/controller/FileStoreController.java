@@ -100,7 +100,7 @@ public class FileStoreController extends BaseController {
         String insertPostfix = StringUtils.substringAfterLast(name, ".").toLowerCase();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = format.format(new Date());
-        String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + folderId+"/"+UUID.randomUUID().toString()+"."+insertPostfix;
+        String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + folderId + "/" + UUID.randomUUID().toString() + "." + insertPostfix;
 
         //获得文件类型
         int insertType = getType(insertPostfix);
@@ -117,7 +117,7 @@ public class FileStoreController extends BaseController {
             if (!tmpFolder.exists())
                 tmpFolder.mkdirs();
 
-
+            //保存
             srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
             FileOutputStream fos = new FileOutputStream(srcFile);
             byte[] buf = new byte[1024];
@@ -303,7 +303,6 @@ public class FileStoreController extends BaseController {
         map.put("code", 200);
         return map;
 
-
     }
 
 
@@ -334,13 +333,13 @@ public class FileStoreController extends BaseController {
         // 文件名转码一下，不然会出现中文乱码
         try {
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             logger.error("文件名编码失败");
             return;
         }
 //        规定是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
-        if ((cloudDiskConfig.getType().equals("OSS"))||myFile.getType()==2) {
+        if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
             try {
                 logger.info("开始下载");
                 ossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
@@ -386,9 +385,8 @@ public class FileStoreController extends BaseController {
         MyFile myFile = myFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
         String showPath = myFile.getShowPath();
-        String fileName = myFile.getMyFileName();
 
-        if (cloudDiskConfig.getType().equals("OSS")||(myFile.getType()==2)) {
+        if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
             logger.info("假装remote文件从OSS删除成功");
         } else {
             //从FTP文件服务器上删除文件
@@ -455,7 +453,7 @@ public class FileStoreController extends BaseController {
         if (files.size() != 0) {
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
-                if (cloudDiskConfig.getType().equals("OSS")||(thisFile.getType()==2)) {
+                if (cloudDiskConfig.getType().equals("OSS") || (thisFile.getType() == 2)) {
                     logger.info("假装remote文件从OSS删除成功");
                 } else {
                     //从FTP文件服务器上删除文件
@@ -573,18 +571,18 @@ public class FileStoreController extends BaseController {
             String oldName = myFile.getMyFileName();
             String newName = file.getMyFileName();
             if (!oldName.equals(newName)) {
-                    Integer integer = myFileService.updateFile(
-                            MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
-                    if (integer == 1) {
-                        if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
-                            iLibraryService.updateEbookNameByBookId(myFile.getMyFileId(), newName);
-                        }
-                        logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
-                    } else {
-                        logger.error("修改文件名失败!原文件名:" + oldName + "  新文件名:" + newName);
+                Integer integer = myFileService.updateFile(
+                        MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
+                if (integer == 1) {
+                    if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
+                        iLibraryService.updateEbookNameByBookId(myFile.getMyFileId(), newName);
                     }
-
+                    logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
+                } else {
+                    logger.error("修改文件名失败!原文件名:" + oldName + "  新文件名:" + newName);
                 }
+
+            }
         }
         return "redirect:/files?fId=" + myFile.getParentFolderId();
     }

@@ -1,4 +1,4 @@
-package site.pyyf.cloudDisk.utils.OSS;
+package site.pyyf.cloudDisk.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.OSSObject;
@@ -149,6 +149,10 @@ public class OSSService {
 
 
     }
+
+
+
+
 //    public static void main(String[] args) throws FileNotFoundException {
 //        String a = "cloudDisk/imgs/img/14df6b3f040a47abb957e650cde4d028tibet-9.jpg";
 //        OutputStream outputStream = new FileOutputStream("F:\\Projects\\Java\\Community\\community\\src\\main\\java\\com\\nowcoder\\community\\service\\1.jpg");
