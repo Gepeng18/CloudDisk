@@ -47,7 +47,7 @@ public class PreviewController extends BaseController {
             // 设置返回类型
             response.setContentType("video/mpeg4");
             // 文件名转码一下，不然会出现中文乱码
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             logger.info("下载完成");
             if (flag) {
                 myFileService.updateFile(
@@ -84,7 +84,7 @@ public class PreviewController extends BaseController {
             // 设置返回类型
             response.setContentType("audio/mp3");
             // 文件名转码一下，不然会出现中文乱码
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             if (flag) {
                 myFileService.updateFile(
                         MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
@@ -157,7 +157,7 @@ public class PreviewController extends BaseController {
             //去FTP上拉取
             OutputStream os = new BufferedOutputStream(response.getOutputStream());
             logger.info("开始下载");
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
 
             if (flag) {
                 logger.info("文件下载成功!" + myFile);

@@ -217,7 +217,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
             new File("tmp").mkdirs();
         String tmpFilePath = "tmp/"+UUID.randomUUID().toString().replaceAll("-", "");
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFilePath);
-        FtpUtil.downloadFile("/"+remotePath, fileName, fileOutputStream);
+        FtpUtil.downloadFile("/"+remotePath, fileOutputStream);
         FileInputStream fileInputStream = new FileInputStream(tmpFilePath);
         readFile(fileInputStream, fileName, id);
         new File(tmpFilePath).delete();

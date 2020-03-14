@@ -1,7 +1,7 @@
 package site.pyyf.cloudDisk.utils.markdown;
 
 import org.apache.commons.lang3.StringUtils;
-import site.pyyf.cloudDisk.utils.UploadOss.OssUpload;
+import site.pyyf.cloudDisk.utils.OSS.OssUpload;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public class ProcessMdToEbook {
 
         File file = new File(imgsPath);
         for (File listFile : file.listFiles()) {
-            upload.upload("ebook",listFile);
+            upload.upload("cloudDisk/ebook",listFile);
         }
     }
 

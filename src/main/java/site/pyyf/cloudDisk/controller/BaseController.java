@@ -1,5 +1,6 @@
 package site.pyyf.cloudDisk.controller;
 
+import site.pyyf.cloudDisk.config.CloudDiskConfig;
 import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,7 @@ import site.pyyf.cloudDisk.service.FileFolderService;
 import site.pyyf.cloudDisk.service.FileStoreService;
 import site.pyyf.cloudDisk.service.MyFileService;
 import site.pyyf.cloudDisk.service.UserService;
-import site.pyyf.cloudDisk.service.impl.EbookContentService;
-import site.pyyf.cloudDisk.utils.UploadOss.OssUpload;
+import site.pyyf.cloudDisk.utils.OSS.OSSService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,9 +23,6 @@ import javax.servlet.http.HttpSession;
  * @Version: 1.0
  **/
 public class BaseController {
-
-    protected OssUpload uploadInstance = OssUpload.getInstance();
-
     @Autowired
     protected  IMediaTranfer iMediaTranfer;
     @Autowired
@@ -41,9 +38,13 @@ public class BaseController {
     protected FileStoreService fileStoreService;
     @Autowired
     protected ILibraryService iLibraryService;
-
+    @Autowired
+    protected CloudDiskConfig cloudDiskConfig;
+    @Autowired
+    protected OSSService ossService;
     @Autowired
     protected IEbookContentService iEbookContentService;
+
     protected HttpServletRequest request;
     protected HttpServletResponse response;
     protected HttpSession session;

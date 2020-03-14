@@ -1,4 +1,4 @@
-package site.pyyf.cloudDisk.utils.UploadOss;
+package site.pyyf.cloudDisk.utils.OSS;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClient;
@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import site.pyyf.cloudDisk.entity.PicUploadResult;
+import site.pyyf.cloudDisk.entity.UploadResult;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,7 +53,7 @@ public class OssUpload_sample {
             ".jpeg", ".gif", ".png"};
 
 
-    public PicUploadResult upload(File file) {
+    public UploadResult upload(File file) {
         String imgName = file.getName();
         String imgsPath = file.getParent();
         // 校验图片格式
@@ -66,7 +66,7 @@ public class OssUpload_sample {
             }
         }
         // 封装Result对象，并且将文件的byte数组放置到result对象中
-        PicUploadResult fileUploadResult = new PicUploadResult();
+        UploadResult fileUploadResult = new UploadResult();
         if(!isLegal){
             fileUploadResult.setStatus("error");
             return fileUploadResult;

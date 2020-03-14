@@ -1,4 +1,4 @@
-package site.pyyf.cloudDisk.utils.UploadOss;
+package site.pyyf.cloudDisk.utils.OSS;
 import lombok.AllArgsConstructor;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ class Uploadthread implements Runnable {
     @Override
     public void run() {
         for (File file : files) {
-            ossUpload.upload("ebook",file);
+            ossUpload.upload("cloudDisk/ebook",file);
         }
     }
 }
@@ -68,7 +68,7 @@ public class MultiThreadUploadUtil {
         File[] files = new File(folderPath).listFiles();
         OssUpload instance = OssUpload.getInstance();
         for(File file:files){
-            instance.upload("ebook",file);
+            instance.upload("cloudDisk/ebook",file);
         }
         long endTime = new Date().getTime();
         System.out.println("一共用了： " + (endTime - startTime) / 1000 + "秒"); //一共用了： 129秒

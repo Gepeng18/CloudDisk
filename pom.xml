@@ -19,6 +19,14 @@
     </properties>
 
     <dependencies>
+<!--       防止出现 Spring Boot Configuration Annotation Processor not found in claspath-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
         <!--引入MyBatis-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>

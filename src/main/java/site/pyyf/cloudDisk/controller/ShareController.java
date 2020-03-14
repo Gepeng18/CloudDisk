@@ -1,5 +1,6 @@
 package site.pyyf.cloudDisk.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +8,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.entity.FileFolder;
 import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.MyFile;
+import site.pyyf.cloudDisk.entity.UploadResult;
 import site.pyyf.cloudDisk.service.IResolveHeaderService;
 import site.pyyf.cloudDisk.utils.CommunityUtil;
 import site.pyyf.cloudDisk.utils.FtpUtil;
@@ -27,6 +30,8 @@ public class ShareController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ShareController.class);
 
+    @Autowired
+    private AliyunConfig aliyunConfig;
     @Autowired
     protected IResolveHeaderService iResolveHeaderService;
 
@@ -64,7 +69,7 @@ public class ShareController extends BaseController {
             response.setContentType("multipart/form-data");
             // 文件名转码一下，不然会出现中文乱码
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             logger.info("下载完成");
             if (flag) {
                 myFileService.updateFile(
@@ -84,8 +89,8 @@ public class ShareController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getShareUrl", method = RequestMethod.POST)
     public String getShareUrl(@RequestParam(value = "fId") Integer id,
-                              @RequestParam(value = "type") String type,
-                              Model model) {
+                              @RequestParam(value = "type") String type
+    ) {
         String pwd = UUID.randomUUID().toString().replaceAll("-", "");
         String msg = pwd + "-" + type + "-" + id;
         return CommunityUtil.getJSONString(200, msg);
@@ -115,7 +120,7 @@ public class ShareController extends BaseController {
             return CommunityUtil.getJSONString(result, map.get(result));
 
         } else {
-            System.out.println("传来一个不知名的内容");
+            logger.error("传来一个不知名的内容");
         }
         return null;
     }
@@ -158,9 +163,7 @@ public class ShareController extends BaseController {
                 return 501;
             }
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String dateStr = format.format(new Date());
-        String path = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId;
+
 
         Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
         //是否仓库放不下该文件
@@ -169,80 +172,98 @@ public class ShareController extends BaseController {
             return 503;
         }
 
+        String insertRemotePath = null;
+        String insertShowPath = null;
+        if (cloudDiskConfig.getType().equals("OSS")||shareFile.getType()==2) {
+            //提交到OSS服务器
+            UploadResult OSStransferRes = ossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
+                    StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
+            if (OSStransferRes.getStatus().equals("done")) {
+                logger.info("OSS中remote文件转存完成");
+                insertRemotePath = OSStransferRes.getUrl();
+                insertShowPath = OSStransferRes.getUrl();
+            } else {
+                logger.error("OSS中remote文件转存失败");
+                return 504;
+            }
 
 
-        boolean transferFileSuccess = true;
-        try {
-            //提交到FTP服务器
-            transferFileSuccess = FtpUtil.transferFile("/" + shareFile.getMyFilePath(), "/" + path, shareFile.getMyFileName());
-            logger.info("转存完成");
-        } catch (Exception e) {
-            logger.error("转存失败");
-            return 504;
-        }
-        if (transferFileSuccess) {
-            //上传成功
-            logger.info("文件转存成功!" + shareFile.getMyFileName());
-
-            boolean saveShowFile = true;
-            if (!(shareFile.getShowPath() == null || shareFile.getShowPath().equals(""))) {
-                if (shareFile.getPostfix().equals("mp3") || (shareFile.getPostfix().equals("mp4"))) {
-                    try {
-                        saveShowFile = FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + path, shareFile.getMyFileName());
-                    } catch (Exception e) {
-                        logger.error("转存在线播放的mp3或mp4文件失败");
-                    }
+            if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
+                //提交到FTP服务器
+                OSStransferRes = ossService.transfer(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1),
+                        StringUtils.substringBeforeLast(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1), "/"));
+                if (OSStransferRes.getStatus().equals("done")) {
+                    logger.info("OSS中show文件转存完成");
+                    insertShowPath = OSStransferRes.getUrl();
                 } else {
-                    try {
-                        saveShowFile = FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + path + "_mp", shareFile.getMyFileName());
-                    } catch (Exception e) {
-                        logger.error("转存在线播放的非mp3或mp4文件失败");
-                    }
+                    logger.error("OSS中show文件转存失败");
+                    return 504;
                 }
 
             }
 
-            //文件转存成功后则需要插入数据库
-            MyFile insertFile = null;
-            if (saveShowFile) {
 
-                String insertShowPath = null;
-                if (shareFile.getPostfix().equals("mp3") || shareFile.getPostfix().equals("mp4"))
-                    insertShowPath = path;
-                else
-                    insertShowPath = path + "_mp";
+        } else {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            String dateStr = format.format(new Date());
+            String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId+"/"+UUID.randomUUID().toString()+"."+shareFile.getPostfix();
 
-                insertFile = MyFile.builder()
-                        .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
-                                size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).showPath(insertShowPath).build();
-            } else {
-                insertFile = MyFile.builder()
-                        .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
-                                size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).build();
-
+            try {
+                //提交到FTP服务器
+                FtpUtil.transferFile("/" + shareFile.getMyFilePath(), "/" + remoteFilePath);
+                logger.info("FTP中remote文件转存完成");
+                insertRemotePath = remoteFilePath;
+                insertShowPath = remoteFilePath;
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("FTP中remote文件转存失败");
+                return 504;
             }
 
-            //向数据库文件表写入数据
-            myFileService.addFileByFileStoreId(insertFile);
-            //更新仓库表的当前大小
-            fileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
-            logger.info("转存文件插入数据库成功");
-
-
-            //如果是markdown，则再传一份到library表中
-            if (insertFile.getPostfix().equals(".md"))
+            if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
                 try {
-                    iResolveHeaderService.readFile(insertFile.getMyFilePath(), insertFile.getMyFileName(), insertFile.getMyFileId());
-                    logger.info("markdown插入表成功");
+                    FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + remoteFilePath + "_mp");
+                    logger.error("FTP中showfile转存成功");
+                    insertShowPath = remoteFilePath + "_mp";
                 } catch (Exception e) {
                     e.printStackTrace();
-                    logger.error("markdown转化失败");
+                    logger.error("FTP中showfile转存失败");
+                    return 504;
                 }
-            return 200;
-        } else {
-            return 504;
+
+            }
+
         }
+
+
+        //文件转存成功后则需要插入数据库
+        MyFile insertFile = MyFile.builder()
+                .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(insertRemotePath)
+                .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
+                        size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).showPath(insertShowPath).build();
+
+
+        //向数据库文件表写入数据
+        myFileService.addFileByFileStoreId(insertFile);
+        //更新仓库表的当前大小
+        fileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
+        logger.info("转存文件插入数据库成功");
+
+
+        //如果是markdown，则再传一份到library表中
+        if (insertFile.getPostfix().equals(".md")) {
+            try {
+                iResolveHeaderService.readFile(insertFile.getMyFilePath(), insertFile.getMyFileName(), insertFile.getMyFileId());
+                logger.info("文件转存过程中markdown转化成功");
+                return 200;
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.error("文件转存过程中markdown转化失败");
+                return 504;
+            }
+
+        }
+        return 200;
     }
 }
+

@@ -62,7 +62,7 @@ public class FileStoreServiceImpl extends BaseService implements FileStoreServic
             String tempStr = "temp/" + UUID.randomUUID().toString();
             //去FTP上拉取
             OutputStream tmpFileStream = new FileOutputStream(new File(tempStr));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, file.getMyFileName(), tmpFileStream);
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, tmpFileStream);
             if (flag) {
 
                 //获得服务器本地的文件，并使用IO流写出到浏览器

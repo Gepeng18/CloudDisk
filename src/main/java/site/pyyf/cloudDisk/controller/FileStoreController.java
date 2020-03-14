@@ -1,20 +1,26 @@
 package site.pyyf.cloudDisk.controller;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Controller;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.entity.FileFolder;
 import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.MyFile;
-import site.pyyf.cloudDisk.entity.PicUploadResult;
+import site.pyyf.cloudDisk.entity.UploadResult;
 import site.pyyf.cloudDisk.service.IResolveHeaderService;
-import site.pyyf.cloudDisk.utils.*;
-import org.slf4j.Logger;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.multipart.MultipartFile;
+import site.pyyf.cloudDisk.utils.FtpUtil;
+import site.pyyf.cloudDisk.utils.LogUtils;
+import site.pyyf.cloudDisk.utils.QRCodeUtil;
 
 import java.io.*;
 import java.net.URL;
@@ -37,6 +43,8 @@ public class FileStoreController extends BaseController {
 
     private Logger logger = LogUtils.getInstance(FileStoreController.class);
 
+    @Autowired
+    private AliyunConfig aliyunConfig;
     @Autowired
     protected IResolveHeaderService iResolveHeaderService;
 
@@ -72,9 +80,7 @@ public class FileStoreController extends BaseController {
                 return map;
             }
         }
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String dateStr = format.format(new Date());
-        String path = loginUser.getUserId() + "/" + dateStr + "/" + folderId;
+
         if (!checkTarget(name)) {
             logger.error("上传失败!文件名不符合规范...");
             map.put("code", 502);
@@ -87,25 +93,32 @@ public class FileStoreController extends BaseController {
             map.put("code", 503);
             return map;
         }
+
         long size = originalFile.getSize();
         //处理文件大小
         String insertSize = StringUtils.substringBeforeLast(String.valueOf(size / 1024.0), ".");
         String insertPostfix = StringUtils.substringAfterLast(name, ".").toLowerCase();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = format.format(new Date());
+        String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + folderId+"/"+UUID.randomUUID().toString()+"."+insertPostfix;
 
         //获得文件类型
         int insertType = getType(insertPostfix);
         File srcFile = null;
+        File dstFile = null;
+
+        String insertRemotePath = null;
+        String insertShowPath = null;
         InputStream uploadStream = originalFile.getInputStream();
-        boolean transferSuccess = true;
-        //音乐文件，小于3MB，且不是MP3则转码后存储
-        if ((insertType == 4) && (size < 10 * 1024 * 1024) && (!insertPostfix.equals("mp3"))) {
+        //音乐文件，小于MaxShowSize MB，且不是MP3则转码后存储
+        if ((insertType == 4) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!insertPostfix.equals("mp3"))) {
             String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
             final File tmpFolder = new File(rootPath + "data/audio");
             if (!tmpFolder.exists())
                 tmpFolder.mkdirs();
 
-            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
 
+            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
             FileOutputStream fos = new FileOutputStream(srcFile);
             byte[] buf = new byte[1024];
             int length;
@@ -113,24 +126,48 @@ public class FileStoreController extends BaseController {
                 fos.write(buf, 0, length);
             }
             fos.close();
+            logger.info("非Mp3音乐文件存储成功");
 
-            logger.info("音乐文件存储成功");
+
+            //非Mp3音乐转码
+            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
+            boolean tranferSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
+            if (tranferSuccess)
+                logger.info("非Mp3音乐文件转码成功");
+            else
+                logger.error("非Mp3音乐转码失败");
 
 
-            File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
-            boolean isSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
-            if (isSuccess) {
-                FileInputStream dstStream = new FileInputStream(dstFile);
-                FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
-                dstStream.close();
-                logger.info("转码文件上传完毕");
+            if (cloudDiskConfig.getType().equals("OSS")) {
+                UploadResult OSSsrcUploadResult = ossService.upload(srcFile, "cloudDisk/audio");
+                UploadResult OSSdstUploadResult = ossService.upload(dstFile, "cloudDisk/audio");
+
+                if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
+
+                    logger.info("非Mp3音乐源文件和转码文件上传到OSS完毕");
+                    insertRemotePath = OSSsrcUploadResult.getUrl();
+                    insertShowPath = OSSdstUploadResult.getUrl();
+                } else {
+                    logger.error("非Mp3音乐源文件或目标文件上传失败");
+                }
             } else {
-                transferSuccess = false;
-                logger.info("转码失败");
-            }
-            dstFile.delete();
+                FileInputStream srcStream = new FileInputStream(srcFile);
+                final boolean FTPsrcUploadresult = FtpUtil.uploadFile("/" + remoteFilePath, srcStream);
+                srcStream.close();
 
-        } else if ((insertType == 3) && (size < 10 * 1024 * 1024) && (!(insertPostfix.equals("mp4")))) {
+                FileInputStream dstStream = new FileInputStream(dstFile);
+                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + remoteFilePath + "_mp", dstStream);
+                dstStream.close();
+                if (FTPsrcUploadresult && FTPdstUploadresult) {
+                    logger.info("非Mp3音乐源文件和转码文件上传到FTP完毕");
+                    insertRemotePath = remoteFilePath;
+                    insertShowPath = remoteFilePath + "_mp";
+                } else
+                    logger.error("非Mp3音乐源文件或目标文件上传失败");
+            }
+
+
+        } else if ((insertType == 3) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!(insertPostfix.equals("mp4")))) {
             //视频文件，小于10MB，且不是MP4则转码后存储
             String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
             final File tmpFolder = new File(rootPath + "data/video");
@@ -138,7 +175,7 @@ public class FileStoreController extends BaseController {
                 tmpFolder.mkdirs();
 
 
-            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
             FileOutputStream fos = new FileOutputStream(srcFile);
             byte[] buf = new byte[1024];
             int length;
@@ -146,104 +183,129 @@ public class FileStoreController extends BaseController {
                 fos.write(buf, 0, length);
             }
             fos.close();
-            logger.info("视频文件存储成功");
+            logger.info("非MP4视频文件存储成功");
 
-            File dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", ""));
+            //非Mp4音乐转码
+            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
+            boolean tranferSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
+            if (tranferSuccess)
+                logger.info("非Mp4音乐文件转码成功");
+            else
+                logger.error("非Mp4音乐转码失败");
 
-            boolean isSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
-            if (isSuccess) {
+
+            if (cloudDiskConfig.getType().equals("OSS")) {
+                UploadResult OSSsrcUploadResult = ossService.upload(srcFile, "cloudDisk/video");
+                UploadResult OSSdstUploadResult = ossService.upload(dstFile, "cloudDisk/video");
+
+                if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
+                    logger.info("非Mp4音乐源文件和转码文件上传到OSS完毕");
+                    insertRemotePath = OSSsrcUploadResult.getUrl();
+                    insertShowPath = OSSdstUploadResult.getUrl();
+                } else {
+                    logger.error("非Mp4音乐源文件或目标文件上传失败");
+                }
+            } else {
+                FileInputStream srcStream = new FileInputStream(srcFile);
+                final boolean FTPsrcUploadresult = FtpUtil.uploadFile("/" + remoteFilePath, srcStream);
+                srcStream.close();
+
                 FileInputStream dstStream = new FileInputStream(dstFile);
-                FtpUtil.uploadFile("/" + path + "_mp", name, dstStream);
+                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + remoteFilePath + "_mp", dstStream);
                 dstStream.close();
-                logger.info("转码文件上传完毕");
+                if (FTPsrcUploadresult && FTPdstUploadresult) {
+                    logger.info("非Mp4音乐源文件和转码文件上传到FTP完毕");
+                    insertRemotePath = remoteFilePath;
+                    insertShowPath = remoteFilePath + "_mp";
+                } else
+                    logger.error("非Mp4音乐源文件或目标文件上传失败");
+            }
+
+
+        } else if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4")) {
+            //mp3 mp4
+            if (cloudDiskConfig.getType().equals("OSS")) {
+                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
+
+                if (OSSfileUploadRes.getStatus().equals("done")) {
+                    logger.info("MP3或者mp4文件上传到OSS完毕");
+                    insertRemotePath = OSSfileUploadRes.getUrl();
+                    insertShowPath = OSSfileUploadRes.getUrl();
+                } else {
+                    logger.error("MP3或者mp4文件上传到OSS失败");
+                }
             } else {
-                transferSuccess = false;
-                logger.info("转码失败");
+                boolean FTPfileUploadRes = FtpUtil.uploadFile("/" + remoteFilePath, originalFile.getInputStream());
+
+                if (FTPfileUploadRes) {
+                    logger.info("MP3或者mp4文件上传到FTP完毕");
+                    insertRemotePath = remoteFilePath;
+                    insertShowPath = remoteFilePath;
+                } else
+                    logger.error("MP3或者mp4文件上传到FTP失败");
             }
+        } else if ((insertType == 2)) {
+            //图片
 
-            dstFile.delete();
-        }
+            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/imgs");
 
-
-        //图片
-        if((insertType == 2)){
-            String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
-            final File tmpFolder = new File(rootPath + "data/img");
-            if (!tmpFolder.exists())
-                tmpFolder.mkdirs();
-            File tmpFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString().replaceAll("-", "")+originalFile.getOriginalFilename());
-            originalFile.transferTo(tmpFile);
-            final PicUploadResult ossRes = uploadInstance.upload("cloudDisk/imgs",tmpFile);
-            //提交到FTP服务器
-            boolean ftpRes = FtpUtil.uploadFile("/" + path, name, new FileInputStream(tmpFile));
-            if(ossRes.getStatus().equals("done")&&ftpRes)
-            {
-                logger.info("图片上传到OSS和FTP成功");
-                MyFile fileItem = MyFile.builder()
-                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(ossRes.getUrl()).build();
-                //向数据库文件表写入数据
-                myFileService.addFileByFileStoreId(fileItem);
-                //更新仓库表的当前大小
-                fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
-                map.put("code", 200);
-            }else{
-                logger.info("图片上传到OSS和FTP失败");
-                map.put("code", 504);
-            }
-            if(tmpFile.exists()){
-                tmpFile.delete();
-            }
-            return map;
-        }
-
-        //其他文件照旧
-
-
-        if (srcFile != null) {
-            uploadStream = new FileInputStream(srcFile);
-            srcFile.delete();
-        }
-        //提交到FTP服务器
-        boolean b = FtpUtil.uploadFile("/" + path, name, uploadStream);
-        if (b) {
-            //上传成功
-            logger.info("文件上传成功!" + name);
-            MyFile fileItem = null;
-            if (((((insertType == 4) && (size < 10 * 1024 * 1024)) || ((insertType == 3) && (size < 10 * 1024 * 1024)))) && (transferSuccess)) {
-                String insertShowPath = null;
-                if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4"))
-                    insertShowPath = path;
-                else
-                    insertShowPath = path + "_mp";
-                fileItem = MyFile.builder()
-                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(insertShowPath).build();
+            if (OSSimgUploadRes.getStatus().equals("done")) {
+                logger.info("图片文件上传到OSS完毕");
+                insertRemotePath = OSSimgUploadRes.getUrl();
+                insertShowPath = OSSimgUploadRes.getUrl();
             } else {
-                fileItem = MyFile.builder()
-                        .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(path)
-                        .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
-                                size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).build();
+                logger.error("图片文件上传到OSS失败");
             }
 
-            //向数据库文件表写入数据
-            myFileService.addFileByFileStoreId(fileItem);
-            //更新仓库表的当前大小
-            fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
-
-            //如果是markdown，则再传一份到library表中
-            if (fileItem.getPostfix().equals("md"))
-                iResolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
-            map.put("code", 200);
 
         } else {
-            logger.error("文件上传失败!" + name);
-            map.put("code", 504);
+            //提交到FTP服务器
+            boolean FTPfilesUploadResult = FtpUtil.uploadFile("/" + remoteFilePath, uploadStream);
+            if (FTPfilesUploadResult) {
+                logger.info("普通文件或者mp3 mp4上传到FTP完毕");
+                insertRemotePath = remoteFilePath;
+                insertShowPath = remoteFilePath;
+            } else
+                logger.error("普通文件或者mp3 mp4上传到FTP失败");
         }
+
+
+        if ((insertRemotePath == null) || (insertShowPath == null)) {
+            logger.error("当前文件上传失败...");
+            map.put("code", 504);
+            return map;
+        }
+        MyFile fileItem = MyFile.builder()
+                .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(insertRemotePath)
+                .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
+                        size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(insertShowPath).build();
+
+
+        //向数据库文件表写入数据
+        myFileService.addFileByFileStoreId(fileItem);
+        //更新仓库表的当前大小
+        fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
+
+        //如果是markdown，则再传一份到library表中
+        if (fileItem.getPostfix().equals("md"))
+            iResolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
+
+        if (dstFile != null) {
+            if (dstFile.exists())
+                dstFile.delete();
+        }
+
+        if (srcFile != null) {
+            if (srcFile.exists())
+                srcFile.delete();
+        }
+
+        map.put("code", 200);
         return map;
+
+
     }
+
 
     /**
      * @return void
@@ -254,30 +316,60 @@ public class FileStoreController extends BaseController {
      **/
     @GetMapping("/downloadFile")
     public void downloadFile(@RequestParam Integer fId) {
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(response.getOutputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("获取reponse的输出流失败");
+            return;
+        }
         //获取文件信息
         MyFile myFile = myFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
+        response.setCharacterEncoding("utf-8");
+        // 设置返回类型
+        response.setContentType("multipart/form-data");
+        // 文件名转码一下，不然会出现中文乱码
         try {
-            //去FTP上拉取
-            OutputStream os = new BufferedOutputStream(response.getOutputStream());
-            logger.info("开始下载");
-            response.setCharacterEncoding("utf-8");
-            // 设置返回类型
-            response.setContentType("multipart/form-data");
-            // 文件名转码一下，不然会出现中文乱码
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, fileName, os);
-            logger.info("下载完成");
-            if (flag) {
-                myFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
-                os.flush();
-                os.close();
-                logger.info("文件下载成功!" + myFile);
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.error("文件名编码失败");
+            return;
+        }
+//        规定是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
+        if ((cloudDiskConfig.getType().equals("OSS"))||myFile.getType()==2) {
+            try {
+                logger.info("开始下载");
+                ossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
+                logger.info("文件从OSS下载成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("文件从OSS下载失败");
+                return;
             }
+        } else {
+            //去FTP上拉取
+            logger.info("开始下载");
+            boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + remotePath, os);
+            if (FTPdownLoadRes)
+                logger.info("文件从FTP下载成功");
+            else {
+                logger.info("文件从FTP下载失败!" + myFile);
+                return;
+            }
+        }
+
+        myFileService.updateFile(
+                MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+        try {
+            os.flush();
+            os.close();
         } catch (Exception e) {
             e.printStackTrace();
+            logger.error("reponse输出流关闭错误");
         }
     }
 
@@ -293,33 +385,42 @@ public class FileStoreController extends BaseController {
         //获得文件信息
         MyFile myFile = myFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
-        String ShowPath = myFile.getShowPath();
+        String showPath = myFile.getShowPath();
         String fileName = myFile.getMyFileName();
-        //从FTP文件服务器上删除文件
-        boolean b = FtpUtil.deleteFile("/" + remotePath, fileName);
-        if (b) {
-            logger.info("删除文件成功!" + myFile);
 
-            if (!(myFile.getShowPath() == null || myFile.getShowPath().equals(""))) {
-                boolean isSuccess = true;
-                if (!(myFile.getPostfix().equals("mp3") || (myFile.getPostfix().equals("mp4"))))
-                    isSuccess = FtpUtil.deleteFile("/" + ShowPath, fileName);
-                if (isSuccess)
-                    logger.info("转存文件的播放文件删除成功");
-                else
-                    logger.info("转存文件的播放文件删除失败");
+        if (cloudDiskConfig.getType().equals("OSS")||(myFile.getType()==2)) {
+            logger.info("假装remote文件从OSS删除成功");
+        } else {
+            //从FTP文件服务器上删除文件
+            boolean FTPdeleteRes = FtpUtil.deleteFile("/" + remotePath);
+            if (FTPdeleteRes)
+                logger.info("remote文件从FTP删除成功");
+            else {
+                logger.info("remote文件从FTP删除失败!" + myFile);
+                return null;
             }
 
-            if (StringUtils.substringAfterLast(myFile.getMyFileName(), ".").equals("md")) {
-
-                iLibraryService.deleteByBookId(fId);
-                iEbookContentService.deleteByBookId(fId);
+            if (!remotePath.equals(showPath)) {
+                //从FTP文件服务器上删除文件
+                FTPdeleteRes = FtpUtil.deleteFile("/" + showPath);
+                if (FTPdeleteRes)
+                    logger.info("show文件从FTP删除成功");
+                else {
+                    logger.info("show文件从FTP删除失败!" + myFile);
+                    return null;
+                }
             }
-            //删除成功,返回空间
-            fileStoreService.subSize(myFile.getFileStoreId(), Integer.valueOf(myFile.getSize()));
-            //删除文件表对应的数据
-            myFileService.deleteByFileId(fId);
         }
+        if (StringUtils.substringAfterLast(myFile.getMyFileName(), ".").equals("md")) {
+
+            iLibraryService.deleteByBookId(fId);
+            iEbookContentService.deleteByBookId(fId);
+        }
+
+        //删除成功,返回空间
+        fileStoreService.subSize(myFile.getFileStoreId(), Integer.valueOf(myFile.getSize()));
+        //删除文件表对应的数据
+        myFileService.deleteByFileId(fId);
 
         return "redirect:/files?fId=" + folder;
     }
@@ -353,17 +454,40 @@ public class FileStoreController extends BaseController {
         List<MyFile> files = myFileService.getFilesByParentFolderId(folder.getFileFolderId());
         if (files.size() != 0) {
             for (int i = 0; i < files.size(); i++) {
-                Integer fileId = files.get(i).getMyFileId();
-                boolean b = FtpUtil.deleteFile("/" + files.get(i).getMyFilePath(), files.get(i).getMyFileName());
-                if (b) {
-                    if (StringUtils.substringAfterLast(files.get(i).getMyFileName(), ".").equals("md")) {
-
-                        iLibraryService.deleteByBookId(fileId);
-                        iEbookContentService.deleteByBookId(fileId);
+                MyFile thisFile = files.get(i);
+                if (cloudDiskConfig.getType().equals("OSS")||(thisFile.getType()==2)) {
+                    logger.info("假装remote文件从OSS删除成功");
+                } else {
+                    //从FTP文件服务器上删除文件
+                    boolean FTPdeleteRes = FtpUtil.deleteFile("/" + thisFile.getMyFilePath());
+                    if (FTPdeleteRes)
+                        logger.info("remote文件从FTP删除成功");
+                    else {
+                        logger.info("remote文件从FTP删除失败!" + thisFile);
+                        return;
                     }
-                    myFileService.deleteByFileId(fileId);
-                    fileStoreService.subSize(folder.getFileStoreId(), Integer.valueOf(files.get(i).getSize()));
+
+                    if (!thisFile.getMyFilePath().equals(thisFile.getShowPath())) {
+                        //从FTP文件服务器上删除文件
+                        FTPdeleteRes = FtpUtil.deleteFile("/" + thisFile.getShowPath());
+                        if (FTPdeleteRes)
+                            logger.info("show文件从FTP删除成功");
+                        else {
+                            logger.info("show文件从FTP删除失败!" + thisFile);
+                            return;
+                        }
+                    }
                 }
+                if (StringUtils.substringAfterLast(thisFile.getMyFileName(), ".").equals("md")) {
+
+                    iLibraryService.deleteByBookId(thisFile.getMyFileId());
+                    iEbookContentService.deleteByBookId(thisFile.getMyFileId());
+                }
+
+                //删除成功,返回空间
+                fileStoreService.subSize(thisFile.getFileStoreId(), Integer.valueOf(thisFile.getSize()));
+                //删除文件表对应的数据
+                myFileService.deleteByFileId(thisFile.getMyFileId());
             }
         }
         if (folders.size() != 0) {
@@ -443,26 +567,12 @@ public class FileStoreController extends BaseController {
      * @Param [file, map]
      **/
     @PostMapping("/updateFileName")
-    public String updateFileName(MyFile file, Map<String, Object> map) {
+    public String updateFileName(MyFile file) {
         MyFile myFile = myFileService.getFileByFileId(file.getMyFileId());
         if (myFile != null) {
             String oldName = myFile.getMyFileName();
             String newName = file.getMyFileName();
             if (!oldName.equals(newName)) {
-                boolean b = FtpUtil.reNameFile(myFile.getMyFilePath() + "/" + oldName, myFile.getMyFilePath() + "/" + newName);
-                if (b) {
-
-                    if (!(myFile.getShowPath().equals("") || myFile.getShowPath() == null)) {
-                        boolean isSuccess=true;
-                        if (!(myFile.getPostfix().equals("mp3") || (myFile.getPostfix().equals("mp4"))))
-                            isSuccess = FtpUtil.reNameFile(myFile.getShowPath() + "/" + oldName, myFile.getShowPath() + "/" + newName);
-                        if (isSuccess)
-                            logger.info("转存文件的播放文件更名成功");
-                        else
-                            logger.info("转存文件的播放文件更名失败");
-                    }
-
-
                     Integer integer = myFileService.updateFile(
                             MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
                     if (integer == 1) {
@@ -475,9 +585,6 @@ public class FileStoreController extends BaseController {
                     }
 
                 }
-            }
-
-
         }
         return "redirect:/files?fId=" + myFile.getParentFolderId();
     }
@@ -511,7 +618,7 @@ public class FileStoreController extends BaseController {
                         QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
                         os.close();
                     }
-                    PicUploadResult upload = uploadInstance.upload("cloudDisk/QrCode",f);
+                    UploadResult upload = ossService.upload(f, "cloudDisk/QrCode");
 
                     map.put("imgPath", upload.getUrl());
                     map.put("url", url);
@@ -534,7 +641,7 @@ public class FileStoreController extends BaseController {
     public int getType(String type) {
 
 
-        if ("html".equals(type) || "css".equals(type) || "js".equals(type)|| "c".equals(type)|| "md".equals(type)
+        if ("html".equals(type) || "css".equals(type) || "js".equals(type) || "c".equals(type) || "md".equals(type)
                 || "java".equals(type) || "php".equals(type) || "py".equals(type) || "cpp".equals(type)) {
             return 1;
         } else if ("bmp".equals(type) || "gif".equals(type) || "jpg".equals(type)
@@ -543,7 +650,7 @@ public class FileStoreController extends BaseController {
             return 2;
         } else if ("avi".equals(type) || "mov".equals(type) || "qt".equals(type)
                 || "asf".equals(type) || "rm".equals(type) || "navi".equals(type) || "wav".equals(type)
-                || "mp4".equals(type) || "flv".equals(type)  ) {
+                || "mp4".equals(type) || "flv".equals(type)) {
             return 3;
         } else if ("mp3".equals(type) || "wma".equals(type)) {
             return 4;

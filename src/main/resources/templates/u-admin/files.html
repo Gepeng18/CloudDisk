@@ -211,7 +211,7 @@
                                             <tr th:each="f:${files}" class="files-items files">
                                                 <td>
                                                     <span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
-                                                    <span id="imgShowPath" style="display: none" th:text="${f.getShowPath()}"></span>
+                                                    <span id="showPath" style="display: none" th:text="${f.getShowPath()}"></span>
 
                                                     <img th:src="@{https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/{language}.png(language=${f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1)})}"
                                                          height="30px" alt="图标暂未录入" th:if="${f.getType()==1}">
