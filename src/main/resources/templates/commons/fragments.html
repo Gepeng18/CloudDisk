@@ -6,6 +6,9 @@
 </head>
 <body>
 
+<th:block th:fragment="constant">
+    <span id="maxShowSize">40</span>
+</th:block>
 
 <th:block th:fragment="share">
     <script>
@@ -126,9 +129,11 @@
                 {
                     text: " 在线浏览",
                     callback: function () {
+                        var maxShowSize = $('#maxShowSize').html();
                         var showPath = $(".flag td #showPath").html();
                         let id = $('#tarFile').html();
                         let name = $('.flag td a').html();
+
                         var supLang = ["md", "java", "css", "cpp", "py", "php", "html"];
                         var supImg = ["png", "jpg", "jpeg"];
                         var supVideo = ["mp4", "wmv", "flv"];
@@ -153,10 +158,11 @@
                             let size1 = $('.flag #size1').html();   //mb
                             let size2 = $('.flag #size2').html();   //kb
 
+
                             if (size2 == null) {
-                                if (size1.toString().split("MB")[0] > 10) {
+                                if (size1.toString().split("MB")[0] > maxShowSize) {
                                     console.log(size1.toString().split("MB")[0]);
-                                    alert("超过10M，本网盘只支持10M以下内容在线播放");
+                                    alert("超过"+maxShowSize+"M，本网盘只支持"+maxShowSize+"M以下内容在线播放");
                                     return;
                                 }
                             }
@@ -194,9 +200,9 @@
                             let size2 = $('.flag #size2').html();   //kb
 
                             if (size2 == null) {
-                                if (size1.toString().split("MB")[0] > 10) {
+                                if (size1.toString().split("MB")[0] > maxShowSize) {
                                     console.log(size1.toString().split("MB")[0]);
-                                    alert("超过10M，本网盘只支持10M以下内容在线播放");
+                                    alert("超过"+maxShowSize+"M，本网盘只支持"+maxShowSize+"M以下内容在线播放");
                                     return;
                                 }
                             }
@@ -487,6 +493,7 @@
 
                 let name = $('.flag td a').html();
                 var supImg = ["png","jpg","jpeg"];
+
                 if (supImg.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
                     //定义X初始坐标量
                     var x = 10;
@@ -515,7 +522,6 @@
                         });
                     });
                 }
-
             }, function () {
             });
         });

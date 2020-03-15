@@ -154,7 +154,25 @@ public class OSSService {
     }
 
 
+    public boolean delete(String srcPath){
+        String filePath = StringUtils.substring(srcPath,aliyunConfig.getUrlPrefix().length());
+        String bucketName = this.aliyunConfig.getBucketName();
+        if(bucketName==null||filePath==null){
+            logger.error("");
+            return false;
+        }
+        try {
+            GenericRequest request = new DeleteObjectsRequest(bucketName).withKey(filePath);
+            ossClient.deleteObject(request);
+            logger.info("oss中文件删除完毕");
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("oss中文件删除失败");
+            return false;
+        }
+        return true;
 
+    }
 
 //    public static void main(String[] args) throws FileNotFoundException {
 //        String a = "cloudDisk/imgs/img/14df6b3f040a47abb957e650cde4d028tibet-9.jpg";

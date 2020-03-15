@@ -174,7 +174,6 @@ public class FileStoreController extends BaseController {
             if (!tmpFolder.exists())
                 tmpFolder.mkdirs();
 
-
             srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
             FileOutputStream fos = new FileOutputStream(srcFile);
             byte[] buf = new byte[1024];
@@ -225,7 +224,7 @@ public class FileStoreController extends BaseController {
         } else if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4")) {
             //mp3 mp4
             if (cloudDiskConfig.getType().equals("OSS")) {
-                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
+                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), UUID.randomUUID().toString() + "." + insertPostfix, "cloudDisk/audio");
 
                 if (OSSfileUploadRes.getStatus().equals("done")) {
                     logger.info("MP3或者mp4文件上传到OSS完毕");
@@ -247,7 +246,7 @@ public class FileStoreController extends BaseController {
         } else if ((insertType == 2)) {
             //图片
 
-            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/imgs");
+            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), UUID.randomUUID().toString() + "." + insertPostfix, "cloudDisk/imgs");
 
             if (OSSimgUploadRes.getStatus().equals("done")) {
                 logger.info("图片文件上传到OSS完毕");
@@ -650,7 +649,7 @@ public class FileStoreController extends BaseController {
                 || "asf".equals(type) || "rm".equals(type) || "navi".equals(type) || "wav".equals(type)
                 || "mp4".equals(type) || "flv".equals(type)) {
             return 3;
-        } else if ("mp3".equals(type) || "wma".equals(type)) {
+        } else if ("mp3".equals(type) || "wma".equals(type) || "flac".equals(type)) {
             return 4;
         } else {
             return 5;
