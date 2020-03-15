@@ -9,7 +9,7 @@ public class test {
         final File file = new File("G:\\FFOutput\\7.1 Spring Security.wmv");
         final File file2 = new File("G:\\FFOutput\\7.1 Spring Security.mp4");
 
-
+        System.out.println("1");
         VideoTransfer.videoToMp4(file,file2);
     }
 }
