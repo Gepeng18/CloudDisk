@@ -16,9 +16,13 @@ import site.pyyf.cloudDisk.entity.UploadResult;
 import site.pyyf.cloudDisk.service.IResolveHeaderService;
 import site.pyyf.cloudDisk.utils.CommunityUtil;
 import site.pyyf.cloudDisk.utils.FtpUtil;
+import site.pyyf.cloudDisk.utils.QRCodeUtil;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -35,6 +39,50 @@ public class ShareController extends BaseController {
     @Autowired
     protected IResolveHeaderService iResolveHeaderService;
 
+
+    /**
+     * @return java.util.Map<java.lang.String, java.lang.Object>
+     * @Description 获得二维码
+     * @Author xw
+     * @Date 15:20 2020/2/12
+     * @Param [id, url]
+     **/
+    @GetMapping("getQrCode")
+    @ResponseBody
+    public Map<String, Object> getQrCode(@RequestParam Integer id, @RequestParam String url) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("imgPath", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2654852821,3851565636&fm=26&gp=0.jpg");
+        if (id != null) {
+            MyFile file = myFileService.getFileByFileId(id);
+            if (file != null) {
+                try {
+                    String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "") + "user_img";
+                    url = url + "/file/linearDownload?t=" + UUID.randomUUID().toString().substring(0, 10) + "&f=" + file.getMyFileId() + "&p=" + file.getUploadTime().getTime() + "" + file.getSize();
+                    File targetFile = new File(rootPath, "");
+                    if (!targetFile.exists()) {
+                        targetFile.mkdirs();
+                    }
+                    File f = new File(rootPath, id + ".jpg");
+                    if (!f.exists()) {
+                        //文件不存在,开始生成二维码并保存文件
+                        OutputStream os = new FileOutputStream(f);
+                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
+                        os.close();
+                    }
+                    UploadResult upload = ossService.upload(f, "cloudDisk/QrCode");
+
+                    map.put("imgPath", upload.getUrl());
+                    map.put("url", url);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return map;
+    }
+
+
+
     /**
      * @return void
      * @Description 分享文件
@@ -42,7 +90,7 @@ public class ShareController extends BaseController {
      * @Date 14:23 2020/2/12
      * @Param [fId]
      **/
-    @GetMapping("/file/share")
+    @GetMapping("/file/linearDownload")
     public void shareFile(Integer f, String p, String t) {
         //获取文件信息
         MyFile myFile = myFileService.getFileByFileId(f);
@@ -81,8 +129,6 @@ public class ShareController extends BaseController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
 
@@ -96,6 +142,10 @@ public class ShareController extends BaseController {
         return CommunityUtil.getJSONString(200, msg);
 
     }
+
+
+
+
 
     @ResponseBody
     @RequestMapping(value = "/share")

@@ -174,6 +174,7 @@ public class FileStoreController extends BaseController {
             if (!tmpFolder.exists())
                 tmpFolder.mkdirs();
 
+
             srcFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
             FileOutputStream fos = new FileOutputStream(srcFile);
             byte[] buf = new byte[1024];
@@ -224,7 +225,7 @@ public class FileStoreController extends BaseController {
         } else if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4")) {
             //mp3 mp4
             if (cloudDiskConfig.getType().equals("OSS")) {
-                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), UUID.randomUUID().toString() + "." + insertPostfix, "cloudDisk/audio");
+                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
 
                 if (OSSfileUploadRes.getStatus().equals("done")) {
                     logger.info("MP3或者mp4文件上传到OSS完毕");
@@ -246,7 +247,7 @@ public class FileStoreController extends BaseController {
         } else if ((insertType == 2)) {
             //图片
 
-            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), UUID.randomUUID().toString() + "." + insertPostfix, "cloudDisk/imgs");
+            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/imgs");
 
             if (OSSimgUploadRes.getStatus().equals("done")) {
                 logger.info("图片文件上传到OSS完毕");
@@ -386,6 +387,7 @@ public class FileStoreController extends BaseController {
         String showPath = myFile.getShowPath();
 
         if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
+
             boolean OSSdeleteRes = ossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
             if (OSSdeleteRes)
                 logger.info("remote文件从OSS删除成功");
@@ -401,6 +403,7 @@ public class FileStoreController extends BaseController {
                     logger.info("show文件从OSS删除失败!" + myFile);
                 }
             }
+
         } else {
             //从FTP文件服务器上删除文件
             boolean FTPdeleteRes = FtpUtil.deleteFile("/" + remotePath);
@@ -485,6 +488,7 @@ public class FileStoreController extends BaseController {
                             logger.info("show文件从OSS删除失败!" + thisFile);
                         }
                     }
+
                 } else {
                     //从FTP文件服务器上删除文件
                     boolean FTPdeleteRes = FtpUtil.deleteFile("/" + thisFile.getMyFilePath());
@@ -617,46 +621,7 @@ public class FileStoreController extends BaseController {
         return "redirect:/files?fId=" + myFile.getParentFolderId();
     }
 
-    /**
-     * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Description 获得二维码
-     * @Author xw
-     * @Date 15:20 2020/2/12
-     * @Param [id, url]
-     **/
-    @GetMapping("getQrCode")
-    @ResponseBody
-    public Map<String, Object> getQrCode(@RequestParam Integer id, @RequestParam String url) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("imgPath", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2654852821,3851565636&fm=26&gp=0.jpg");
-        if (id != null) {
-            MyFile file = myFileService.getFileByFileId(id);
-            if (file != null) {
-                try {
-                    String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "") + "user_img";
-                    url = url + "/file/share?t=" + UUID.randomUUID().toString().substring(0, 10) + "&f=" + file.getMyFileId() + "&p=" + file.getUploadTime().getTime() + "" + file.getSize();
-                    File targetFile = new File(rootPath, "");
-                    if (!targetFile.exists()) {
-                        targetFile.mkdirs();
-                    }
-                    File f = new File(rootPath, id + ".jpg");
-                    if (!f.exists()) {
-                        //文件不存在,开始生成二维码并保存文件
-                        OutputStream os = new FileOutputStream(f);
-                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
-                        os.close();
-                    }
-                    UploadResult upload = ossService.upload(f, "cloudDisk/QrCode");
 
-                    map.put("imgPath", upload.getUrl());
-                    map.put("url", url);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return map;
-    }
 
 
     /**
