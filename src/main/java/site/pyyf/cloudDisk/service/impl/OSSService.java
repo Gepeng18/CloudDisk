@@ -1,6 +1,9 @@
 package site.pyyf.cloudDisk.service.impl;
 
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.DeleteObjectsRequest;
+import com.aliyun.oss.model.GenericRequest;
 import com.aliyun.oss.model.OSSObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 @Configuration
 @Component
-//@PropertySource(value = {"classpath:Account.yml"})
 @ConfigurationProperties(prefix = "aliyun")
 @Data
 public class AliyunConfig {
