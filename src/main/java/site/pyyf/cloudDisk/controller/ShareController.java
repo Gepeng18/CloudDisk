@@ -82,7 +82,6 @@ public class ShareController extends BaseController {
     }
 
 
-
     /**
      * @return void
      * @Description 分享文件
@@ -142,9 +141,6 @@ public class ShareController extends BaseController {
         return CommunityUtil.getJSONString(200, msg);
 
     }
-
-
-
 
 
     @ResponseBody
@@ -224,7 +220,7 @@ public class ShareController extends BaseController {
 
         String insertRemotePath = null;
         String insertShowPath = null;
-        if (cloudDiskConfig.getType().equals("OSS")||shareFile.getType()==2) {
+        if (cloudDiskConfig.getType().equals("OSS") || shareFile.getType() == 2) {
             //提交到OSS服务器
             UploadResult OSStransferRes = iossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
                     StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
@@ -239,7 +235,7 @@ public class ShareController extends BaseController {
 
 
             if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
-                //提交到FTP服务器
+
                 OSStransferRes = iossService.transfer(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1),
                         StringUtils.substringBeforeLast(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1), "/"));
                 if (OSStransferRes.getStatus().equals("done")) {
@@ -256,7 +252,7 @@ public class ShareController extends BaseController {
         } else {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dateStr = format.format(new Date());
-            String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId+"/"+UUID.randomUUID().toString()+"."+shareFile.getPostfix();
+            String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId + "/" + UUID.randomUUID().toString() + "." + shareFile.getPostfix();
 
             try {
                 //提交到FTP服务器
