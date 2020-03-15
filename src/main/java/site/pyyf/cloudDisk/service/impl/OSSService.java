@@ -136,7 +136,7 @@ public class OSSService {
 
     }
 
-    public UploadResult transfer(String srcPath,String dstSuffix) {
+    public UploadResult transfer(String srcPath, String dstSuffix) {
         if (!new File("tmp").exists())
             new File("tmp").mkdirs();
         File tmpFile = new File("tmp/" + UUID.randomUUID().toString() + "." + StringUtils.substringAfterLast(srcPath, "."));
@@ -146,7 +146,7 @@ public class OSSService {
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("OSS转存过程中下载失败");
-            return new UploadResult("","error");
+            return new UploadResult("", "error");
         }
         return upload(tmpFile, dstSuffix);
 
@@ -154,25 +154,25 @@ public class OSSService {
     }
 
 
-    public boolean delete(String srcPath){
-        String filePath = StringUtils.substring(srcPath,aliyunConfig.getUrlPrefix().length());
-        String bucketName = this.aliyunConfig.getBucketName();
-        if(bucketName==null||filePath==null){
-            logger.error("");
+    public boolean delete(String srcPath) {
+        String bucketName = aliyunConfig.getBucketName();
+        String fileName = StringUtils.substringAfterLast(srcPath, "/");
+
+        if (bucketName == null || fileName == null) {
+            logger.error("OSS所删除的文件不存在！");
             return false;
         }
         try {
-            GenericRequest request = new DeleteObjectsRequest(bucketName).withKey(filePath);
+            GenericRequest request = new DeleteObjectsRequest(bucketName).withKey(srcPath); //srcPath = "cloudDisk/Audio/test.html"
             ossClient.deleteObject(request);
-            logger.info("oss中文件删除完毕");
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("oss中文件删除失败");
+        } catch (Exception oe) {
+            oe.printStackTrace();
             return false;
         }
         return true;
-
     }
+
+}
 
 //    public static void main(String[] args) throws FileNotFoundException {
 //        String a = "cloudDisk/imgs/img/14df6b3f040a47abb957e650cde4d028tibet-9.jpg";
@@ -183,6 +183,6 @@ public class OSSService {
 //        ossService.download(a,outputStream,ossService.aliyunConfig.getBucketName());
 //    }
 
-}
+
 
 

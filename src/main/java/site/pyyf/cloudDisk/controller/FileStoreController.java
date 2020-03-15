@@ -386,7 +386,21 @@ public class FileStoreController extends BaseController {
         String showPath = myFile.getShowPath();
 
         if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
-            logger.info("假装remote文件从OSS删除成功");
+            boolean OSSdeleteRes = ossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
+            if (OSSdeleteRes)
+                logger.info("remote文件从OSS删除成功");
+            else {
+                logger.info("remote文件从OSS删除失败!" + myFile);
+            }
+            if (!remotePath.equals(showPath)) {
+                //从OSS文件服务器上删除文件
+                OSSdeleteRes = ossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
+                if (OSSdeleteRes)
+                    logger.info("show文件从OSS删除成功");
+                else {
+                    logger.info("show文件从OSS删除失败!" + myFile);
+                }
+            }
         } else {
             //从FTP文件服务器上删除文件
             boolean FTPdeleteRes = FtpUtil.deleteFile("/" + remotePath);
@@ -453,7 +467,24 @@ public class FileStoreController extends BaseController {
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
                 if (cloudDiskConfig.getType().equals("OSS") || (thisFile.getType() == 2)) {
-                    logger.info("假装remote文件从OSS删除成功");
+                    String showPath = thisFile.getShowPath();
+                    String remotePath = thisFile.getMyFilePath();
+                    boolean OSSdeleteRes = ossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
+                    if (OSSdeleteRes)
+                        logger.info("remote文件从OSS删除成功");
+                    else {
+                        logger.info("remote文件从OSS删除失败!" + thisFile);
+                    }
+
+                    if (!remotePath.equals(showPath)) {
+                        //从OSS文件服务器上删除文件
+                        OSSdeleteRes = ossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
+                        if (OSSdeleteRes)
+                            logger.info("show文件从OSS删除成功");
+                        else {
+                            logger.info("show文件从OSS删除失败!" + thisFile);
+                        }
+                    }
                 } else {
                     //从FTP文件服务器上删除文件
                     boolean FTPdeleteRes = FtpUtil.deleteFile("/" + thisFile.getMyFilePath());
