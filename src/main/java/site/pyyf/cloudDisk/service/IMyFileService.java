@@ -14,7 +14,7 @@ import java.util.List;
  * @date 2020/1/26 22:15
  * @Version: 1.0
  **/
-public interface MyFileService{
+public interface IMyFileService {
 
     /**
      * @Description 根据文件的id删除文件

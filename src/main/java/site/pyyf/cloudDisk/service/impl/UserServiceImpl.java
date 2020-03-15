@@ -1,7 +1,7 @@
 package site.pyyf.cloudDisk.service.impl;
 
 import site.pyyf.cloudDisk.entity.User;
-import site.pyyf.cloudDisk.service.UserService;
+import site.pyyf.cloudDisk.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
  * @Version 1.0
  **/
  @Service
-public class UserServiceImpl extends BaseService implements UserService {
+public class UserServiceImpl extends BaseService implements IUserService {
 
     /**
      * @Description 添加User

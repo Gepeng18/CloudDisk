@@ -1,7 +1,6 @@
 package site.pyyf.cloudDisk.service.impl;
 
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.DeleteObjectsRequest;
 import com.aliyun.oss.model.GenericRequest;
 import com.aliyun.oss.model.OSSObject;
@@ -12,14 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.entity.UploadResult;
+import site.pyyf.cloudDisk.service.IOSSService;
 
 import java.io.*;
 import java.util.UUID;
 
 
 @Service
-public class OSSService {
-    private static final Logger logger = LoggerFactory.getLogger(OSSService.class);
+public class OSSServiceImpl implements IOSSService {
+    private static final Logger logger = LoggerFactory.getLogger(OSSServiceImpl.class);
     @Autowired
     private OSS ossClient;
 
@@ -31,7 +31,7 @@ public class OSSService {
             "md", "java", "css", "cpp", "py", "php", "html",
             "bmp", "jpg", "jpeg", "gif", "png",
             "mp4", "wmv", "flv",
-            "mp3", "wma"};
+            "mp3", "wma","flac"};
 
     private String getFilePath(String fileName, String suffix) {
 
@@ -178,9 +178,9 @@ public class OSSService {
 //        String a = "cloudDisk/imgs/img/14df6b3f040a47abb957e650cde4d028tibet-9.jpg";
 //        OutputStream outputStream = new FileOutputStream("F:\\Projects\\Java\\Community\\community\\src\\main\\java\\com\\nowcoder\\community\\service\\1.jpg");
 //        final AliyunConfigg aliyunConfig = new AliyunConfigg();
-//        final OSSService ossService = new OSSService();
-//        ossService.aliyunConfig = aliyunConfig;
-//        ossService.download(a,outputStream,ossService.aliyunConfig.getBucketName());
+//        final OSSService iossService = new OSSService();
+//        iossService.aliyunConfig = aliyunConfig;
+//        iossService.download(a,outputStream,iossService.aliyunConfig.getBucketName());
 //    }
 
 

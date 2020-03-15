@@ -54,25 +54,25 @@ public class SystemController extends BaseController {
         if (fId == null || fId <= 0) {
             //代表当前为根目录
             fId = 0;
-            folders = fileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
-            files = myFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+            folders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
+            files = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
             nowFolder = FileFolder.builder().fileFolderId(fId).build();
             location.add(nowFolder);
         } else {
             //当前为具体目录
-            folders = fileFolderService.getFileFolderByParentFolderId(fId);
-            files = myFileService.getFilesByParentFolderId(fId);
-            nowFolder = fileFolderService.getFileFolderByFileFolderId(fId);
+            folders = iFileFolderService.getFileFolderByParentFolderId(fId);
+            files = iMyFileService.getFilesByParentFolderId(fId);
+            nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
             //遍历查询当前目录
             FileFolder temp = nowFolder;
             while (temp.getParentFolderId() != 0) {
-                temp = fileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
+                temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
                 location.add(temp);
             }
         }
         Collections.reverse(location);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("folders", folders);
         map.put("files", files);
@@ -92,9 +92,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/doc-files")
     public String toDocFilePage( Map<String, Object> map) {
-        List<MyFile> files = myFileService.getFilesByType(loginUser.getFileStoreId(),1);
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getFileStoreId(),1);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri","doc");
@@ -110,9 +110,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/image-files")
     public String toImageFilePage( Map<String, Object> map) {
-        List<MyFile> files = myFileService.getFilesByType(loginUser.getFileStoreId(),2);
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getFileStoreId(),2);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri","image");
@@ -128,9 +128,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/video-files")
     public String toVideoFilePage( Map<String, Object> map) {
-        List<MyFile> files = myFileService.getFilesByType(loginUser.getFileStoreId(),3);
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getFileStoreId(),3);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri","video");
@@ -146,9 +146,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/music-files")
     public String toMusicFilePage( Map<String, Object> map) {
-        List<MyFile> files = myFileService.getFilesByType(loginUser.getFileStoreId(),4);
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getFileStoreId(),4);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri","music");
@@ -164,9 +164,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/other-files")
     public String toOtherFilePage( Map<String, Object> map) {
-        List<MyFile> files = myFileService.getFilesByType(loginUser.getFileStoreId(),5);
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getFileStoreId(),5);
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri","other");
@@ -183,8 +183,8 @@ public class SystemController extends BaseController {
     @GetMapping("/index")
     public String index(Map<String, Object> map) {
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
-        statistics.setFileStore(fileStoreService.getFileStoreById(loginUser.getFileStoreId()));
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
+        statistics.setFileStore(iFileStoreService.getFileStoreById(loginUser.getFileStoreId()));
         map.put("statistics", statistics);
         return "u-admin/index";
     }
@@ -199,7 +199,7 @@ public class SystemController extends BaseController {
     @GetMapping("/help")
     public String helpPage(Map<String, Object> map) {
         //获得统计信息
-        FileStoreStatistics statistics = myFileService.getCountStatistics(loginUser.getFileStoreId());
+        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
         map.put("statistics", statistics);
         return "u-admin/help";
     }

@@ -2,7 +2,7 @@ package site.pyyf.cloudDisk.service;
 
 import java.util.List;
 
-public interface IfilePreviewService {
+public interface IFilePreviewService {
     public String addQuotationMarks(String language, StringBuilder oriCode);
 
     public StringBuilder addHtmlShowStyle(StringBuilder code, List<String> languages);

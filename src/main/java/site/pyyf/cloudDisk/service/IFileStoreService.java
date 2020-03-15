@@ -11,7 +11,7 @@ import site.pyyf.cloudDisk.entity.MyFile;
  * @date 2020/1/26 22:15
  * @Version: 1.0
  **/
-public interface FileStoreService {
+public interface IFileStoreService {
 
     /**
      * @Description 添加文件仓库（用户注册时调用）

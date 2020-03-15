@@ -41,18 +41,18 @@ public class LoginController extends BaseController {
         String testNickName = "测试用户";
         String testAvatar = "https://s2.ax1x.com/2020/03/08/3vsmw9.png";
         //设置用户信息
-        User user = userService.getUserByOpenId(testOpenID);
+        User user = iUserService.getUserByOpenId(testOpenID);
         if (user == null){
             user = User.builder()
                     .openId(testOpenID).userName(testNickName)
                     .imagePath(testAvatar).
                             registerTime(new Date()).build();
-            if (userService.insert(user)){
+            if (iUserService.insert(user)){
                 logger.info("测试用户注册成功");
                 FileStore store = FileStore.builder().userId(user.getUserId()).build();
-                if (fileStoreService.addFileStore(store) == 1){
+                if (iFileStoreService.addFileStore(store) == 1){
                     user.setFileStoreId(store.getFileStoreId());
-                    userService.update(user);
+                    iUserService.update(user);
                     logger.info("注册仓库成功！当前注册仓库" + store);
                 }
             } else {
@@ -61,7 +61,7 @@ public class LoginController extends BaseController {
         }else {
             user.setUserName(testNickName);
             user.setImagePath(testAvatar);
-            userService.update(user);
+            iUserService.update(user);
         }
         logger.info("测试用户登录成功");
         session.setAttribute("loginUser", user);
@@ -119,18 +119,18 @@ public class LoginController extends BaseController {
                     logger.info("用户的昵称: " + removeNonBmpUnicode(userInfoBean.getNickname()));
                     logger.info("用户的头像URI: " + userInfoBean.getAvatar().getAvatarURL100());
                     //设置用户信息
-                    User user = userService.getUserByOpenId(openID);
+                    User user = iUserService.getUserByOpenId(openID);
                     if (user == null){
                         user = User.builder()
                                 .openId(openID).userName(removeNonBmpUnicode(userInfoBean.getNickname()))
                                 .imagePath(userInfoBean.getAvatar().getAvatarURL100()).
                                 registerTime(new Date()).build();
-                        if (userService.insert(user)){
+                        if (iUserService.insert(user)){
                             logger.info("注册用户成功！当前注册用户" + user);
                             FileStore store = FileStore.builder().userId(user.getUserId()).build();
-                            if (fileStoreService.addFileStore(store) == 1){
+                            if (iFileStoreService.addFileStore(store) == 1){
                                 user.setFileStoreId(store.getFileStoreId());
-                                userService.update(user);
+                                iUserService.update(user);
                                 logger.info("注册仓库成功！当前注册仓库" + store);
                             }
                         } else {
@@ -139,7 +139,7 @@ public class LoginController extends BaseController {
                     }else {
                         user.setUserName(removeNonBmpUnicode(userInfoBean.getNickname()));
                         user.setImagePath(userInfoBean.getAvatar().getAvatarURL100());
-                        userService.update(user);
+                        iUserService.update(user);
                     }
                     logger.info("QQ用户登录成功！"+user);
                     session.setAttribute("loginUser", user);

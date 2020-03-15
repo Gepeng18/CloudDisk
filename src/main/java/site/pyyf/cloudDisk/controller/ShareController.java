@@ -53,7 +53,7 @@ public class ShareController extends BaseController {
         Map<String, Object> map = new HashMap<>();
         map.put("imgPath", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2654852821,3851565636&fm=26&gp=0.jpg");
         if (id != null) {
-            MyFile file = myFileService.getFileByFileId(id);
+            MyFile file = iMyFileService.getFileByFileId(id);
             if (file != null) {
                 try {
                     String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "") + "user_img";
@@ -69,7 +69,7 @@ public class ShareController extends BaseController {
                         QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
                         os.close();
                     }
-                    UploadResult upload = ossService.upload(f, "cloudDisk/QrCode");
+                    UploadResult upload = iossService.upload(f, "cloudDisk/QrCode");
 
                     map.put("imgPath", upload.getUrl());
                     map.put("url", url);
@@ -93,7 +93,7 @@ public class ShareController extends BaseController {
     @GetMapping("/file/linearDownload")
     public void shareFile(Integer f, String p, String t) {
         //获取文件信息
-        MyFile myFile = myFileService.getFileByFileId(f);
+        MyFile myFile = iMyFileService.getFileByFileId(f);
         String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
         if (t == null) {
             return;
@@ -120,7 +120,7 @@ public class ShareController extends BaseController {
             boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             logger.info("下载完成");
             if (flag) {
-                myFileService.updateFile(
+                iMyFileService.updateFile(
                         MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 os.flush();
                 os.close();
@@ -161,11 +161,11 @@ public class ShareController extends BaseController {
 
         if (split[1].equals("folder")) {
             //分享的是文件夹
-            FileFolder fileFolder = fileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[2]));
+            FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[2]));
             int result = transferSaveFolder(fileFolder, toFileFolderId);
             return CommunityUtil.getJSONString(result, map.get(result));
         } else if (split[1].equals("file")) {
-            MyFile shareFile = myFileService.getFileByFileId(Integer.valueOf(split[2]));
+            MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[2]));
             int result = transferSaveFile(shareFile, toFileFolderId);
             return CommunityUtil.getJSONString(result, map.get(result));
 
@@ -177,18 +177,18 @@ public class ShareController extends BaseController {
 
     //将文件夹fileFolder放到fileFolderId中
     public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
-        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
-        List<MyFile> files = myFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
+        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        List<MyFile> files = iMyFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
         //设置文件夹信息
         FileFolder thisFolder = FileFolder.builder()
                 .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).fileStoreId(store.getFileStoreId())
                 .time(new Date()).build();
-        fileFolderService.addFileFolder(thisFolder);
+        iFileFolderService.addFileFolder(thisFolder);
         for (MyFile file : files) {
             transferSaveFile(file, thisFolder.getFileFolderId());
         }
 
-        List<FileFolder> folders = fileFolderService.getFileFolderByParentFolderId(fileFolder.getFileFolderId());
+        List<FileFolder> folders = iFileFolderService.getFileFolderByParentFolderId(fileFolder.getFileFolderId());
         for (FileFolder folder : folders) {
             transferSaveFolder(folder, thisFolder.getFileFolderId());
         }
@@ -197,15 +197,15 @@ public class ShareController extends BaseController {
 
     //将shareFile放在fileFolderId中
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
-        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (toFileFolderId == 0) {
             //当前目录为根目录
-            myFiles = myFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+            myFiles = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
         } else {
             //当前目录为其他目录
-            myFiles = myFileService.getFilesByParentFolderId(toFileFolderId);
+            myFiles = iMyFileService.getFilesByParentFolderId(toFileFolderId);
         }
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
@@ -226,7 +226,7 @@ public class ShareController extends BaseController {
         String insertShowPath = null;
         if (cloudDiskConfig.getType().equals("OSS")||shareFile.getType()==2) {
             //提交到OSS服务器
-            UploadResult OSStransferRes = ossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
+            UploadResult OSStransferRes = iossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
                     StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
             if (OSStransferRes.getStatus().equals("done")) {
                 logger.info("OSS中remote文件转存完成");
@@ -240,7 +240,7 @@ public class ShareController extends BaseController {
 
             if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
                 //提交到FTP服务器
-                OSStransferRes = ossService.transfer(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1),
+                OSStransferRes = iossService.transfer(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1),
                         StringUtils.substringBeforeLast(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1), "/"));
                 if (OSStransferRes.getStatus().equals("done")) {
                     logger.info("OSS中show文件转存完成");
@@ -294,9 +294,9 @@ public class ShareController extends BaseController {
 
 
         //向数据库文件表写入数据
-        myFileService.addFileByFileStoreId(insertFile);
+        iMyFileService.addFileByFileStoreId(insertFile);
         //更新仓库表的当前大小
-        fileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
+        iFileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
         logger.info("转存文件插入数据库成功");
 
 

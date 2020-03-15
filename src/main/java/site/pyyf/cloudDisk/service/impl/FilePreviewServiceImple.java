@@ -1,12 +1,12 @@
 package site.pyyf.cloudDisk.service.impl;
 
 import org.springframework.stereotype.Service;
-import site.pyyf.cloudDisk.service.IfilePreviewService;
+import site.pyyf.cloudDisk.service.IFilePreviewService;
 
 import java.util.List;
 
 @Service
-public class FilePreviewServiceImple implements IfilePreviewService {
+public class FilePreviewServiceImple implements IFilePreviewService {
     @Override
     public String addQuotationMarks(String language, StringBuilder oriCode) {
 

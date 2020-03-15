@@ -61,17 +61,17 @@ public class FileStoreController extends BaseController {
 //        if(postfix.equals("md"))
 //            resolveHeaderService.readFile(file.getInputStream(), file.getOriginalFilename());
         Map<String, Object> map = new HashMap<>();
-        FileStore store = fileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
         Integer folderId = Integer.valueOf(request.getHeader("id"));
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (folderId == 0) {
             //当前目录为根目录
-            myFiles = myFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+            myFiles = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
         } else {
             //当前目录为其他目录
-            myFiles = myFileService.getFilesByParentFolderId(folderId);
+            myFiles = iMyFileService.getFilesByParentFolderId(folderId);
         }
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(name)) {
@@ -139,8 +139,8 @@ public class FileStoreController extends BaseController {
 
 
             if (cloudDiskConfig.getType().equals("OSS")) {
-                UploadResult OSSsrcUploadResult = ossService.upload(srcFile, "cloudDisk/audio");
-                UploadResult OSSdstUploadResult = ossService.upload(dstFile, "cloudDisk/audio");
+                UploadResult OSSsrcUploadResult = iossService.upload(srcFile, "cloudDisk/audio");
+                UploadResult OSSdstUploadResult = iossService.upload(dstFile, "cloudDisk/audio");
 
                 if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
 
@@ -195,8 +195,8 @@ public class FileStoreController extends BaseController {
 
 
             if (cloudDiskConfig.getType().equals("OSS")) {
-                UploadResult OSSsrcUploadResult = ossService.upload(srcFile, "cloudDisk/video");
-                UploadResult OSSdstUploadResult = ossService.upload(dstFile, "cloudDisk/video");
+                UploadResult OSSsrcUploadResult = iossService.upload(srcFile, "cloudDisk/video");
+                UploadResult OSSdstUploadResult = iossService.upload(dstFile, "cloudDisk/video");
 
                 if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
                     logger.info("非Mp4音乐源文件和转码文件上传到OSS完毕");
@@ -225,7 +225,7 @@ public class FileStoreController extends BaseController {
         } else if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4")) {
             //mp3 mp4
             if (cloudDiskConfig.getType().equals("OSS")) {
-                final UploadResult OSSfileUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
+                final UploadResult OSSfileUploadRes = iossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
 
                 if (OSSfileUploadRes.getStatus().equals("done")) {
                     logger.info("MP3或者mp4文件上传到OSS完毕");
@@ -247,7 +247,7 @@ public class FileStoreController extends BaseController {
         } else if ((insertType == 2)) {
             //图片
 
-            final UploadResult OSSimgUploadRes = ossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/imgs");
+            final UploadResult OSSimgUploadRes = iossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/imgs");
 
             if (OSSimgUploadRes.getStatus().equals("done")) {
                 logger.info("图片文件上传到OSS完毕");
@@ -282,9 +282,9 @@ public class FileStoreController extends BaseController {
 
 
         //向数据库文件表写入数据
-        myFileService.addFileByFileStoreId(fileItem);
+        iMyFileService.addFileByFileStoreId(fileItem);
         //更新仓库表的当前大小
-        fileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
+        iFileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
 
         //如果是markdown，则再传一份到library表中
         if (fileItem.getPostfix().equals("md"))
@@ -324,7 +324,7 @@ public class FileStoreController extends BaseController {
             return;
         }
         //获取文件信息
-        MyFile myFile = myFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
         response.setCharacterEncoding("utf-8");
@@ -342,7 +342,7 @@ public class FileStoreController extends BaseController {
         if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
             try {
                 logger.info("开始下载");
-                ossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
+                iossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
                 logger.info("文件从OSS下载成功");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -361,7 +361,7 @@ public class FileStoreController extends BaseController {
             }
         }
 
-        myFileService.updateFile(
+        iMyFileService.updateFile(
                 MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
         try {
             os.flush();
@@ -382,13 +382,13 @@ public class FileStoreController extends BaseController {
     @GetMapping("/deleteFile")
     public String deleteFile(@RequestParam Integer fId, Integer folder) {
         //获得文件信息
-        MyFile myFile = myFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.getFileByFileId(fId);
         String remotePath = myFile.getMyFilePath();
         String showPath = myFile.getShowPath();
 
         if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
 
-            boolean OSSdeleteRes = ossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
+            boolean OSSdeleteRes = iossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
             if (OSSdeleteRes)
                 logger.info("remote文件从OSS删除成功");
             else {
@@ -396,7 +396,7 @@ public class FileStoreController extends BaseController {
             }
             if (!remotePath.equals(showPath)) {
                 //从OSS文件服务器上删除文件
-                OSSdeleteRes = ossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
+                OSSdeleteRes = iossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
                 if (OSSdeleteRes)
                     logger.info("show文件从OSS删除成功");
                 else {
@@ -432,9 +432,9 @@ public class FileStoreController extends BaseController {
         }
 
         //删除成功,返回空间
-        fileStoreService.subSize(myFile.getFileStoreId(), Integer.valueOf(myFile.getSize()));
+        iFileStoreService.subSize(myFile.getFileStoreId(), Integer.valueOf(myFile.getSize()));
         //删除文件表对应的数据
-        myFileService.deleteByFileId(fId);
+        iMyFileService.deleteByFileId(fId);
 
         return "redirect:/files?fId=" + folder;
     }
@@ -448,7 +448,7 @@ public class FileStoreController extends BaseController {
      **/
     @GetMapping("/deleteFolder")
     public String deleteFolder(@RequestParam Integer fId) {
-        FileFolder folder = fileFolderService.getFileFolderByFileFolderId(fId);
+        FileFolder folder = iFileFolderService.getFileFolderByFileFolderId(fId);
         //强制删除
         deleteFolderF(folder);
         return folder.getParentFolderId() == 0 ? "redirect:/files" : "redirect:/files?fId=" + folder.getParentFolderId();
@@ -463,16 +463,16 @@ public class FileStoreController extends BaseController {
      **/
     public void deleteFolderF(FileFolder folder) {
         //获得当前文件夹下的所有子文件夹
-        List<FileFolder> folders = fileFolderService.getFileFolderByParentFolderId(folder.getFileFolderId());
+        List<FileFolder> folders = iFileFolderService.getFileFolderByParentFolderId(folder.getFileFolderId());
         //删除当前文件夹的所有的文件
-        List<MyFile> files = myFileService.getFilesByParentFolderId(folder.getFileFolderId());
+        List<MyFile> files = iMyFileService.getFilesByParentFolderId(folder.getFileFolderId());
         if (files.size() != 0) {
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
                 if (cloudDiskConfig.getType().equals("OSS") || (thisFile.getType() == 2)) {
                     String showPath = thisFile.getShowPath();
                     String remotePath = thisFile.getMyFilePath();
-                    boolean OSSdeleteRes = ossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
+                    boolean OSSdeleteRes = iossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
                     if (OSSdeleteRes)
                         logger.info("remote文件从OSS删除成功");
                     else {
@@ -481,7 +481,7 @@ public class FileStoreController extends BaseController {
 
                     if (!remotePath.equals(showPath)) {
                         //从OSS文件服务器上删除文件
-                        OSSdeleteRes = ossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
+                        OSSdeleteRes = iossService.delete(showPath.substring(aliyunConfig.getUrlPrefix().length()));
                         if (OSSdeleteRes)
                             logger.info("show文件从OSS删除成功");
                         else {
@@ -517,9 +517,9 @@ public class FileStoreController extends BaseController {
                 }
 
                 //删除成功,返回空间
-                fileStoreService.subSize(thisFile.getFileStoreId(), Integer.valueOf(thisFile.getSize()));
+                iFileStoreService.subSize(thisFile.getFileStoreId(), Integer.valueOf(thisFile.getSize()));
                 //删除文件表对应的数据
-                myFileService.deleteByFileId(thisFile.getMyFileId());
+                iMyFileService.deleteByFileId(thisFile.getMyFileId());
             }
         }
         if (folders.size() != 0) {
@@ -527,7 +527,7 @@ public class FileStoreController extends BaseController {
                 deleteFolderF(folders.get(i));
             }
         }
-        fileFolderService.deleteFileFolderById(folder.getFileFolderId());
+        iFileFolderService.deleteFileFolderById(folder.getFileFolderId());
     }
 
     /**
@@ -546,10 +546,10 @@ public class FileStoreController extends BaseController {
         List<FileFolder> fileFolders = null;
         if (folder.getParentFolderId() == 0) {
             //向用户根目录添加文件夹
-            fileFolders = fileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
+            fileFolders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
         } else {
             //向用户的其他目录添加文件夹
-            fileFolders = fileFolderService.getFileFolderByParentFolderId(folder.getParentFolderId());
+            fileFolders = iFileFolderService.getFileFolderByParentFolderId(folder.getParentFolderId());
         }
         for (int i = 0; i < fileFolders.size(); i++) {
             FileFolder fileFolder = fileFolders.get(i);
@@ -559,7 +559,7 @@ public class FileStoreController extends BaseController {
             }
         }
         //向数据库写入数据
-        Integer integer = fileFolderService.addFileFolder(folder);
+        Integer integer = iFileFolderService.addFileFolder(folder);
         logger.info("添加文件夹成功!" + folder);
         return "redirect:/files?fId=" + folder.getParentFolderId();
     }
@@ -574,10 +574,10 @@ public class FileStoreController extends BaseController {
     @PostMapping("/updateFolder")
     public String updateFolder(FileFolder folder, Map<String, Object> map) {
         //获得文件夹的数据库信息
-        FileFolder fileFolder = fileFolderService.getFileFolderByFileFolderId(folder.getFileFolderId());
+        FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(folder.getFileFolderId());
         fileFolder.setFileFolderName(folder.getFileFolderName());
         //获得当前目录下的所有文件夹,用于检查文件夹是否已经存在
-        List<FileFolder> fileFolders = fileFolderService.getFileFolderByParentFolderId(fileFolder.getParentFolderId());
+        List<FileFolder> fileFolders = iFileFolderService.getFileFolderByParentFolderId(fileFolder.getParentFolderId());
         for (int i = 0; i < fileFolders.size(); i++) {
             FileFolder folder1 = fileFolders.get(i);
             if (folder1.getFileFolderName().equals(folder.getFileFolderName()) && folder1.getFileFolderId() != folder.getFileFolderId()) {
@@ -586,7 +586,7 @@ public class FileStoreController extends BaseController {
             }
         }
         //向数据库写入数据
-        Integer integer = fileFolderService.updateFileFolderById(fileFolder);
+        Integer integer = iFileFolderService.updateFileFolderById(fileFolder);
         logger.info("重命名文件夹成功!" + folder);
         return "redirect:/files?fId=" + fileFolder.getParentFolderId();
     }
@@ -600,12 +600,12 @@ public class FileStoreController extends BaseController {
      **/
     @PostMapping("/updateFileName")
     public String updateFileName(MyFile file) {
-        MyFile myFile = myFileService.getFileByFileId(file.getMyFileId());
+        MyFile myFile = iMyFileService.getFileByFileId(file.getMyFileId());
         if (myFile != null) {
             String oldName = myFile.getMyFileName();
             String newName = file.getMyFileName();
             if (!oldName.equals(newName)) {
-                Integer integer = myFileService.updateFile(
+                Integer integer = iMyFileService.updateFile(
                         MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
                 if (integer == 1) {
                     if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {

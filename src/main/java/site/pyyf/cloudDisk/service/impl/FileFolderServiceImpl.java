@@ -2,7 +2,7 @@ package site.pyyf.cloudDisk.service.impl;
 
 import site.pyyf.cloudDisk.entity.FileFolder;
 import site.pyyf.cloudDisk.entity.MyFile;
-import site.pyyf.cloudDisk.service.FileFolderService;
+import site.pyyf.cloudDisk.service.IFileFolderService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
 **/
 
 @Service
-public class FileFolderServiceImpl extends BaseService implements FileFolderService {
+public class FileFolderServiceImpl extends BaseService implements IFileFolderService {
 
     @Override
     public Integer deleteFileFolderById(Integer fileFolderId) {

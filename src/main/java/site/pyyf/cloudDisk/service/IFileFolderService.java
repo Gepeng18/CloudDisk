@@ -13,7 +13,7 @@ import java.util.List;
  * @Param  * @param null
  * @return
  **/
-public interface FileFolderService{
+public interface IFileFolderService {
 
 
     /**

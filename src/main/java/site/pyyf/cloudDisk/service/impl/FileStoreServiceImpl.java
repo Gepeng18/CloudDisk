@@ -2,7 +2,7 @@ package site.pyyf.cloudDisk.service.impl;
 
 import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.MyFile;
-import site.pyyf.cloudDisk.service.FileStoreService;
+import site.pyyf.cloudDisk.service.IFileStoreService;
 import site.pyyf.cloudDisk.utils.FtpUtil;
 import site.pyyf.cloudDisk.utils.LogUtils;
 import org.slf4j.Logger;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @Version: 1.0
  **/
 @Service
-public class FileStoreServiceImpl extends BaseService implements FileStoreService {
+public class FileStoreServiceImpl extends BaseService implements IFileStoreService {
 
     Logger logger = LogUtils.getInstance(UserServiceImpl.class);
 
