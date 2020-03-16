@@ -80,24 +80,24 @@
 
 ##### 在线预览
 
-![](.\imgs\音乐播放1.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/音乐播放1.png)
 
 ##### 音乐播放
 
-![](.\imgs\音乐播放2.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/音乐播放2.png)
 
 ##### 代码预览
 
-![](.\imgs\代码展示.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/代码展示.png)
 
 ##### 图片预览
 
-![](.\imgs\图片预览.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/图片预览.png)
 
 ##### 图片播放
 
-![](.\imgs\图片浏览.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/图片浏览.png)
 
 ##### 视频播放
 
-![](.\imgs\视频播放.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/视频播放.png)
