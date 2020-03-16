@@ -91,6 +91,44 @@ public class SystemController extends BaseController {
             map.put("location", location);
             logger.info("网盘页面域中的数据:" + map);
             return "u-admin/files";
+        }else {
+//包含的子文件夹
+            List<FileFolder> folders = null;
+            //包含的文件
+            List<MyFile> files = null;
+            //当前文件夹信息
+            FileFolder nowFolder = null;
+            //当前文件夹的相对路径
+            List<FileFolder> location = new ArrayList<>();
+            if (fId == null || fId <= 0) {
+                //代表当前为根目录
+                fId = 0;
+                folders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
+                files = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+                nowFolder = FileFolder.builder().fileFolderId(fId).build();
+                location.add(nowFolder);
+            } else {
+                //当前为具体目录
+                folders = iFileFolderService.getFileFolderByParentFolderId(fId);
+                files = iMyFileService.getFilesByParentFolderId(fId);
+                nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
+                //遍历查询当前目录
+                FileFolder temp = nowFolder;
+                while (temp.getParentFolderId() != 0) {
+                    temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
+                    location.add(temp);
+                }
+            }
+            Collections.reverse(location);
+            //获得统计信息
+            FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
+            map.put("statistics", statistics);
+            map.put("folders", folders);
+            map.put("files", files);
+            map.put("nowFolder", nowFolder);
+            map.put("location", location);
+            logger.info("网盘页面域中的数据:" + map);
+            return "u-admin/files";
         }
 
 
