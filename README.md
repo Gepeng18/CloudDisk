@@ -74,7 +74,7 @@
 
 ##### 完整页面
 
-![](.\imgs\总界面.png)
+![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/总界面.png)
 
 
 
