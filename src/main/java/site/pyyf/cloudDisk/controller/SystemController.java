@@ -61,14 +61,14 @@ public class SystemController extends BaseController {
         files = iMyFileService.getFilesByParentFolderId(fId);
         nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
         if (fId == 0) {
-            //遍历查询当前目录
+            location.add(nowFolder);
+
+        } else { //遍历查询当前目录
             FileFolder temp = nowFolder;
             while (temp.getParentFolderId() != 0) {
                 temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
                 location.add(temp);
             }
-        } else {
-            location.add(nowFolder);
         }
 
         Collections.reverse(location);
