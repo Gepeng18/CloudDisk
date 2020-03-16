@@ -45,6 +45,8 @@ public class FileFolderServiceImpl extends BaseService implements IFileFolderSer
 
     @Override
     public FileFolder getFileFolderByFileFolderId(Integer fileFolderId) {
+        if(fileFolderId==0)
+            return FileFolder.builder().fileFolderId(0).build();
         return fileFolderMapper.getFileFolderById(fileFolderId);
     }
 
