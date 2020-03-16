@@ -19,6 +19,11 @@
     </properties>
 
     <dependencies>
+<!--        使用redis-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
 <!--       防止出现 Spring Boot Configuration Annotation Processor not found in claspath-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

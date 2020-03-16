@@ -17,6 +17,7 @@ import site.pyyf.cloudDisk.service.IResolveHeaderService;
 import site.pyyf.cloudDisk.utils.CommunityUtil;
 import site.pyyf.cloudDisk.utils.FtpUtil;
 import site.pyyf.cloudDisk.utils.QRCodeUtil;
+import site.pyyf.cloudDisk.utils.RedisKeyUtil;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,6 +27,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 @Controller
@@ -90,7 +92,7 @@ public class ShareController extends BaseController {
      * @Param [fId]
      **/
     @GetMapping("/file/linearDownload")
-    public void shareFile(Integer f, String p, String t) {
+    public void linearDownload(Integer f, String p, String t) {
         //获取文件信息
         MyFile myFile = iMyFileService.getFileByFileId(f);
         String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
@@ -137,8 +139,12 @@ public class ShareController extends BaseController {
                               @RequestParam(value = "type") String type
     ) {
         String pwd = UUID.randomUUID().toString().replaceAll("-", "");
-        String msg = pwd + "-" + type + "-" + id;
-        return CommunityUtil.getJSONString(200, msg);
+        String typeAndId = type + "-" + id;
+
+        // 将验证码存入Redis
+        String shareKey = RedisKeyUtil.getShareKey(pwd);
+        redisTemplate.opsForValue().set(shareKey, typeAndId, 7, TimeUnit.DAYS);
+        return CommunityUtil.getJSONString(200, pwd);
 
     }
 
@@ -146,29 +152,36 @@ public class ShareController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/share")
     public String share(@RequestParam(value = "fileFolderId") Integer toFileFolderId,
-                        @RequestParam(value = "typeAndfid") String typeAndfid) {
+                        @RequestParam(value = "pwd") String pwd) {
         Map<Integer, String> map = new HashMap();
         map.put(200, "转存完成！");
         map.put(501, "当前文件已存在!上传失败！");
+        map.put(502, "分享码已过期！");
         map.put(503, "上传失败!仓库已满！");
         map.put(504, "文件转存失败！");
-        map.put(500, "应该不会出现这个情况吧！");
-        String[] split = typeAndfid.split("-");
+        map.put(500, "系统错误，请联系管理员！");
 
-        if (split[1].equals("folder")) {
+        String shareKey = RedisKeyUtil.getShareKey(pwd);
+        String typeAndFid = (String) redisTemplate.opsForValue().get(shareKey);
+        if(StringUtils.isBlank(typeAndFid))
+            return CommunityUtil.getJSONString(502, map.get(502));
+
+
+        String[] split = typeAndFid.split("-");
+        if (split[0].equals("folder")) {
             //分享的是文件夹
-            FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[2]));
+            FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[1]));
             int result = transferSaveFolder(fileFolder, toFileFolderId);
             return CommunityUtil.getJSONString(result, map.get(result));
-        } else if (split[1].equals("file")) {
-            MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[2]));
+        } else if (split[0].equals("file")) {
+            MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[1]));
             int result = transferSaveFile(shareFile, toFileFolderId);
             return CommunityUtil.getJSONString(result, map.get(result));
 
         } else {
             logger.error("传来一个不知名的内容");
+            return CommunityUtil.getJSONString(500, map.get(500));
         }
-        return null;
     }
 
     //将文件夹fileFolder放到fileFolderId中
@@ -236,8 +249,8 @@ public class ShareController extends BaseController {
 
             if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
 
-                OSStransferRes = iossService.transfer(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1),
-                        StringUtils.substringBeforeLast(shareFile.getShowPath().substring(shareFile.getShowPath().indexOf(aliyunConfig.getUrlPrefix()) + 1), "/"));
+                OSStransferRes = iossService.transfer(shareFile.getShowPath().substring(aliyunConfig.getUrlPrefix().length()),
+                        StringUtils.substringBeforeLast(shareFile.getShowPath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
                 if (OSStransferRes.getStatus().equals("done")) {
                     logger.info("OSS中show文件转存完成");
                     insertShowPath = OSStransferRes.getUrl();
@@ -253,6 +266,7 @@ public class ShareController extends BaseController {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dateStr = format.format(new Date());
             String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId + "/" + UUID.randomUUID().toString() + "." + shareFile.getPostfix();
+            String showFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId + "/" + UUID.randomUUID().toString() + "." +StringUtils.substringAfterLast(shareFile.getShowPath(),".");
 
             try {
                 //提交到FTP服务器
@@ -268,9 +282,9 @@ public class ShareController extends BaseController {
 
             if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
                 try {
-                    FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + remoteFilePath + "_mp");
+                    FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + showFilePath);
                     logger.error("FTP中showfile转存成功");
-                    insertShowPath = remoteFilePath + "_mp";
+                    insertShowPath = showFilePath;
                 } catch (Exception e) {
                     e.printStackTrace();
                     logger.error("FTP中showfile转存失败");

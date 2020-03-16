@@ -1,13 +1,17 @@
 package site.pyyf.cloudDisk.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import site.pyyf.cloudDisk.entity.FileFolder;
 import site.pyyf.cloudDisk.entity.FileStoreStatistics;
 import site.pyyf.cloudDisk.entity.MyFile;
+import site.pyyf.cloudDisk.utils.CommunityUtil;
 import site.pyyf.cloudDisk.utils.LogUtils;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import site.pyyf.cloudDisk.utils.RedisKeyUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,43 +47,53 @@ public class SystemController extends BaseController {
                 map.put("error", "重命名失败！文件夹已存在");
             }
         }
-        //包含的子文件夹
-        List<FileFolder> folders = null;
-        //包含的文件
-        List<MyFile> files = null;
-        //当前文件夹信息
-        FileFolder nowFolder = null;
-        //当前文件夹的相对路径
-        List<FileFolder> location = new ArrayList<>();
-        if (fId == null || fId <= 0) {
-            //代表当前为根目录
-            fId = 0;
-            folders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
-            files = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
-            nowFolder = FileFolder.builder().fileFolderId(fId).build();
-            location.add(nowFolder);
-        } else {
-            //当前为具体目录
-            folders = iFileFolderService.getFileFolderByParentFolderId(fId);
-            files = iMyFileService.getFilesByParentFolderId(fId);
-            nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
-            //遍历查询当前目录
-            FileFolder temp = nowFolder;
-            while (temp.getParentFolderId() != 0) {
-                temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
-                location.add(temp);
+
+        String cachedFilesKey = RedisKeyUtil.getFilesInUserFolder(loginUser.getUserId(),fId);
+        final List<MyFile> cachedFiles = (List<MyFile>) redisTemplate.opsForValue().get(cachedFilesKey);
+        String cachedFolderKey = RedisKeyUtil.getFoldersInUserFolder(loginUser.getUserId(),fId);
+        final List<MyFile> cachedFolders = (List<MyFile>) redisTemplate.opsForValue().get(cachedFolderKey);
+        if(cachedFiles==null&&cachedFolders==null)
+        {
+            //包含的子文件夹
+            List<FileFolder> folders = null;
+            //包含的文件
+            List<MyFile> files = null;
+            //当前文件夹信息
+            FileFolder nowFolder = null;
+            //当前文件夹的相对路径
+            List<FileFolder> location = new ArrayList<>();
+            if (fId == null || fId <= 0) {
+                //代表当前为根目录
+                fId = 0;
+                folders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
+                files = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+                nowFolder = FileFolder.builder().fileFolderId(fId).build();
+                location.add(nowFolder);
+            } else {
+                //当前为具体目录
+                folders = iFileFolderService.getFileFolderByParentFolderId(fId);
+                files = iMyFileService.getFilesByParentFolderId(fId);
+                nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
+                //遍历查询当前目录
+                FileFolder temp = nowFolder;
+                while (temp.getParentFolderId() != 0) {
+                    temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
+                    location.add(temp);
+                }
             }
+            Collections.reverse(location);
+            //获得统计信息
+            FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
+            map.put("statistics", statistics);
+            map.put("folders", folders);
+            map.put("files", files);
+            map.put("nowFolder", nowFolder);
+            map.put("location", location);
+            logger.info("网盘页面域中的数据:" + map);
+            return "u-admin/files";
         }
-        Collections.reverse(location);
-        //获得统计信息
-        FileStoreStatistics statistics = iMyFileService.getCountStatistics(loginUser.getFileStoreId());
-        map.put("statistics", statistics);
-        map.put("folders", folders);
-        map.put("files", files);
-        map.put("nowFolder", nowFolder);
-        map.put("location", location);
-        logger.info("网盘页面域中的数据:" + map);
-        return "u-admin/files";
+
+
     }
 
 

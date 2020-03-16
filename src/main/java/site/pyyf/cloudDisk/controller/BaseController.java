@@ -1,5 +1,6 @@
 package site.pyyf.cloudDisk.controller;
 
+import org.springframework.data.redis.core.RedisTemplate;
 import site.pyyf.cloudDisk.config.CloudDiskConfig;
 import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.*;
@@ -43,6 +44,8 @@ public class BaseController {
     protected IOSSService iossService ;
     @Autowired
     protected IEbookContentService iEbookContentService;
+    @Autowired
+    protected RedisTemplate redisTemplate;
 
     protected HttpServletRequest request;
     protected HttpServletResponse response;

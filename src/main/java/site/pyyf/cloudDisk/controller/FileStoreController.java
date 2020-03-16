@@ -58,9 +58,9 @@ public class FileStoreController extends BaseController {
     @PostMapping("/uploadFile")
     @ResponseBody
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile originalFile) throws Exception {
-//        if(postfix.equals("md"))
-//            resolveHeaderService.readFile(file.getInputStream(), file.getOriginalFilename());
-        Map<String, Object> map = new HashMap<>();
+        List<String> htmlSupAudio = new ArrayList<>(Arrays.asList("mp3","flac","wav"));
+        List<String> htmlSupVideo = new ArrayList<>(Arrays.asList("mp4"));
+        Map<String, Object> resultMap = new HashMap<>();
         FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
         Integer folderId = Integer.valueOf(request.getHeader("id"));
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
@@ -76,22 +76,22 @@ public class FileStoreController extends BaseController {
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(name)) {
                 logger.error("当前文件已存在!上传失败...");
-                map.put("code", 501);
-                return map;
+                resultMap.put("code", 501);
+                return resultMap;
             }
         }
 
         if (!checkTarget(name)) {
             logger.error("上传失败!文件名不符合规范...");
-            map.put("code", 502);
-            return map;
+            resultMap.put("code", 502);
+            return resultMap;
         }
         Integer sizeInt = Math.toIntExact(originalFile.getSize() / 1024);
         //是否仓库放不下该文件
         if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
             logger.error("上传失败!仓库已满。");
-            map.put("code", 503);
-            return map;
+            resultMap.put("code", 503);
+            return resultMap;
         }
 
         long size = originalFile.getSize();
@@ -101,6 +101,7 @@ public class FileStoreController extends BaseController {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String dateStr = format.format(new Date());
         String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + folderId + "/" + UUID.randomUUID().toString() + "." + insertPostfix;
+        String showFilePath = loginUser.getUserId() + "/" + dateStr + "/" + folderId + "/" + UUID.randomUUID().toString() + "." ;
 
         //获得文件类型
         int insertType = getType(insertPostfix);
@@ -110,8 +111,8 @@ public class FileStoreController extends BaseController {
         String insertRemotePath = null;
         String insertShowPath = null;
         InputStream uploadStream = originalFile.getInputStream();
-        //音乐文件，小于MaxShowSize MB，且不是MP3则转码后存储
-        if ((insertType == 4) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!insertPostfix.equals("mp3"))) {
+        //音乐文件，小于MaxShowSize MB，且不是htmlSupAudio则转码后存储
+        if ((insertType == 4) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!htmlSupAudio.contains(insertPostfix))) {
             String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
             final File tmpFolder = new File(rootPath + "data/audio");
             if (!tmpFolder.exists())
@@ -126,16 +127,16 @@ public class FileStoreController extends BaseController {
                 fos.write(buf, 0, length);
             }
             fos.close();
-            logger.info("非Mp3音乐文件存储成功");
+            logger.info("非htmlSupAudio音乐文件存储成功");
 
 
-            //非Mp3音乐转码
-            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
+            //非htmlSupAudio音乐转码为mp3音乐
+            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + ".mp3" );
             boolean tranferSuccess = iMediaTranfer.tranferAudio(srcFile, dstFile);
             if (tranferSuccess)
-                logger.info("非Mp3音乐文件转码成功");
+                logger.info("非htmlSupAudio音乐文件转码成功");
             else
-                logger.error("非Mp3音乐转码失败");
+                logger.error("非htmlSupAudio音乐转码失败");
 
 
             if (cloudDiskConfig.getType().equals("OSS")) {
@@ -144,11 +145,11 @@ public class FileStoreController extends BaseController {
 
                 if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
 
-                    logger.info("非Mp3音乐源文件和转码文件上传到OSS完毕");
+                    logger.info("非htmlSupAudio音乐源文件和转码文件上传到OSS完毕");
                     insertRemotePath = OSSsrcUploadResult.getUrl();
                     insertShowPath = OSSdstUploadResult.getUrl();
                 } else {
-                    logger.error("非Mp3音乐源文件或目标文件上传失败");
+                    logger.error("非htmlSupAudio音乐源文件或目标文件上传到OSS失败");
                 }
             } else {
                 FileInputStream srcStream = new FileInputStream(srcFile);
@@ -156,19 +157,19 @@ public class FileStoreController extends BaseController {
                 srcStream.close();
 
                 FileInputStream dstStream = new FileInputStream(dstFile);
-                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + remoteFilePath + "_mp", dstStream);
+                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + showFilePath + "mp3", dstStream);
                 dstStream.close();
                 if (FTPsrcUploadresult && FTPdstUploadresult) {
-                    logger.info("非Mp3音乐源文件和转码文件上传到FTP完毕");
+                    logger.info("非htmlSupAudio音乐源文件和转码文件上传到FTP完毕");
                     insertRemotePath = remoteFilePath;
-                    insertShowPath = remoteFilePath + "_mp";
+                    insertShowPath = showFilePath + "mp3";
                 } else
-                    logger.error("非Mp3音乐源文件或目标文件上传失败");
+                    logger.error("非htmlSupAudio音乐源文件或目标文件上传到FTP失败");
             }
 
 
-        } else if ((insertType == 3) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!(insertPostfix.equals("mp4")))) {
-            //视频文件，小于10MB，且不是MP4则转码后存储
+        } else if ((insertType == 3) && (size < cloudDiskConfig.getMaxShowSize() * 1024 * 1024) && (!htmlSupVideo.contains(insertPostfix))) {
+            //视频文件，小于10MB，且不是htmlSupVideo则转码后存储
             String rootPath = ClassUtils.getDefaultClassLoader().getResource("").getPath();
             final File tmpFolder = new File(rootPath + "data/video");
             if (!tmpFolder.exists())
@@ -183,15 +184,15 @@ public class FileStoreController extends BaseController {
                 fos.write(buf, 0, length);
             }
             fos.close();
-            logger.info("非MP4视频文件存储成功");
+            logger.info("非htmlSupVideo视频文件存储成功");
 
             //非Mp4音乐转码
-            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + "." + insertPostfix);
+            dstFile = new File(tmpFolder.getAbsolutePath() + "/" + UUID.randomUUID().toString() + ".mp4");
             boolean tranferSuccess = iMediaTranfer.tranferVideo(srcFile, dstFile);
             if (tranferSuccess)
-                logger.info("非Mp4音乐文件转码成功");
+                logger.info("非htmlSupVideo音乐文件转码成功");
             else
-                logger.error("非Mp4音乐转码失败");
+                logger.error("非htmlSupVideo音乐转码失败");
 
 
             if (cloudDiskConfig.getType().equals("OSS")) {
@@ -199,11 +200,11 @@ public class FileStoreController extends BaseController {
                 UploadResult OSSdstUploadResult = iossService.upload(dstFile, "cloudDisk/video");
 
                 if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
-                    logger.info("非Mp4音乐源文件和转码文件上传到OSS完毕");
+                    logger.info("非htmlSupVideo音乐源文件和转码文件上传到OSS完毕");
                     insertRemotePath = OSSsrcUploadResult.getUrl();
                     insertShowPath = OSSdstUploadResult.getUrl();
                 } else {
-                    logger.error("非Mp4音乐源文件或目标文件上传失败");
+                    logger.error("非htmlSupVideo音乐源文件或目标文件上传失败");
                 }
             } else {
                 FileInputStream srcStream = new FileInputStream(srcFile);
@@ -211,38 +212,38 @@ public class FileStoreController extends BaseController {
                 srcStream.close();
 
                 FileInputStream dstStream = new FileInputStream(dstFile);
-                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + remoteFilePath + "_mp", dstStream);
+                final boolean FTPdstUploadresult = FtpUtil.uploadFile("/" + showFilePath + "mp4", dstStream);
                 dstStream.close();
                 if (FTPsrcUploadresult && FTPdstUploadresult) {
-                    logger.info("非Mp4音乐源文件和转码文件上传到FTP完毕");
+                    logger.info("非htmlSupVideo音乐源文件和转码文件上传到FTP完毕");
                     insertRemotePath = remoteFilePath;
-                    insertShowPath = remoteFilePath + "_mp";
+                    insertShowPath = showFilePath + "mp4";
                 } else
-                    logger.error("非Mp4音乐源文件或目标文件上传失败");
+                    logger.error("非htmlSupVideo音乐源文件或目标文件上传失败");
             }
 
 
-        } else if (insertPostfix.equals("mp3") || insertPostfix.equals("mp4")) {
-            //mp3 mp4
+        } else if (htmlSupAudio.contains(insertPostfix) || htmlSupVideo.contains(insertPostfix)) {
+            //htmlSupAudio insertPostfix
             if (cloudDiskConfig.getType().equals("OSS")) {
                 final UploadResult OSSfileUploadRes = iossService.upload(originalFile.getInputStream(), originalFile.getOriginalFilename(), "cloudDisk/audio");
 
                 if (OSSfileUploadRes.getStatus().equals("done")) {
-                    logger.info("MP3或者mp4文件上传到OSS完毕");
+                    logger.info("htmlSupAudio或者htmlSupVideo文件上传到OSS完毕");
                     insertRemotePath = OSSfileUploadRes.getUrl();
                     insertShowPath = OSSfileUploadRes.getUrl();
                 } else {
-                    logger.error("MP3或者mp4文件上传到OSS失败");
+                    logger.error("htmlSupAudio或者htmlSupVideo文件上传到OSS失败");
                 }
             } else {
                 boolean FTPfileUploadRes = FtpUtil.uploadFile("/" + remoteFilePath, originalFile.getInputStream());
 
                 if (FTPfileUploadRes) {
-                    logger.info("MP3或者mp4文件上传到FTP完毕");
+                    logger.info("htmlSupAudio或者htmlSupVideo文件上传到FTP完毕");
                     insertRemotePath = remoteFilePath;
                     insertShowPath = remoteFilePath;
                 } else
-                    logger.error("MP3或者mp4文件上传到FTP失败");
+                    logger.error("htmlSupAudio或者htmlSupVideo文件上传到FTP失败");
             }
         } else if ((insertType == 2)) {
             //图片
@@ -262,18 +263,18 @@ public class FileStoreController extends BaseController {
             //提交到FTP服务器
             boolean FTPfilesUploadResult = FtpUtil.uploadFile("/" + remoteFilePath, uploadStream);
             if (FTPfilesUploadResult) {
-                logger.info("普通文件或者mp3 mp4上传到FTP完毕");
+                logger.info("普通文件上传到FTP完毕");
                 insertRemotePath = remoteFilePath;
                 insertShowPath = remoteFilePath;
             } else
-                logger.error("普通文件或者mp3 mp4上传到FTP失败");
+                logger.error("普通文件上传到FTP失败");
         }
 
 
         if ((insertRemotePath == null) || (insertShowPath == null)) {
             logger.error("当前文件上传失败...");
-            map.put("code", 504);
-            return map;
+            resultMap.put("code", 504);
+            return resultMap;
         }
         MyFile fileItem = MyFile.builder()
                 .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(insertRemotePath)
@@ -300,8 +301,8 @@ public class FileStoreController extends BaseController {
                 srcFile.delete();
         }
 
-        map.put("code", 200);
-        return map;
+        resultMap.put("code", 200);
+        return resultMap;
 
     }
 
@@ -645,7 +646,7 @@ public class FileStoreController extends BaseController {
                 || "asf".equals(type) || "rm".equals(type) || "navi".equals(type) || "wav".equals(type)
                 || "mp4".equals(type) || "flv".equals(type)) {
             return 3;
-        } else if ("mp3".equals(type) || "wma".equals(type) || "flac".equals(type)) {
+        } else if ("mp3".equals(type) || "wma".equals(type) || "wav".equals(type)|| "flac".equals(type)) {
             return 4;
         } else {
             return 5;

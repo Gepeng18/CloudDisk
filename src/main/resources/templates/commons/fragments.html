@@ -127,15 +127,15 @@
         function doShare() {
             $("#submit").html('<i class="fa fa-spinner fa-pulse"></i>&nbsp; 转存中\n');
             var fileFolderId = $('#fileFolderId').val();
-            var typeAndfid = $('#typeAndfid').val();
-            console.log("logggg" + fileFolderId + "  " + typeAndfid);
+            var pwd = $('#pwd').val();
+            console.log("logggg" + fileFolderId + "  " + pwd);
 
             $.ajax({
                 url: '/cloudpan/share',
                 type: 'post',
                 data: {
                     fileFolderId: $('#fileFolderId').val(),
-                    typeAndfid: $('#typeAndfid').val()
+                    pwd: $('#pwd').val()
                 },
                 datatype: "json",
                 success: function (result) {
