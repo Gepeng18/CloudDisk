@@ -1,7 +1,7 @@
 package site.pyyf.cloudDisk.service.impl;
 
-import site.pyyf.cloudDisk.entity.FileStoreStatistics;
 import site.pyyf.cloudDisk.entity.MyFile;
+import site.pyyf.cloudDisk.entity.UserStatistics;
 import site.pyyf.cloudDisk.service.IMyFileService;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +29,8 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
     }
 
     @Override
-    public Integer addFileByFileStoreId(MyFile myFile) {
-        return myFileMapper.addFileByFileStoreId(myFile);
+    public Integer addFileByUserId(MyFile myFile) {
+        return myFileMapper.addFileByUserId(myFile);
     }
 
     @Override
@@ -39,8 +39,8 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
     }
 
     @Override
-    public List<MyFile> getRootFilesByFileStoreId(Integer fileStoreId) {
-        return myFileMapper.getRootFilesByFileStoreId(fileStoreId);
+    public List<MyFile> getRootFilesByUserId(Integer userId) {
+        return myFileMapper.getRootFilesByUserId(userId);
     }
 
     @Override
@@ -54,9 +54,9 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
     }
 
     @Override
-    public FileStoreStatistics getCountStatistics(Integer id) {
-        FileStoreStatistics statistics = myFileMapper.getCountStatistics(id);
-        statistics.setFolderCount(fileFolderMapper.getFileFolderCountByFileStoreId(id));
+    public UserStatistics getCountStatistics(Integer id) {
+        UserStatistics statistics = myFileMapper.getCountStatistics(id);
+        statistics.setFolderCount(fileFolderMapper.getFileFolderCountByUserId(id));
         return statistics;
     }
 

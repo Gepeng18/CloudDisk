@@ -1,7 +1,7 @@
 package site.pyyf.cloudDisk.mapper;
 
-import site.pyyf.cloudDisk.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import site.pyyf.cloudDisk.entity.User;
 
 import java.util.List;
 
@@ -76,5 +76,52 @@ public interface UserMapper {
      * @return 影响行数
      */
     int update(User user);
+
+
+    /*原UserMapper中的*/
+    /**
+     * @Description 添加文件仓库（用户注册时调用）
+     * @Author xw
+     * @Date 21:56 2020/1/26
+     * @Param [user]
+     * @return java.lang.Integer 返回影响数据库的行数，新增文件仓库id封装在实体类的id属性
+     **/
+     Integer addUser(User user);
+
+    /**
+     * @Description 根据用户id获得文件仓库
+     * @Author xw
+     * @Date 22:01 2020/1/26
+     * @Param [userId]
+     * @return com.molihub.entity.User
+     **/
+     User getUserByUserId(Integer userId);
+
+    /**
+     * @Description 根据文件仓库id获得文件仓库
+     * @Author xw
+     * @Date 22:01 2020/1/26
+     * @Param [userId]
+     * @return com.molihub.entity.User
+     **/
+     User getUserById(Integer userId);
+
+    /**
+     * @Description 修改仓库当前已使用的容量
+     * @Author xw
+     * @Date 21:18 2020/2/10
+     * @Param [id,size]
+     * @return java.lang.Integer
+     **/
+     Integer addSize(Integer id, Integer size);
+
+    /**
+     * @Description 修改仓库当前已使用的容量
+     * @Author xw
+     * @Date 21:18 2020/2/10
+     * @Param [id,size]
+     * @return java.lang.Integer
+     **/
+     Integer subSize(Integer id, Integer size);
 
 }

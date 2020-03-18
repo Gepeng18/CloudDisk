@@ -3,24 +3,25 @@
 <mapper namespace="site.pyyf.cloudDisk.mapper.FileFolderMapper">
   <!--开启二级缓存,使用Ehcache缓存框架-->
   <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
+
   <resultMap id="BaseResultMap" type="site.pyyf.cloudDisk.entity.FileFolder">
     <!--@mbg.generated-->
     <!--@Table file_folder-->
     <id column="file_folder_id" jdbcType="INTEGER" property="fileFolderId" />
     <result column="file_folder_name" jdbcType="VARCHAR" property="fileFolderName" />
     <result column="parent_folder_id" jdbcType="INTEGER" property="parentFolderId" />
-    <result column="file_store_id" jdbcType="INTEGER" property="fileStoreId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
   </resultMap>
 
   <!--所有属性【文件夹id，文件夹名称，父文件夹id，文件仓库id】-->
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    file_folder_id, file_folder_name, parent_folder_id, file_store_id,time
+    file_folder_id, file_folder_name, parent_folder_id, user_id,time
   </sql>
   <!--文件的所有属性sql-->
   <sql id="Base_Column_List1">
     <!--@mbg.generated-->
-    my_file_id, my_file_name, file_store_id, my_file_path, download_time, upload_time,
+    my_file_id, my_file_name, user_id, my_file_path, download_time, upload_time,
     parent_folder_id
   </sql>
   <!--添加属性sql-->
@@ -31,8 +32,8 @@
     <if test="parentFolderId != null">
       parent_folder_id,
     </if>
-    <if test="fileStoreId != null">
-      file_store_id,
+    <if test="userId != null">
+      user_id,
     </if>
     <if test="time != null">
       time,
@@ -46,8 +47,8 @@
     <if test="parentFolderId != null">
       #{parentFolderId,jdbcType=INTEGER},
     </if>
-    <if test="fileStoreId != null">
-      #{fileStoreId,jdbcType=INTEGER},
+    <if test="userId != null">
+      #{userId,jdbcType=INTEGER},
     </if>
     <if test="time != null">
       #{time},
@@ -61,8 +62,8 @@
     <if test="parentFolderId != null">
       parent_folder_id = #{parentFolderId,jdbcType=INTEGER},
     </if>
-    <if test="fileStoreId != null">
-      file_store_id = #{fileStoreId,jdbcType=INTEGER},
+    <if test="userId != null">
+      user_id = #{userId,jdbcType=INTEGER},
     </if>
   </sql>
 
@@ -80,19 +81,19 @@
     from file_folder
     where parent_folder_id = #{parentFolderId,jdbcType=INTEGER}
   </select>
-  <select id="getFileFolderByFileStoreId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="getFileFolderByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
     <include refid="Base_Column_List" />
     from file_folder
-    where file_store_id = #{fileStoreId,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </select>
-  <select id="getRootFoldersByFileStoreId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="getRootFoldersByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     <!--@mbg.generated-->
     select
     <include refid="Base_Column_List" />
     from file_folder
-    where file_store_id = #{fileStoreId,jdbcType=INTEGER} and parent_folder_id = 0;
+    where user_id = #{userId,jdbcType=INTEGER} and parent_folder_id = 0;
   </select>
   <select id="getFileByFileFolder" parameterType="java.lang.Integer" resultType="site.pyyf.cloudDisk.entity.MyFile">
     <!--@mbg.generated-->
@@ -111,10 +112,10 @@
     delete from file_folder
     where parent_folder_id = #{parentFolderId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteFileFolderByFileStoreId" parameterType="java.lang.Integer">
+  <delete id="deleteFileFolderByUserId" parameterType="java.lang.Integer">
     <!--@mbg.generated-->
     delete from file_folder
-    where file_store_id = #{fileStoreId,jdbcType=INTEGER}
+    where user_id = #{userId,jdbcType=INTEGER}
   </delete>
   <insert id="addFileFolder" keyColumn="file_folder_id" keyProperty="fileFolderId" parameterType="site.pyyf.cloudDisk.entity.FileFolder" useGeneratedKeys="true">
     <!--@mbg.generated-->
@@ -134,7 +135,7 @@
     </set>
     where file_folder_id = #{fileFolderId,jdbcType=INTEGER}
   </update>
-  <select id="getFileFolderCountByFileStoreId" resultType="java.lang.Integer">
-        select count(*) from file_folder where file_store_id = #{id}
+  <select id="getFileFolderCountByUserId" resultType="java.lang.Integer">
+        select count(*) from file_folder where user_id = #{id}
     </select>
 </mapper>

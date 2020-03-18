@@ -33,7 +33,7 @@ public class FileFolder implements Serializable {
     /**
     * 所属文件仓库ID
     */
-    private Integer fileStoreId;
+    private Integer userId;
     /**
     * 创建时间
     */

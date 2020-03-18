@@ -51,7 +51,7 @@ public class FileFolderServiceImpl extends BaseService implements IFileFolderSer
     }
 
     @Override
-    public List<FileFolder> getRootFoldersByFileStoreId(Integer fileStoreId) {
-        return fileFolderMapper.getRootFoldersByFileStoreId(fileStoreId);
+    public List<FileFolder> getRootFoldersByUserId(Integer userId) {
+        return fileFolderMapper.getRootFoldersByUserId(userId);
     }
 }

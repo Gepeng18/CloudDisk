@@ -65,10 +65,10 @@ public interface IFileFolderService {
      * @Description 根据仓库Id获得仓库根目录下的所有文件夹
      * @Author xw
      * @Date 23:46 2020/2/9
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.molihub.entity.FileFolder>
      **/
-    List<FileFolder> getRootFoldersByFileStoreId(Integer fileStoreId);
+    List<FileFolder> getRootFoldersByUserId(Integer userId);
 
     /**
      * @Description 根据文件夹的id修改文件夹信息

@@ -1,8 +1,8 @@
 package site.pyyf.cloudDisk.mapper;
 
-import site.pyyf.cloudDisk.entity.FileStoreStatistics;
 import site.pyyf.cloudDisk.entity.MyFile;
 import org.apache.ibatis.annotations.Mapper;
+import site.pyyf.cloudDisk.entity.UserStatistics;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ public interface MyFileMapper {
      * @Param [myFile]
      * @return java.lang.Integer
      **/
-    Integer addFileByFileStoreId(MyFile myFile);
+    Integer addFileByUserId(MyFile myFile);
 
     /**
      * @Description 根据文件id修改文件
@@ -65,10 +65,10 @@ public interface MyFileMapper {
      * @Description 获得仓库根目录下的所有文件
      * @Author xw
      * @Date 23:53 2020/2/9
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.molihub.entity.MyFile>
      **/
-    List<MyFile> getRootFilesByFileStoreId(Integer fileStoreId);
+    List<MyFile> getRootFilesByUserId(Integer userId);
     
     /**
      * @Description 根据父文件夹id获得文件 
@@ -93,7 +93,7 @@ public interface MyFileMapper {
      * @Author xw
      * @Date 21:47 2020/2/10
      * @Param [id]
-     * @return com.molihub.entity.FileStoreStatistics
+     * @return com.molihub.entity.UserStatistics
      **/
-    FileStoreStatistics getCountStatistics(Integer id);
+    UserStatistics getCountStatistics(Integer id);
 }

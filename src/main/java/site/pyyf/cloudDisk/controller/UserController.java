@@ -14,16 +14,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.entity.FileFolder;
-import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.MyFile;
 import site.pyyf.cloudDisk.entity.UploadResult;
+import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.IResolveHeaderService;
 import site.pyyf.cloudDisk.utils.FtpUtil;
 import site.pyyf.cloudDisk.utils.LogUtils;
-import site.pyyf.cloudDisk.utils.QRCodeUtil;
 
 import java.io.*;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,7 +29,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @ClassName: FileStoreController
+ * @ClassName: UserController
  * @Description: 文件仓库控制器
  * @author: xw
  * @date 2020/2/6 16:04
@@ -39,9 +37,9 @@ import java.util.regex.Pattern;
  **/
 @Controller
 @Scope("prototype")
-public class FileStoreController extends BaseController {
+public class UserController extends BaseController {
 
-    private Logger logger = LogUtils.getInstance(FileStoreController.class);
+    private Logger logger = LogUtils.getInstance(UserController.class);
 
     @Autowired
     private AliyunConfig aliyunConfig;
@@ -61,14 +59,14 @@ public class FileStoreController extends BaseController {
         List<String> htmlSupAudio = new ArrayList<>(Arrays.asList("mp3","flac","wav"));
         List<String> htmlSupVideo = new ArrayList<>(Arrays.asList("mp4"));
         Map<String, Object> resultMap = new HashMap<>();
-        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        User user = iUserService.getUserById(loginUser.getUserId());
         Integer folderId = Integer.valueOf(request.getHeader("id"));
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (folderId == 0) {
             //当前目录为根目录
-            myFiles = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+            myFiles = iMyFileService.getRootFilesByUserId(loginUser.getUserId());
         } else {
             //当前目录为其他目录
             myFiles = iMyFileService.getFilesByParentFolderId(folderId);
@@ -88,7 +86,7 @@ public class FileStoreController extends BaseController {
         }
         Integer sizeInt = Math.toIntExact(originalFile.getSize() / 1024);
         //是否仓库放不下该文件
-        if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
+        if (user.getCurrentSize() + sizeInt > user.getMaxSize()) {
             logger.error("上传失败!仓库已满。");
             resultMap.put("code", 503);
             return resultMap;
@@ -277,15 +275,15 @@ public class FileStoreController extends BaseController {
             return resultMap;
         }
         MyFile fileItem = MyFile.builder()
-                .myFileName(name).fileStoreId(loginUser.getFileStoreId()).myFilePath(insertRemotePath)
+                .myFileName(name).userId(loginUser.getUserId()).myFilePath(insertRemotePath)
                 .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
                         size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).showPath(insertShowPath).build();
 
 
         //向数据库文件表写入数据
-        iMyFileService.addFileByFileStoreId(fileItem);
+        iMyFileService.addFileByUserId(fileItem);
         //更新仓库表的当前大小
-        iFileStoreService.addSize(store.getFileStoreId(), Integer.valueOf(insertSize));
+        iUserService.addSize(user.getUserId(), Integer.valueOf(insertSize));
 
         //如果是markdown，则再传一份到library表中
         if (fileItem.getPostfix().equals("md"))
@@ -433,7 +431,7 @@ public class FileStoreController extends BaseController {
         }
 
         //删除成功,返回空间
-        iFileStoreService.subSize(myFile.getFileStoreId(), Integer.valueOf(myFile.getSize()));
+        iUserService.subSize(myFile.getUserId(), Integer.valueOf(myFile.getSize()));
         //删除文件表对应的数据
         iMyFileService.deleteByFileId(fId);
 
@@ -518,7 +516,7 @@ public class FileStoreController extends BaseController {
                 }
 
                 //删除成功,返回空间
-                iFileStoreService.subSize(thisFile.getFileStoreId(), Integer.valueOf(thisFile.getSize()));
+                iUserService.subSize(thisFile.getUserId(), Integer.valueOf(thisFile.getSize()));
                 //删除文件表对应的数据
                 iMyFileService.deleteByFileId(thisFile.getMyFileId());
             }
@@ -541,13 +539,13 @@ public class FileStoreController extends BaseController {
     @PostMapping("/addFolder")
     public String addFolder(FileFolder folder, Map<String, Object> map) {
         //设置文件夹信息
-        folder.setFileStoreId(loginUser.getFileStoreId());
+        folder.setUserId(loginUser.getUserId());
         folder.setTime(new Date());
         //获得当前目录下的所有文件夹,检查当前文件夹是否已经存在
         List<FileFolder> fileFolders = null;
         if (folder.getParentFolderId() == 0) {
             //向用户根目录添加文件夹
-            fileFolders = iFileFolderService.getRootFoldersByFileStoreId(loginUser.getFileStoreId());
+            fileFolders = iFileFolderService.getRootFoldersByUserId(loginUser.getUserId());
         } else {
             //向用户的其他目录添加文件夹
             fileFolders = iFileFolderService.getFileFolderByParentFolderId(folder.getParentFolderId());

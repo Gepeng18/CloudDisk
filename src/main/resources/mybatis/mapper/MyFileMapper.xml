@@ -8,7 +8,7 @@
     <id column="my_file_id" jdbcType="INTEGER" property="myFileId" />
     <result column="my_file_name" jdbcType="VARCHAR" property="myFileName" />
     <result column="show_path" jdbcType="VARCHAR" property="showPath" />
-    <result column="file_store_id" jdbcType="INTEGER" property="fileStoreId" />
+    <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="my_file_path" jdbcType="VARCHAR" property="myFilePath" />
     <result column="download_time" jdbcType="INTEGER" property="downloadTime" />
     <result column="upload_time" jdbcType="TIMESTAMP" property="uploadTime" />
@@ -17,7 +17,7 @@
 
   <!--表中所有属性-->
   <sql id="Base_Column_List">
-    my_file_id, my_file_name, file_store_id, my_file_path, download_time, upload_time,
+    my_file_id, my_file_name, user_id, my_file_path, download_time, upload_time,
     parent_folder_id,size,type,postfix,show_path
   </sql>
   <!--添加属性sql-->
@@ -25,8 +25,8 @@
     <if test="myFileName != null">
       my_file_name,
     </if>
-    <if test="fileStoreId != null">
-      file_store_id,
+    <if test="userId != null">
+      user_id,
     </if>
     <if test="myFilePath != null">
       my_file_path,
@@ -58,8 +58,8 @@
     <if test="myFileName != null">
       #{myFileName,jdbcType=VARCHAR},
     </if>
-    <if test="fileStoreId != null">
-      #{fileStoreId,jdbcType=INTEGER},
+    <if test="userId != null">
+      #{userId,jdbcType=INTEGER},
     </if>
     <if test="myFilePath != null">
       #{myFilePath,jdbcType=VARCHAR},
@@ -111,7 +111,7 @@
     </if>
   </sql>
 
-  <insert id="addFileByFileStoreId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.cloudDisk.entity.MyFile" useGeneratedKeys="true">
+  <insert id="addFileByUserId" keyColumn="my_file_id" keyProperty="myFileId" parameterType="site.pyyf.cloudDisk.entity.MyFile" useGeneratedKeys="true">
     insert into my_file
     <trim prefix="(" suffix=")" suffixOverrides=",">
         <include refid="Base_Insert_Key_List"></include>
@@ -146,11 +146,11 @@
     where my_file_id = #{myFileId,jdbcType=INTEGER}
   </select>
 
-  <select id="getRootFilesByFileStoreId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+  <select id="getRootFilesByUserId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from my_file
-    where file_store_id = #{fileStoreId} and parent_folder_id = 0;
+    where user_id = #{userId} and parent_folder_id = 0;
   </select>
 
   <select id="getFilesByParentFolderId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -164,12 +164,12 @@
     select
     <include refid="Base_Column_List" />
     from my_file
-    where file_store_id = #{storeId} and type = #{type};
+    where user_id = #{storeId} and type = #{type};
   </select>
 
-  <select id="getCountStatistics" resultType="site.pyyf.cloudDisk.entity.FileStoreStatistics">
+  <select id="getCountStatistics" resultType="site.pyyf.cloudDisk.entity.UserStatistics">
    select sum(type = 1) doc,sum(type = 2) image,sum(type = 3) video,
       sum(type = 4) music,sum(type = 5) other,count(*) fileCount from my_file
-      where file_store_id = #{id}
+      where user_id = #{id}
   </select>
 </mapper>

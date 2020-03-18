@@ -5,7 +5,7 @@ import lombok.*;
 import java.io.Serializable;
 
 /**
- * @ClassName: FileStoreStatistics
+ * @ClassName: UserStatistics
  * @Description: 文件仓库数据统计类
  * @author: xw
  * @date 2020/2/10 21:40
@@ -18,12 +18,12 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileStoreStatistics implements Serializable {
+public class UserStatistics implements Serializable {
 
     /**
      * 文件仓库
      */
-    private FileStore fileStore;
+    private User user;
     /**
      * 文档数
      */

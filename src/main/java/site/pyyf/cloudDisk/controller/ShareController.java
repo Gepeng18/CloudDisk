@@ -6,13 +6,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.entity.FileFolder;
-import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.MyFile;
 import site.pyyf.cloudDisk.entity.UploadResult;
+import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.IResolveHeaderService;
 import site.pyyf.cloudDisk.utils.CommunityUtil;
 import site.pyyf.cloudDisk.utils.FtpUtil;
@@ -44,7 +43,7 @@ public class ShareController extends BaseController {
 
     /**
      * @return java.util.Map<java.lang.String, java.lang.Object>
-     * @Description 获得二维码
+     * @Description 获得二维码 和直链下载地址
      * @Author xw
      * @Date 15:20 2020/2/12
      * @Param [id, url]
@@ -86,7 +85,7 @@ public class ShareController extends BaseController {
 
     /**
      * @return void
-     * @Description 分享文件
+     * @Description 获取直链下载
      * @Author xw
      * @Date 14:23 2020/2/12
      * @Param [fId]
@@ -136,8 +135,8 @@ public class ShareController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getShareUrl", method = RequestMethod.POST)
     public String getShareUrl(@RequestParam(value = "fId") Integer id,
-                              @RequestParam(value = "type") String type
-    ) {
+                              @RequestParam(value = "type") String type)
+    {
         String pwd = UUID.randomUUID().toString().replaceAll("-", "");
         String typeAndId = type + "-" + id;
 
@@ -186,11 +185,11 @@ public class ShareController extends BaseController {
 
     //将文件夹fileFolder放到fileFolderId中
     public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
-        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        User store = iUserService.getUserByUserId(loginUser.getUserId());
         List<MyFile> files = iMyFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
         //设置文件夹信息
         FileFolder thisFolder = FileFolder.builder()
-                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).fileStoreId(store.getFileStoreId())
+                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).userId(store.getUserId())
                 .time(new Date()).build();
         iFileFolderService.addFileFolder(thisFolder);
         for (MyFile file : files) {
@@ -206,12 +205,12 @@ public class ShareController extends BaseController {
 
     //将shareFile放在fileFolderId中
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
-        FileStore store = iFileStoreService.getFileStoreByUserId(loginUser.getUserId());
+        User store = iUserService.getUserByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (toFileFolderId == 0) {
             //当前目录为根目录
-            myFiles = iMyFileService.getRootFilesByFileStoreId(loginUser.getFileStoreId());
+            myFiles = iMyFileService.getRootFilesByUserId(loginUser.getUserId());
         } else {
             //当前目录为其他目录
             myFiles = iMyFileService.getFilesByParentFolderId(toFileFolderId);
@@ -298,15 +297,15 @@ public class ShareController extends BaseController {
 
         //文件转存成功后则需要插入数据库
         MyFile insertFile = MyFile.builder()
-                .myFileName(shareFile.getMyFileName()).fileStoreId(loginUser.getFileStoreId()).myFilePath(insertRemotePath)
+                .myFileName(shareFile.getMyFileName()).userId(loginUser.getUserId()).myFilePath(insertRemotePath)
                 .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
                         size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).showPath(insertShowPath).build();
 
 
         //向数据库文件表写入数据
-        iMyFileService.addFileByFileStoreId(insertFile);
+        iMyFileService.addFileByUserId(insertFile);
         //更新仓库表的当前大小
-        iFileStoreService.addSize(store.getFileStoreId(), shareFile.getSize());
+        iUserService.addSize(store.getUserId(), shareFile.getSize());
         logger.info("转存文件插入数据库成功");
 
 
@@ -321,7 +320,6 @@ public class ShareController extends BaseController {
                 logger.error("文件转存过程中markdown转化失败");
                 return 504;
             }
-
         }
         return 200;
     }

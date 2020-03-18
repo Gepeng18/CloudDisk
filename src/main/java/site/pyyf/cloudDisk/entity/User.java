@@ -1,11 +1,11 @@
 package site.pyyf.cloudDisk.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * (User)用户实体类
@@ -25,21 +25,30 @@ public class User implements Serializable {
     * 用户的openid
     */
     private String openId;
-    /**
-    * 文件仓库ID
-    */
-    private Integer fileStoreId;
+
     /**
     * 用户名
     */
     private String userName;
     /**
+     * 头像地址
+     */
+    private String imagePath;
+    /**
     * 注册时间
     */
     private Date registerTime;
+
+
+
+    //     user独有的列名
     /**
-    * 头像地址
-    */
-    private String imagePath;
+     * 当前容量（单位KB）
+     */
+    private Integer currentSize;
+    /**
+     * 最大容量（单位KB）
+     */
+    private Integer maxSize;
 
 }

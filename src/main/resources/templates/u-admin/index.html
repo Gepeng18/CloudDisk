@@ -121,8 +121,8 @@
 <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.13/cloudpan/u-admin/dist/modules/jquery.min.js"></script>
 <script>
 	$(function () {
-		var cur = [[${statistics.fileStore.currentSize}]];
-		var max = [[${statistics.fileStore.maxSize}]];
+		var cur = [[${statistics.user.currentSize}]];
+		var max = [[${statistics.user.maxSize}]];
 		var w = cur/max*100;
 		$('#progress').css('width',w+'%');
 	})
@@ -187,8 +187,8 @@
 		data: {
 			datasets: [{
 				data: [
-					[[${statistics.fileStore.currentSize/1024}]],
-					[[${(statistics.fileStore.maxSize-statistics.fileStore.currentSize)/1024}]],
+					[[${statistics.user.currentSize/1024}]],
+					[[${(statistics.user.maxSize-statistics.user.currentSize)/1024}]],
 				],
 				backgroundColor: [
 					'#223e36',

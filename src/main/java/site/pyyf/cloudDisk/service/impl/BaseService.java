@@ -2,7 +2,6 @@ package site.pyyf.cloudDisk.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import site.pyyf.cloudDisk.mapper.FileFolderMapper;
-import site.pyyf.cloudDisk.mapper.FileStoreMapper;
 import site.pyyf.cloudDisk.mapper.MyFileMapper;
 import site.pyyf.cloudDisk.mapper.UserMapper;
 
@@ -21,6 +20,5 @@ public class BaseService {
     protected MyFileMapper myFileMapper;
     @Autowired
     protected FileFolderMapper fileFolderMapper;
-    @Autowired
-    protected FileStoreMapper fileStoreMapper;
+
 }

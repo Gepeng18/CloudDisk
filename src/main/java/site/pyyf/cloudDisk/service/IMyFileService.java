@@ -2,8 +2,8 @@ package site.pyyf.cloudDisk.service;
 
 
 
-import site.pyyf.cloudDisk.entity.FileStoreStatistics;
 import site.pyyf.cloudDisk.entity.MyFile;
+import site.pyyf.cloudDisk.entity.UserStatistics;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public interface IMyFileService {
      * @Param [myFile]
      * @Return Integer
      */
-    Integer addFileByFileStoreId(MyFile myFile);
+    Integer addFileByUserId(MyFile myFile);
 
     /**
      * @Description 根据文件id获得文件
@@ -65,10 +65,10 @@ public interface IMyFileService {
      * @Description 获得仓库根目录下的所有文件
      * @Author xw
      * @Date 23:53 2020/2/9
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.molihub.entity.MyFile>
      **/
-    List<MyFile> getRootFilesByFileStoreId(Integer fileStoreId);
+    List<MyFile> getRootFilesByUserId(Integer userId);
 
     /**
      * @Description 根据父文件夹id获得文件
@@ -93,8 +93,8 @@ public interface IMyFileService {
      * @Author xw
      * @Date 21:47 2020/2/10
      * @Param [id]
-     * @return com.molihub.entity.FileStoreStatistics
+     * @return com.molihub.entity.UserStatistics
      **/
-    FileStoreStatistics getCountStatistics(Integer id);
+    UserStatistics getCountStatistics(Integer id);
 
 }

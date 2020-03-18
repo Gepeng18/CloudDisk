@@ -1,6 +1,5 @@
 package site.pyyf.cloudDisk.controller;
 
-import site.pyyf.cloudDisk.entity.FileStore;
 import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.utils.LogUtils;
 import com.qq.connect.QQConnectException;
@@ -49,9 +48,9 @@ public class LoginController extends BaseController {
                             registerTime(new Date()).build();
             if (iUserService.insert(user)){
                 logger.info("测试用户注册成功");
-                FileStore store = FileStore.builder().userId(user.getUserId()).build();
-                if (iFileStoreService.addFileStore(store) == 1){
-                    user.setFileStoreId(store.getFileStoreId());
+                User store = User.builder().userId(user.getUserId()).build();
+                if (iUserService.addUser(store) == 1){
+                    user.setUserId(store.getUserId());
                     iUserService.update(user);
                     logger.info("注册仓库成功！当前注册仓库" + store);
                 }
@@ -127,9 +126,9 @@ public class LoginController extends BaseController {
                                 registerTime(new Date()).build();
                         if (iUserService.insert(user)){
                             logger.info("注册用户成功！当前注册用户" + user);
-                            FileStore store = FileStore.builder().userId(user.getUserId()).build();
-                            if (iFileStoreService.addFileStore(store) == 1){
-                                user.setFileStoreId(store.getFileStoreId());
+                            User store = User.builder().userId(user.getUserId()).build();
+                            if (iUserService.addUser(store) == 1){
+                                user.setUserId(store.getUserId());
                                 iUserService.update(user);
                                 logger.info("注册仓库成功！当前注册仓库" + store);
                             }

@@ -28,7 +28,7 @@ public class MyFile implements Serializable {
     /**
     * 文件仓库ID
     */
-    private Integer fileStoreId;
+    private Integer userId;
     /**
     * 文件存储路径
     */

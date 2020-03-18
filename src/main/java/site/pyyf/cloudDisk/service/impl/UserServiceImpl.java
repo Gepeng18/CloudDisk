@@ -1,12 +1,18 @@
 package site.pyyf.cloudDisk.service.impl;
 
+import org.slf4j.Logger;
+import org.springframework.stereotype.Service;
+import site.pyyf.cloudDisk.entity.MyFile;
 import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.IUserService;
-import org.springframework.stereotype.Service;
+import site.pyyf.cloudDisk.utils.FtpUtil;
+import site.pyyf.cloudDisk.utils.LogUtils;
 
+import java.io.*;
 import java.util.List;
+import java.util.UUID;
 
- /**
+/**
  * @ClassName UserServiceImpl
  * @Description (User)表服务实现类
  * @author 鹏圆
@@ -15,6 +21,8 @@ import java.util.List;
  **/
  @Service
 public class UserServiceImpl extends BaseService implements IUserService {
+
+    Logger logger = LogUtils.getInstance(UserServiceImpl.class);
 
     /**
      * @Description 添加User
@@ -109,4 +117,67 @@ public class UserServiceImpl extends BaseService implements IUserService {
         return false;
     }
 
-}
+
+    @Override
+    public Integer addUser(User user) {
+        return userMapper.addUser(user);
+    }
+
+    @Override
+    public User getUserByUserId(Integer userId) {
+        return userMapper.getUserByUserId(userId);
+    }
+
+    @Override
+    public User getUserById(Integer userId) {
+        return userMapper.getUserById(userId);
+    }
+
+    @Override
+    public Integer addSize(Integer id, Integer size) {
+        return userMapper.addSize(id,size);
+    }
+
+    @Override
+    public Integer subSize(Integer id, Integer size) {
+        return userMapper.subSize(id,size);
+    }
+
+    @Override
+    public StringBuilder getFileContentByMyFile(MyFile file) {
+        StringBuilder code = new StringBuilder();
+        //获取文件信息
+        String remotePath = file.getMyFilePath();
+
+        try {
+            File temp = new File("temp");
+            if (!temp.exists()) {
+                temp.mkdirs();
+            }
+            String tempStr = "temp/" + UUID.randomUUID().toString();
+            //去FTP上拉取
+            OutputStream tmpFileStream = new FileOutputStream(new File(tempStr));
+            boolean flag = FtpUtil.downloadFile("/" + remotePath, tmpFileStream);
+            if (flag) {
+
+                //获得服务器本地的文件，并使用IO流写出到浏览器
+                InputStream is = new BufferedInputStream(new FileInputStream(tempStr));
+                BufferedReader br = new BufferedReader(new InputStreamReader(is));
+                String buffer = null;
+                while ((buffer = br.readLine()) != null) {
+                    buffer += '\n';
+                    code.append(buffer);
+                }
+                is.close();
+                tmpFileStream.close();
+                logger.info("文件下载成功!" + file);
+
+                new File(tempStr).delete();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return code;
+    }
+
+ }

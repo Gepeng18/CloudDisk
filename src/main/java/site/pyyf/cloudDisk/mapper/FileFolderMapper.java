@@ -38,10 +38,10 @@ public interface FileFolderMapper {
      * @Description 根据仓库的id删除文件夹
      * @Author xw
      * @Date 15:18 2020/2/26
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.lang.Integer
      **/
-    Integer deleteFileFolderByFileStoreId(Integer fileStoreId);
+    Integer deleteFileFolderByUserId(Integer userId);
 
     /**
      * @Description 增加文件夹
@@ -74,28 +74,28 @@ public interface FileFolderMapper {
      * @Description 根据仓库的id获取文件夹
      * @Author xw
      * @Date 15:19 2020/2/26
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.moti.entity.FileFolder>
      **/
-    List<FileFolder> getFileFolderByFileStoreId(Integer fileStoreId);
+    List<FileFolder> getFileFolderByUserId(Integer userId);
     
     /**
      * @Description 获得仓库的文件夹数量
      * @Author xw
      * @Date 21:56 2020/2/10
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.lang.Integer
      **/
-    Integer getFileFolderCountByFileStoreId(Integer fileStoreId);
+    Integer getFileFolderCountByUserId(Integer userId);
 
     /**
      * @Description 根据仓库Id获得仓库根目录下的所有文件夹
      * @Author xw
      * @Date 23:49 2020/2/9
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.molihub.entity.FileFolder>
      **/
-    List<FileFolder> getRootFoldersByFileStoreId(Integer fileStoreId);
+    List<FileFolder> getRootFoldersByUserId(Integer userId);
 
     /**
      * @Description 根据文件夹的id修改文件夹信息
@@ -110,9 +110,9 @@ public interface FileFolderMapper {
      * @Description 根据文件夹的id获取文件夹下面的文件
      * @Author xw
      * @Date 15:19 2020/2/26
-     * @Param [fileStoreId]
+     * @Param [userId]
      * @return java.util.List<com.moti.entity.MyFile>
      **/
-    List<MyFile> getFileByFileFolder(Integer fileStoreId);
+    List<MyFile> getFileByFileFolder(Integer userId);
 
 }
