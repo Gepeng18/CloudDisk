@@ -6,7 +6,7 @@ import site.pyyf.cloudDisk.service.IFilePreviewService;
 import java.util.List;
 
 @Service
-public class FilePreviewServiceImple implements IFilePreviewService {
+public class FilePreviewServiceImpl implements IFilePreviewService {
     @Override
     public String addQuotationMarks(String language, StringBuilder oriCode) {
 

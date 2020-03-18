@@ -116,7 +116,7 @@ public class PreviewController extends BaseController {
             return "redirect:/ebook/getbook/" + id;
         if (supportPreviewLang.containsKey(suffix)) {
             if (suffix.equals("java")) {
-                StringBuilder fileContentByMyFile = iUserService.getFileContentByMyFile(file);
+                StringBuilder fileContentByMyFile = iFileStoreService.getFileContentByMyFile(file);
                 String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 String htmlContent = MarkdownToHtmlUtils.markdownToHtmlExtensions(code);
 
@@ -126,7 +126,7 @@ public class PreviewController extends BaseController {
                 model.addAttribute("code", newCode.toString());
                 return "show-code";
             } else {
-                StringBuilder fileContentByMyFile = iUserService.getFileContentByMyFile(file);
+                StringBuilder fileContentByMyFile = iFileStoreService.getFileContentByMyFile(file);
                 String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 // 其他语言 启动mardown显示
                 String htmlContent = MarkdownToHtmlUtils.markdownToHtmlExtensions(code);

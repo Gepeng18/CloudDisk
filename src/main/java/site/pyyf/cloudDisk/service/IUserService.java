@@ -1,17 +1,9 @@
 package site.pyyf.cloudDisk.service;
 
-import site.pyyf.cloudDisk.entity.MyFile;
 import site.pyyf.cloudDisk.entity.User;
 
 import java.util.List;
 
-/**
- * @InterfaceName: MyFileService
- * @Description: 用户业务层接口
- * @author: xw
- * @date 2020/1/26 22:15
- * @Version: 1.0
- **/
 public interface IUserService {
 
     /**
@@ -122,7 +114,5 @@ public interface IUserService {
      * @return java.lang.Integer
      **/
     Integer subSize(Integer id, Integer size);
-
-    StringBuilder getFileContentByMyFile(MyFile file);
 
 }

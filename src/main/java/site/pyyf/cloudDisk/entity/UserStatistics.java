@@ -19,7 +19,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserStatistics implements Serializable {
-
     /**
      * 文件仓库
      */

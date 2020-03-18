@@ -135,8 +135,7 @@ public class ShareController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getShareUrl", method = RequestMethod.POST)
     public String getShareUrl(@RequestParam(value = "fId") Integer id,
-                              @RequestParam(value = "type") String type)
-    {
+                              @RequestParam(value = "type") String type) {
         String pwd = UUID.randomUUID().toString().replaceAll("-", "");
         String typeAndId = type + "-" + id;
 
@@ -162,7 +161,7 @@ public class ShareController extends BaseController {
 
         String shareKey = RedisKeyUtil.getShareKey(pwd);
         String typeAndFid = (String) redisTemplate.opsForValue().get(shareKey);
-        if(StringUtils.isBlank(typeAndFid))
+        if (StringUtils.isBlank(typeAndFid))
             return CommunityUtil.getJSONString(502, map.get(502));
 
 
@@ -185,11 +184,11 @@ public class ShareController extends BaseController {
 
     //将文件夹fileFolder放到fileFolderId中
     public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
-        User store = iUserService.getUserByUserId(loginUser.getUserId());
+        User user = iUserService.getUserByUserId(loginUser.getUserId());
         List<MyFile> files = iMyFileService.getFilesByParentFolderId(fileFolder.getFileFolderId());
         //设置文件夹信息
         FileFolder thisFolder = FileFolder.builder()
-                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).userId(store.getUserId())
+                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).userId(user.getUserId())
                 .time(new Date()).build();
         iFileFolderService.addFileFolder(thisFolder);
         for (MyFile file : files) {
@@ -205,7 +204,7 @@ public class ShareController extends BaseController {
 
     //将shareFile放在fileFolderId中
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
-        User store = iUserService.getUserByUserId(loginUser.getUserId());
+        User user = iUserService.getUserByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
         if (toFileFolderId == 0) {
@@ -225,87 +224,28 @@ public class ShareController extends BaseController {
 
         Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
         //是否仓库放不下该文件
-        if (store.getCurrentSize() + sizeInt > store.getMaxSize()) {
+        if (user.getCurrentSize() + sizeInt > user.getMaxSize()) {
             logger.error("上传失败!仓库已满。");
             return 503;
         }
 
-        String insertRemotePath = null;
-        String insertShowPath = null;
-        if (cloudDiskConfig.getType().equals("OSS") || shareFile.getType() == 2) {
-            //提交到OSS服务器
-            UploadResult OSStransferRes = iossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
-                    StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
-            if (OSStransferRes.getStatus().equals("done")) {
-                logger.info("OSS中remote文件转存完成");
-                insertRemotePath = OSStransferRes.getUrl();
-                insertShowPath = OSStransferRes.getUrl();
-            } else {
-                logger.error("OSS中remote文件转存失败");
-                return 504;
-            }
-
-
-            if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
-
-                OSStransferRes = iossService.transfer(shareFile.getShowPath().substring(aliyunConfig.getUrlPrefix().length()),
-                        StringUtils.substringBeforeLast(shareFile.getShowPath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
-                if (OSStransferRes.getStatus().equals("done")) {
-                    logger.info("OSS中show文件转存完成");
-                    insertShowPath = OSStransferRes.getUrl();
-                } else {
-                    logger.error("OSS中show文件转存失败");
-                    return 504;
-                }
-
-            }
-
-
-        } else {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-            String dateStr = format.format(new Date());
-            String remoteFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId + "/" + UUID.randomUUID().toString() + "." + shareFile.getPostfix();
-            String showFilePath = loginUser.getUserId() + "/" + dateStr + "/" + toFileFolderId + "/" + UUID.randomUUID().toString() + "." +StringUtils.substringAfterLast(shareFile.getShowPath(),".");
-
-            try {
-                //提交到FTP服务器
-                FtpUtil.transferFile("/" + shareFile.getMyFilePath(), "/" + remoteFilePath);
-                logger.info("FTP中remote文件转存完成");
-                insertRemotePath = remoteFilePath;
-                insertShowPath = remoteFilePath;
-            } catch (Exception e) {
-                e.printStackTrace();
-                logger.error("FTP中remote文件转存失败");
-                return 504;
-            }
-
-            if (!shareFile.getShowPath().equals(shareFile.getMyFilePath())) {
-                try {
-                    FtpUtil.transferFile("/" + shareFile.getShowPath(), "/" + showFilePath);
-                    logger.error("FTP中showfile转存成功");
-                    insertShowPath = showFilePath;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error("FTP中showfile转存失败");
-                    return 504;
-                }
-
-            }
-
-        }
-
 
         //文件转存成功后则需要插入数据库
-        MyFile insertFile = MyFile.builder()
-                .myFileName(shareFile.getMyFileName()).userId(loginUser.getUserId()).myFilePath(insertRemotePath)
-                .downloadTime(0).uploadTime(new Date()).parentFolderId(toFileFolderId).
-                        size(shareFile.getSize()).type(shareFile.getType()).postfix(shareFile.getPostfix()).showPath(insertShowPath).build();
+        MyFile insertFile = MyFile.builder().parentFolderId(toFileFolderId)
+                .myFileName(shareFile.getMyFileName()).userId(loginUser.getUserId())
+                .downloadTime(0).uploadTime(new Date()).size(shareFile.getSize())
+                .type(shareFile.getType()).postfix(shareFile.getPostfix()).build();
 
+        iFileStoreService.transeferFile(shareFile, insertFile);
 
+        if (insertFile == null) {
+            logger.error("当前文件上传失败...");
+            return 504;
+        }
         //向数据库文件表写入数据
         iMyFileService.addFileByUserId(insertFile);
         //更新仓库表的当前大小
-        iUserService.addSize(store.getUserId(), shareFile.getSize());
+        iUserService.addSize(user.getUserId(), shareFile.getSize());
         logger.info("转存文件插入数据库成功");
 
 

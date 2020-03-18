@@ -3,6 +3,7 @@ package site.pyyf.cloudDisk.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import site.pyyf.cloudDisk.config.AliyunConfig;
 import site.pyyf.cloudDisk.config.CloudDiskConfig;
 import site.pyyf.cloudDisk.entity.User;
 import site.pyyf.cloudDisk.service.*;
@@ -19,29 +20,30 @@ import javax.servlet.http.HttpSession;
  * @Version: 1.0
  **/
 public class BaseController {
+
+    @Autowired
+    protected AliyunConfig aliyunConfig;
+    @Autowired
+    protected CloudDiskConfig cloudDiskConfig;
+
     @Autowired
     protected IMediaTranfer iMediaTranfer;
     @Autowired
     protected IFilePreviewService ifilePreviewService;
-
     @Autowired
-    protected IUserService iUserService;
+    protected IFileStoreService iFileStoreService;
     @Autowired
     protected IMyFileService iMyFileService;
     @Autowired
     protected IFileFolderService iFileFolderService;
-
-//    @Autowired
-//    protected UserService userService;
-
     @Autowired
     protected ILibraryService iLibraryService;
-    @Autowired
-    protected CloudDiskConfig cloudDiskConfig;
     @Autowired
     protected IOSSService iossService;
     @Autowired
     protected IEbookContentService iEbookContentService;
+    @Autowired
+    protected IUserService iUserService;
     @Autowired
     protected RedisTemplate redisTemplate;
 

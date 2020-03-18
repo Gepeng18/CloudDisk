@@ -38,10 +38,6 @@ public class User implements Serializable {
     * 注册时间
     */
     private Date registerTime;
-
-
-
-    //     user独有的列名
     /**
      * 当前容量（单位KB）
      */
