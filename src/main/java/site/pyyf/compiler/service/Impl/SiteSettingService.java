@@ -15,13 +15,6 @@ public class SiteSettingService implements ISiteSettingService {
     @Autowired
     public SiteSettingMapper siteSettingMapper;
 
-    public int allowRegister(){
-        return siteSettingMapper.getSiteSetting("允许注册");
-    }
-
-    public int allowKaptchaLogin(){
-        return siteSettingMapper.getSiteSetting("验证码登录");
-    }
     public int allowOnlineExecutor(){
         return siteSettingMapper.getSiteSetting("允许在线编译");
     }

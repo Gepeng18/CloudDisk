@@ -5,10 +5,6 @@ import site.pyyf.compiler.dao.SiteSettingMapper;
 
 public interface ISiteSettingService {
 
-
-    public int allowRegister();
-
-    public int allowKaptchaLogin();
     public int allowOnlineExecutor();
 
 }
