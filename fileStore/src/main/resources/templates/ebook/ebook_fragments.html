@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+<div class="navbar navbar-duomi navbar-static-top" role="navigation">
+    <div class="container-fluid">
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+
+            <ul th:fragment="headFragment(headers,n)" th:id="${headers.getContentId()}" class="nav nav-list collapse secondmenu"
+                style="height: 0px;">
+                <li th:each="header:${headers.getSubNodes()}" th:style="|margin-left:${n}px|"  >
+                    <!--                    这一项的key-->
+                    <a th:href="@{|#${header.getContentId()}|}" th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed" data-toggle="collapse"
+                       th:text="${header.getHeader()}" style="word-wrap:break-word;">
+                        系统管理
+                    </a>
+                    <!--                    这一项的value,也就是下一个dir-->
+                    <th:block th:replace="ebook/ebook_fragments::headFragment(${header},${n}+10)">
+                    </th:block>
+
+                </li>
+
+            </ul>
+
+
+        </div>
+
+    </div>
+</div>
+
+
+<!-- 分页 -->
+<nav class="mt-5" th:if="${page.rows>0}" th:fragment="pagination">
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+        </li>
+        <li th:class="|page-item ${page.current==1?'disabled':''}|">
+            <a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a></li>
+        <li th:class="|page-item ${i==page.current?'active':''}|"
+            th:each="i:${#numbers.sequence(page.from,page.to)}">
+            <a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+        </li>
+        <li th:class="|page-item ${page.current==page.total?'disabled':''}|">
+            <a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>
+        </li>
+    </ul>
+</nav>
+
+
+<link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>

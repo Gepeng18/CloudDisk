@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+          rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/prism/prism.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/typo.css" rel="stylesheet">
+
+    <style type="text/css">/*文档内嵌样式表*/
+    body {
+        background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/greek-vase.png");
+    }
+    </style>
+</head>
+<body>
+
+<div class="nk-container" style="margin:80px">
+    <div id="markdown2" class="typo  typo-selection" th:utext="${code}"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/prism/prism.js"></script>
+<script type="text/javascript" src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" crossorigin="anonymous"
+        type="text/javascript"></script>
+<link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+<script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+
+<script>
+    function compile(id) {
+        $("#button" + id).html('<i class="fa fa-spinner fa-pulse"></i>&nbsp;  运行中\n');
+        var code = $('#code' + id).text();
+        console.log("code=" + code);
+        var formData = new FormData();
+        formData.append('code', code);
+        $.ajax({
+            url: '/cloudpan/java/compile',
+            type: 'POST',
+            data: formData,
+            dataType: "json",
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (result) {
+                alert(result.msg);
+                $("#button" + id).html('<i class="fa fa-play"></i>&nbsp;  运行\n');
+            },
+            error: function (result) {
+                console.log("错误");
+                var res = $.parseJSON(result);  //用jQuery处理传过来的json值
+                console.log("处理结果" + res);
+                alert(returndata);
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

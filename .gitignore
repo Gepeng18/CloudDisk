@@ -14,7 +14,7 @@ logs/
 /log/
 /cache/
 /target/
-/temp/
+/fileStore/temp/
 
 
 ### STS ###
@@ -45,15 +45,15 @@ logs/
 
 
 ### Ebook ###
-/src/main/resources/application.properties
-/src/main/java/site/pyyf/cloudDisk/utils/OSS/OssUpload.java
-/src/main/java/site/pyyf/cloudDisk/utils/FtpUtil.java
+/fileStore/src/main/resources/application.properties
+/fileStore/src/main/resources/qqconnectconfig.properties
+/fileStore/src/main/java/site/pyyf/fileStore/utils/OSS/OssUpload.java
+/fileStore/src/main/java/site/pyyf/fileStore/utils/FtpUtil.java
+/fileStore/src/main/resources/application.yml
+/compiler/src/main/resources/application.yml
 
-### cloudpan ###
-/src/main/resources/application.yml
-/src/main/resources/qqconnectconfig.properties
 
 *.log
 *.log.*
-/src/main/resources/data/
+/fileStore/src/main/resources/data/
 /tmp/

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"
+          name="viewport">
+    <title>鹏圆网盘-我的文件</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-fileinput@5.0.6/css/fileinput.css" media="all" rel="stylesheet"
+          type="text/css" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          crossorigin="anonymous" type="text/css"/>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/css/ionicons.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/font-awesome-4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/summernote/summernote-lite.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/flag-icon-css/css/flag-icon.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/css/demo.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/css/style.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/cloudpan/css/upload-file.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/xcConfirm/css/xcConfirm.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/context-menu/css/contextMenu.css">
+
+    <!--    视频播放器-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.1/mediaelement-master/build/mediaelementplayer.css">
+
+<!--    图片播放器-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.2/viewerjs-master/docs/css/viewer.css">
+<!--    缩略图-->
+    <style>
+        .smallImg {
+            width:32px;
+            height:32px;
+        }
+
+    </style>
+    <!--    视频播放器-->
+    <style>
+
+        html, body {
+            overflow-x: hidden;
+        }
+
+
+        a {
+            word-wrap: break-word;
+        }
+
+        code {
+            font-size: 0.8em;
+        }
+
+        #audioPlayer-container .mejs__time-buffering, #audioPlayer-container .mejs__time-current, #audioPlayer-container .mejs__time-handle,
+        #audioPlayer-container .mejs__time-loaded, #audioPlayer-container .mejs__time-hovered, #audioPlayer-container .mejs__time-marker, #audioPlayer-container .mejs__time-total {
+            height: 2px;
+        }
+
+        #audioPlayer-container .mejs__time-total {
+            margin-top: 9px;
+        }
+
+        #audioPlayer-container .mejs__time-handle {
+            left: -5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffffff;
+            top: -5px;
+            cursor: pointer;
+            display: block;
+            position: absolute;
+            z-index: 2;
+            border: none;
+        }
+
+        #audioPlayer-container .mejs__time-handle-content {
+            top: 0;
+            left: 0;
+            width: 12px;
+            height: 12px;
+        }
+    </style>
+
+
+    <style>
+        .files-items {
+            margin-top: -20px;
+            border-bottom: 1px dashed #bdc3c7;
+            border-top: 1px dashed #bdc3c7;
+        }
+
+        .files-items:hover {
+            background: #F4FBFF;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<th:block th:replace="commons/fragments::setting">
+
+</th:block>
+<div id="app">
+    <div class="main-wrapper">
+        <div class="navbar-bg"></div>
+        <div th:replace="commons/bar::#top"></div>
+        <div th:replace="commons/bar::#sidebar(currUri='all',statistics = ${statistics})"></div>
+
+        <div class="main-content">
+            <section class="section">
+                <h1 class="section-header" style="height:80px">
+                    <div style="float:left"><i class="ion ion-folder"></i> 全部文件
+                    </div>
+                    <div style="float:left;margin-left:20px;margin-top:-20px">
+                        <img src="https://img-blog.csdnimg.cn/20181121162612115.gif" style="width:80px">
+                    </div>
+                </h1>
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="dropdown">
+                                    <button type="button" class="btn btn-light dropdown-toggle" id="dropdownMenu1"
+                                            data-toggle="dropdown"
+                                            style="height:36px;width:80px;padding-left:20px;padding-top:6px;margin-bottom:5px">
+                                        文件
+                                        <span class="caret"></span>
+                                    </button>
+                                    <div class="dropdown-menu" role="menu"
+                                         aria-labelledby="dropdownMenu1">
+
+                                        <a class="dropdown-item" href="#" data-toggle="modal" style="margin-left:3px"
+                                           data-target="#uploadElasticframe"><i class="fa fa-upload"></i>&nbsp; 上传</a>
+                                        <a class="dropdown-item" href="#" data-toggle="modal"
+                                           data-target="#saveShareElasticframe">&nbsp;<i class="fa fa-save"></i>&nbsp;
+                                            保存分享的资源</a>
+
+
+                                    </div>
+
+
+                                </div>
+                                <nav aria-label="breadcrumb" class="empty-space">
+                                    <ol class="breadcrumb">
+                                        <li class="breadcrumb-item"><a
+                                                th:href="@{/files(fId=${nowFolder.fileFolderId})}"
+                                                title="刷新"><i
+                                                class="icon ion-refresh"></i></a>
+                                        </li>
+                                        <li th:class="${nowFolder.fileFolderId == 0?'breadcrumb-item active':'breadcrumb-item'}">
+                                                            <span th:if="${nowFolder.fileFolderId == 0}"
+                                                                  th:text="根目录"></span><a style="font-weight: bold"
+                                                                                          th:if="${nowFolder.fileFolderId != 0}"
+                                                                                          href="files">根目录</a></li>
+                                        <li th:each="l:${location}" class="breadcrumb-item"><a
+                                                style="font-weight: bold"
+                                                th:href="@{/files(fId=${l.fileFolderId},fName=${l.fileFolderName})}"
+                                                th:text="${l.fileFolderName}"></a></li>
+                                        <li th:if="${nowFolder.fileFolderId != 0}"
+                                            class="breadcrumb-item active" aria-current="page"
+                                            th:text="${nowFolder.fileFolderName}"></li>
+                                        <li th:if="${nowFolder.fileFolderId != 0}"
+                                            class="breadcrumb-item"><a
+                                                th:href="@{/files(fId=${nowFolder.parentFolderId})}"
+                                                title="返回上一层"><i
+                                                class="icon ion-arrow-return-left"></i></a>
+                                        </li>
+                                    </ol>
+                                </nav>
+                                <div class="row" style="margin-top: -10px;">
+                                    <div class="col-12 col-sm-12 col-lg-12 table-responsive">
+                                        <table class="table tab-bordered text-nowrap" id="files-table">
+                                            <tr id="files-table-title" class="empty-space">
+                                                <th></th>
+                                                <th>名称</th>
+                                                <th>类型</th>
+                                                <th>扩展名</th>
+                                                <th>大小</th>
+                                                <th>下载次数</th>
+                                                <th>上传时间</th>
+                                            </tr>
+
+<!--                                            遍历文件夹-->
+                                            <tr th:each="folder:${folders}" class="files-items folders">
+
+                                                <td><span style="display: none" th:text="${folder.fileFolderId}"></span><img
+                                                        src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/directory.png"
+                                                        height="30px" alt="Cinque Terre"></td>
+                                                <td>
+                                                    <a th:href="@{/files(fId=${folder.fileFolderId},fName=${folder.fileFolderName})}"
+                                                       style="font-weight: 700;color: black"
+                                                       th:text="${folder.fileFolderName}"></a>
+                                                </td>
+                                                <td style="font-weight: 300">文件夹</td>
+                                                <td style="font-weight: 300">-</td>
+                                                <td style="font-weight: 300">-</td>
+                                                <td style="font-weight: 300">-</td>
+                                                <td style="font-weight: 300"
+                                                    th:text="${#dates.format(folder.time,'yyyy-MM-dd HH:mm')}"></td>
+                                            </tr>
+
+<!--                                            遍历文件-->
+
+                                            <tr th:each="f:${files}" class="files-items files">
+                                                <td>
+                                                    <span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
+                                                    <span id="showPath" style="display: none" th:text="${f.getShowPath()}"></span>
+
+                                                    <img th:src="@{https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/{language}.png(language=${f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1)})}"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==1}">
+
+<!--                                                    <img th:src="|${(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('cpp')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cpp.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('java')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/java.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('html')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/html.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('md')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/markdown.png':-->
+<!--                        										(f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1).equals('py')? 'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/python.png':-->
+<!--                        										'https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/file.png')))))}|"-->
+<!--                                                         height="30px" alt="Cinque Terre" th:if="${f.getType()==1}">-->
+
+
+                                                    <span class="thumbnail_img" title="我的图片1" th:if="${f.getType()==2}">
+                                                        <img th:src="@{${f.getShowPath()}}" alt="我的图片1" class="smallImg">
+                                                    </span>
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/video.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==3}">
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/music.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==4}">
+
+                                                    <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/file.png"
+                                                         height="30px" alt="图标暂未录入" th:if="${f.getType()==5}">
+
+                                                    <!--												-->
+                                                    <!--												<i style="font-size: 24px;color: #3498db" th:if="${f.type == 1}" class="icon ion-document-text"></i>-->
+                                                    <!--												<i style="font-size: 24px;color: #28a745" th:if="${f.getMyFileName().substring(f.getMyFileName().lastIndexOf('.')+1).equals("")}" class="icon ion-image"></i>-->
+                                                    <!--												<i style="font-size: 24px;color: #FFC107" th:if="${f.type == 3}" class="icon ion-ios-videocam"></i>-->
+                                                    <!--												<i style="font-size: 24px;color: #dc3545" th:if="${f.type == 4}" class="icon ion-ios-musical-notes"></i>-->
+                                                    <!--												<i style="font-size: 24px;color: #343A40" th:if="${f.type == 5}" class="icon ion-document"></i>-->
+                                                </td>
+                                                <td style="width: 300px">
+                                                    <a href="#" style="font-weight: 700;color: black"
+                                                       th:text="${f.myFileName}"></a>
+                                                </td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 1}">代码</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 2}">图像</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 3}">视频</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 4}">音乐</td>
+                                                <td style="font-weight: 300;" th:if="${f.type == 5}">其他</td>
+
+                                                <td style="font-weight: 300" th:text="${f.postfix}"></td>
+                                                <td style="font-weight: 300" th:if="${f.size > 1024}" id="size1"
+                                                    th:text="${f.size/1024 +'MB'}"></td>
+                                                <td style="font-weight: 300" th:if="${f.size < 1024}" id="size2"
+                                                    th:text="${f.size +'KB'}"></td>
+                                                <td style="font-weight: 300" th:text="${f.downloadTime} + ' 次'"></td>
+                                                <td style="font-weight: 300"
+                                                    th:text="${#dates.format(f.uploadTime,'yyyy-MM-dd HH:mm')}">
+                                                    2020-02-02 15:08
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="float-right">
+                                            <a href="javaScript:addFolderElement()"
+                                               class="btn btn-sm btn-outline-success"><i class="icon ion-plus"></i>
+                                                创建文件夹</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span id="nowF" style="display: none" th:text="${nowFolder.fileFolderId}"></span>
+                <span id="preF" style="display: none" th:text="${nowFolder.parentFolderId}"></span>
+                <span id="tarFolder" style="display: none"></span>
+                <span id="tarFile" style="display: none"></span>
+                <span id="preAudioName" style="display: none"></span>
+                <span id="preAudioId" style="display: none"></span>
+
+                <div class="row" th:if="${(files.size() == 0)&&(folders.size()==0)}">
+                    <div class="col-12 col-sm-12 col-lg-12">
+                        <div class="alert alert-primary alert-has-icon alert-dismissible show fade">
+                            <div class="alert-icon"><i class="ion ion-ios-lightbulb-outline"></i></div>
+                            <div class="alert-body">
+                                <button class="close" data-dismiss="alert">
+                                    <span>×</span>
+                                </button>
+                                <div class="alert-title">这里空空的，什么都没有..</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div th:replace="commons/bar::#footer"></div>
+    </div>
+
+    <!-- 弹出框 -->
+    <div class="modal fade" id="saveShareElasticframe" tabindex="-1" role="dialog"
+         aria-labelledby="saveShareModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">输入你需要保存的资源</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+
+                <!--                        <input type="hidden" name="absolute_path" th:value="${absolute_path}">-->
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        <input type="hidden" id="fileFolderId" name="fileFolderId" th:value="${nowFolder.fileFolderId}">
+                        <label for="pwd" class="col-form-label">您需要保存的资源</label>
+                        <input type="text" class="form-control" id="pwd" name="pwd">
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            style="padding-top:8px; padding-left:0px;padding-right:0px;width:80px;height:40px"
+                            class="btn btn-default" data-dismiss="modal"><i class="fa fa-arrow-circle-left"></i>&nbsp;
+                        取消
+                    </button>
+                    <button id="submit" type="button"
+                            style="padding-top:8px; padding-left:0px;padding-right:0px;width:80px;height:40px"
+                            th:onclick="doShare()" class="btn btn-success"><i class="fa fa-save"></i>&nbsp; 确定
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 弹出框 -->
+    <div class="modal fade" id="uploadElasticframe" tabindex="-1" role="dialog"
+         aria-labelledby="uploadModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">上传文件</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            onclick="closeAndRefresh()">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+
+                <!--                        <input type="hidden" name="absolute_path" th:value="${absolute_path}">-->
+                <div class="modal-body">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>当前路径</h4>
+                            <nav aria-label="breadcrumb" class="empty-space">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a
+                                            th:href="@{/upload(fId=${nowFolder.fileFolderId})}"
+                                            title="刷新"><i
+                                            class="icon ion-refresh"></i></a>
+                                    </li>
+                                    <li th:class="${nowFolder.fileFolderId == 0?'breadcrumb-item active':'breadcrumb-item'}">
+                                                            <span th:if="${nowFolder.fileFolderId == 0}"
+                                                                  th:text="根目录"></span><a style="font-weight: bold"
+                                                                                          th:if="${nowFolder.fileFolderId != 0}"
+                                                                                          href="upload">根目录</a></li>
+                                    <li th:each="l:${location}" class="breadcrumb-item"><a
+                                            style="font-weight: bold"
+                                            th:href="@{/upload(fId=${l.fileFolderId},fName=${l.fileFolderName})}"
+                                            th:text="${l.fileFolderName}"></a></li>
+                                    <li th:if="${nowFolder.fileFolderId != 0}"
+                                        class="breadcrumb-item active" aria-current="page"
+                                        th:text="${nowFolder.fileFolderName}"></li>
+                                    <li th:if="${nowFolder.fileFolderId != 0}"
+                                        class="breadcrumb-item"><a
+                                            th:href="@{/upload(fId=${nowFolder.parentFolderId})}"
+                                            title="返回上一层"><i
+                                            class="icon ion-arrow-return-left"></i></a>
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <div id="uploader" style="margin-top: -10px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div id="videoElasticframe" style="display:none;background-color:white;border:#7577845e solid 0.5px;">
+
+        <div style="float: right;">
+            <button style="background:white;border:white;width: 40px" onclick="closeAndPause()"><img
+                    src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/close3.png" alt="关闭"></button>
+        </div>
+        <div class="players" id="videoPlayer-container">
+            <div class="media-wrapper">
+                <video id="videoPlayer" width="640" height="360" style="max-width:100%;"
+                       poster="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png" preload="none" controls
+                       playsinline webkit-playsinline>
+                    <source id="video" src="" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+<!--音乐播放器-->
+<!--如果是这个层次的话sun是跟随father走的啊，因为是嵌套关系啊，就好比杯子里面有水，总不能杯子走了，水还在原地不动吧，道理是一样的。sun一般情况下总是相对于father来动，father在左侧sun也会到左侧，因为sun在father内部，这个我就不多解释了。特殊的情况是sun绝对定位了，例如sun的样式是width:10px;height:10px;position:absolute;top:0px;left:0px;这样就是相对于页面左上角定位了，如果给父亲添加一个position:relative;那么sun不在页面左上角了，而是在father的左上角了。也就是说sun往上层找有没有relative定位的元素，如果没有就直接相对于window窗口定位。因此，absolute一般是和父层的relative来一起使用的。-->
+<!--position:fixed;定位的时候 只要不写top、left、top、right值，他就会默认居于父级进行定位，又不会失去fixed的不动特性，只是位置只能在左上角，要定位在其他地方就在加上margin值处理即可：-->
+<div id="audioPlayerTool" style="width: 275px; height: 40px; background-color: rgb(35, 35, 35); position: fixed; inset: 100px 0px 100px 5px; float: right; z-index: 10;">
+
+    <div class="players" id="audioPlayer-container" style="float:right;position:fixed;height:40px;">
+        <div class="media-wrapper">
+            <audio id="audioPlayer" preload="none" controls="" style="width:250px;">
+                <source src="" type="audio/mp3">
+            </audio>
+        </div>
+        <br>
+    </div>
+    <div style="position:fixed; margin-left:240px;height:40px;width:30px">
+        <button type="button" onclick="suoxiao()" style="background-color: transparent;outline: none;border: 0;  padding-left:0px;width:30px;height:40px;">
+            <img id="audioPlayerSrc" src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/右.png" alt="缩小">
+        </button>
+
+    </div>
+</div>
+<span id="audioPlayerPosition"></span>
+
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
+<th:block th:replace="commons/fragments::hoverAndDblick">
+
+</th:block>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/context-menu/js/jquery.contextMenu.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/xcConfirm/js/xcConfirm.js"></script>
+
+<!--音乐播放器缩小-->
+<th:block th:replace="commons/fragments::someFunction"></th:block>
+<!--    播放器-->
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/mediaelement/build/mediaelement-and-player.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/mediaelement/build/renderers/dailymotion.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/mediaelement/build/renderers/soundcloud.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/mediaelement/build/renderers/vimeo.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/mediaelement/demo/demo.js"></script>
+<th:block th:replace="commons/fragments::contextMenu"></th:block>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/cloudpan/js/easyUploader.jq.js"></script>
+
+<!--<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" crossorigin="anonymous" type="text/javascript"></script>-->
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/jquery.min.js"></script>
+
+<!--图片播放器-->
+<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>-->
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/testCdn@v0.0.2/viewerjs-master/docs/js/viewer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/popper.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" crossorigin="anonymous"
+        type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/tooltip.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/nicescroll/jquery.nicescroll.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/scroll-up-bar/dist/scroll-up-bar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/js/sa-functions.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/summernote/summernote-lite.js"></script>
+
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/js/scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/js/custom.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/ionicons/plugin/dist/js/demo.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/chart.min.js"></script>
+
+
+
+<!--不加就凉凉-->
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.14/lib/nicescroll/jquery.nicescroll.min.js"></script>
+
+<th:block th:replace="commons/fragments::share"></th:block>
+
+<!--上传模块-->
+<script>
+    var uploader = easyUploader({
+
+        id: "uploader",
+        accept: '',
+        action: 'uploadFile',
+        dataFormat: 'formData',
+        headers: {
+            id: $('#nowF').html()
+        },
+        maxCount: 10,
+        maxSize: 50,
+        multiple: true,
+        data: null,
+        beforeUpload: function (file, data, args) {
+            //todo
+            //这里加的可能出现问题
+
+            if (data != null) {
+                /* dataFormat为formData时配置发送数据的方式 */
+                data.append('token', '387126b0-7b3e-4a2a-86ad-ae5c5edd0ae6TT');
+                data.append('otherKey', 'otherValue');
+
+            }
+
+            /* dataFormat为base64时配置发送数据的方式 */
+            // data.base = file.base;
+            // data.token = '387126b0-7b3e-4a2a-86ad-ae5c5edd0ae6TT';
+            // data.otherKey = 'otherValue';
+        },
+        onChange: function (fileList) {
+            /* input选中时触发 */
+            document.body.onbeforeunload = function () {
+                window.event.returnValue = "确认离开？";
+            }
+        },
+        onRemove: function (removedFiles, files) {
+            console.log('onRemove', removedFiles);
+        },
+        onSuccess: function (res) {
+
+            var code = res["code"];
+            console.log(code);
+            if (code == 501) {
+                alert("当前目录存在同名文件，请删除后再试！");
+            }
+            if (code == 502) {
+                alert("文件名不符合规范，支持【汉字,字符,数字,下划线,英文句号,横线】");
+            }
+            if (code == 503) {
+                alert("仓库容量不足，上传失败！");
+            }
+            if (code == 504) {
+                alert("服务器出错了！");
+            }
+            console.log("我到这了");
+            // document.body.onbeforeunload = function () {
+            //     window.event.returnValue = "确认离开？";
+            // }
+        },
+        onError: function (err) {
+            console.log('onError', err);
+        },
+    });
+</script>
+</body>
+</html>

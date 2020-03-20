@@ -1,0 +1,53 @@
+{
+  "groups": [
+    {
+      "name": "aliyun",
+      "type": "site.pyyf.fileStore.config.AliyunConfig",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "clouddisk",
+      "type": "site.pyyf.fileStore.config.CloudDiskConfig",
+      "sourceType": "site.pyyf.fileStore.config.CloudDiskConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "aliyun.access-key-id",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "aliyun.access-key-secret",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "aliyun.bucket-name",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "aliyun.endpoint",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "aliyun.url-prefix",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.AliyunConfig"
+    },
+    {
+      "name": "clouddisk.max-show-size",
+      "type": "java.lang.Integer",
+      "sourceType": "site.pyyf.fileStore.config.CloudDiskConfig",
+      "defaultValue": 0
+    },
+    {
+      "name": "clouddisk.type",
+      "type": "java.lang.String",
+      "sourceType": "site.pyyf.fileStore.config.CloudDiskConfig"
+    }
+  ],
+  "hints": []
+}

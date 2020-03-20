@@ -94,3 +94,16 @@ create table library
     constraint ebook_header_pk
         primary key (id)
 );
+
+
+DROP TABLE IF EXISTS `site_setting`;
+create table site_setting
+(
+    id int not null auto_increment,
+    setting int not null,
+    description varchar(10) not null,
+    constraint site_setting_pk
+        primary key (id)
+);
+insert into site_setting(setting, description) values (1,'允许注册');
+insert into site_setting(setting, description) values (1,'允许在线编译');

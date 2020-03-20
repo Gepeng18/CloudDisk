@@ -1,0 +1,12 @@
+#dubbo
+dubbo:
+  application:
+    name: compiler
+  registry:
+    address: zookeeper://localhost:2181
+  protocol:
+    name:
+    port:
+server:
+  port:
+

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.pyyf.fileStore.mapper.IebookContentMapper">
+    <sql id="selectContentFields">
+        id, content_id,content,ebook_id
+    </sql>
+
+    <sql id="insertContentFields">
+        content_id,content,ebook_id
+    </sql>
+
+
+    <insert id="insertEbookContent">
+        insert into ebook_content(<include refid="insertContentFields"></include>)
+        values(#{contentId},#{content},#{ebookId})
+    </insert>
+
+    <select id="selectByContentId" resultType="site.pyyf.fileStore.entity.EbookConent">
+        select
+        <include refid="selectContentFields"></include>
+        from ebook_content
+        where content_id=#{contentId}
+    </select>
+
+
+    <update id="updateContentByContentId">
+        update ebook_content
+        set content = #{content}
+        where content_id like #{contentId}
+    </update>
+
+
+    <select id="selectContentByContentId" resultType="java.lang.String">
+         select content
+        from ebook_content
+        where content_id like #{contentId}
+    </select>
+
+
+    <delete id="deleteByBookId">
+        delete
+        from ebook_content
+        where ebook_id=#{bookId}
+    </delete>
+
+    <insert id="insertAllEbookContent" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into ebook_content
+        (<include refid="insertContentFields"></include>)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.contentId},
+            #{item.content},
+            #{item.ebookId}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

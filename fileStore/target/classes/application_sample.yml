@@ -1,0 +1,77 @@
+aliyun:
+  accessKeyId:
+  accessKeySecret:
+  endpoint:
+  bucketName:
+  urlPrefix:
+
+# 配置项目名和session的过期时间
+server:
+  servlet:
+    context-path: /cloudpan
+    session:
+      timeout: 600m
+  tomcat:
+    uri-encoding: UTF-8
+# 日志的存放位置与级别
+logging:
+  #  config: classpath:logback.xml
+  file:
+    name: log/cloudDisk.log
+  level:
+    root: info
+# 配置Mybatis
+mybatis:
+  config-location: classpath:mybatis/mybatis-config.xml
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+clouddisk:
+  maxShowSize: 40
+  type: OSS
+
+
+
+
+spring:
+  #  静态资源的访问路径
+  mvc:
+    static-path-pattern: /**
+  datasource:
+    # 配置数据源
+    username: root
+    password: root
+    url: jdbc:mysql://localhost/cloudpan?serverTimezone=Hongkong&useAffectedRows=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      maximum-pool-size: 15
+      minimum-idle: 5
+      idle-timeout: 30000
+  # RedisProperties
+  redis:
+    database: 11
+    host: localhost
+    port: 6379
+
+  # 配置ThymeLeaf模板缓存
+  thymeleaf:
+    cache: true
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+
+  # 配置文件上传相关
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1024MB
+
+#dubbo
+dubbo:
+  application:
+    name: clouddisk
+  registry:
+    address: zookeeper://localhost:2181
