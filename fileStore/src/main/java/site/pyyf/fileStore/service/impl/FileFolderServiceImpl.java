@@ -41,7 +41,7 @@ private static final Logger logger= LoggerFactory.getLogger(FileFolderServiceImp
             if(folders.size()!=0)
                 redisTemplate.opsForList().rightPushAll(userFoldersKey,folders.toArray());
         }else{
-            logger.info("查询文件夹时缓存击中，查询缓存");
+            logger.info("查询文件夹时缓存击中，查询Redis缓存");
         }
         return folders;
     }

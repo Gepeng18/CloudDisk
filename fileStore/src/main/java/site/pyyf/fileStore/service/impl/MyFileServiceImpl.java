@@ -47,7 +47,7 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
             if (files.size() != 0)
                 redisTemplate.opsForList().rightPushAll(userFilesKey, files.toArray());
         } else {
-            logger.info("查询文件时缓存击中，查询缓存");
+            logger.info("查询文件时缓存击中，查询Redis缓存");
 
         }
         return files;
