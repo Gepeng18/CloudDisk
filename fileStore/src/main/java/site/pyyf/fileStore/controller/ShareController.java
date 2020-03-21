@@ -184,11 +184,8 @@ public class ShareController extends BaseController {
     //将文件夹fileFolder放到fileFolderId中
     public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
         User user = iUserService.getUserByUserId(loginUser.getUserId());
-<<<<<<< HEAD
+
         List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), fileFolder.getFileFolderId());
-=======
-        List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),fileFolder.getFileFolderId());
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
         //设置文件夹信息
         FileFolder thisFolder = FileFolder.builder()
                 .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).userId(user.getUserId())
@@ -198,11 +195,7 @@ public class ShareController extends BaseController {
             transferSaveFile(file, thisFolder.getFileFolderId());
         }
 
-<<<<<<< HEAD
         List<FileFolder> folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), fileFolder.getFileFolderId());
-=======
-        List<FileFolder> folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(),fileFolder.getFileFolderId());
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
         for (FileFolder folder : folders) {
             transferSaveFolder(folder, thisFolder.getFileFolderId());
         }
@@ -214,18 +207,10 @@ public class ShareController extends BaseController {
         User user = iUserService.getUserByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
         List<MyFile> myFiles = null;
-<<<<<<< HEAD
         myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
 
-=======
-        if (toFileFolderId == 0) {
-            //当前目录为根目录
-            myFiles = iMyFileService.getRootFilesByUserId(loginUser.getUserId());
-        } else {
-            //当前目录为其他目录
-            myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),toFileFolderId);
-        }
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
+        //当前目录为其他目录
+        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
                 logger.error("当前文件已存在!上传失败...");

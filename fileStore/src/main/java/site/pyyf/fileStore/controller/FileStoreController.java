@@ -59,18 +59,9 @@ public class FileStoreController extends BaseController {
         Integer folderId = Integer.valueOf(request.getHeader("id"));
 
         //获取当前目录下的所有文件，用来判断是否已经存在
-<<<<<<< HEAD
         List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folderId);
-=======
-        List<MyFile> myFiles = null;
-        if (folderId == 0) {
-            //当前目录为根目录
-            myFiles = iMyFileService.getRootFilesByUserId(loginUser.getUserId());
-        } else {
-            //当前目录为其他目录
+
             myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),folderId);
-        }
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
 
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         for (int i = 0; i < myFiles.size(); i++) {
@@ -136,11 +127,7 @@ public class FileStoreController extends BaseController {
 
         String userFilesKey = RedisKeyUtil.getUserFilesKey(String.valueOf(loginUser.getUserId()), String.valueOf(folderId));
         logger.info("文件上传成功，向缓存中增加一个文件");
-<<<<<<< HEAD
-        redisTemplate.opsForList().rightPush(userFilesKey, fileItem);
-=======
         redisTemplate.opsForList().rightPush(userFilesKey,fileItem);
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
 
         resultMap.put("code", 200);
         return resultMap;
@@ -241,21 +228,12 @@ public class FileStoreController extends BaseController {
         //删除文件表对应的数据
         iMyFileService.deleteByFileId(fId);
 
-<<<<<<< HEAD
-        clearFilesCache(loginUser.getUserId(), folderId);
-=======
         clearFilesCache(loginUser.getUserId(),folderId);
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
         logger.info("文件删除成功，文件缓存删除。。。。");
 
         return "redirect:/files?fId=" + folderId;
     }
 
-
-<<<<<<< HEAD
-=======
-
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     /**
      * @return java.lang.String
      * @Description 删除文件夹并清空文件
@@ -281,23 +259,13 @@ public class FileStoreController extends BaseController {
      **/
     public void deleteFolderF(FileFolder folder) {
 
-<<<<<<< HEAD
         clearFoldersCache(loginUser.getUserId(), folder.getParentFolderId());
-        logger.info("文件夹删除成功，文件夹缓存删除。。。。");
-
-        //删除当前文件夹的所有的文件
-        List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folder.getFileFolderId());
-        if (files.size() != 0) {
-            clearFoldersCache(loginUser.getUserId(), files.get(0).getParentFolderId());
-=======
-        clearFoldersCache(loginUser.getUserId(),folder.getParentFolderId());
         logger.info("文件夹删除成功，文件夹缓存删除。。。。");
 
         //删除当前文件夹的所有的文件
         List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),folder.getFileFolderId());
         if (files.size() != 0) {
             clearFoldersCache(loginUser.getUserId(),files.get(0).getParentFolderId());
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
             logger.info("文件夹删除成功，文件夹缓存删除。。。。");
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
@@ -354,11 +322,7 @@ public class FileStoreController extends BaseController {
 
         String userFoldersKey = RedisKeyUtil.getUserFoldersKey(String.valueOf(loginUser.getUserId()), String.valueOf(folder.getParentFolderId()));
         logger.info("向缓存中增加一个文件夹");
-<<<<<<< HEAD
         redisTemplate.opsForList().rightPush(userFoldersKey, folder);
-=======
-        redisTemplate.opsForList().rightPush(userFoldersKey,folder);
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
 
         return "redirect:/files?fId=" + folder.getParentFolderId();
     }
@@ -388,13 +352,8 @@ public class FileStoreController extends BaseController {
         Integer integer = iFileFolderService.updateFileFolderById(fileFolder);
         logger.info("重命名文件夹成功!" + folder);
 
-<<<<<<< HEAD
-        clearFoldersCache(loginUser.getUserId(), fileFolder.getParentFolderId());
-=======
         clearFoldersCache(loginUser.getUserId(),fileFolder.getParentFolderId());
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
         logger.info("文件夹缓存清除成功");
-
         return "redirect:/files?fId=" + fileFolder.getParentFolderId();
     }
 
@@ -426,11 +385,7 @@ public class FileStoreController extends BaseController {
             }
         }
 
-<<<<<<< HEAD
         clearFilesCache(loginUser.getUserId(), myFile.getParentFolderId());
-=======
-        clearFilesCache(loginUser.getUserId(),myFile.getParentFolderId());
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
         logger.info("文件缓存清除成功");
 
         return "redirect:/files?fId=" + myFile.getParentFolderId();
@@ -453,16 +408,9 @@ public class FileStoreController extends BaseController {
 
     /**
      * Created by "gepeng" on 2020-03-81 10:25:20.
-<<<<<<< HEAD
-     *
-     * @param [userId, folderId]
-     * @return void
-     * @Description 删除文件夹的所有文件夹的Redis缓存
-=======
      * @Description 删除文件夹的所有文件夹的Redis缓存
      * @param [userId, folderId]
      * @return void
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
      */
     private void clearFoldersCache(Integer userId, Integer folderId) {
         String userFoldersKey = RedisKeyUtil.getUserFoldersKey(String.valueOf(userId), String.valueOf(folderId));
@@ -471,16 +419,9 @@ public class FileStoreController extends BaseController {
 
     /**
      * Created by "gepeng" on 2020-03-81 10:55:29.
-<<<<<<< HEAD
-     *
-     * @param [userId, folderId]
-     * @return void
-     * @Description 删除文件夹的所有文件的Redis缓存
-=======
      * @Description 删除文件夹的所有文件的Redis缓存
      * @param [userId, folderId]
      * @return void
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
      */
     private void clearFilesCache(Integer userId, Integer folderId) {
         String userFilesKey = RedisKeyUtil.getUserFilesKey(String.valueOf(userId), String.valueOf(folderId));

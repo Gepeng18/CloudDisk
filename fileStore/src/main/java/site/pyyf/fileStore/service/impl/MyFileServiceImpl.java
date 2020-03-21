@@ -26,15 +26,7 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
         return myFileMapper.deleteByFileId(myFileId);
     }
 
-    @Override
-<<<<<<< HEAD
-=======
-    public Integer deleteByParentFolderId(Integer id) {
-        return myFileMapper.deleteByParentFolderId(id);
-    }
 
-    @Override
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     public Integer addFileByUserId(MyFile myFile) {
         return myFileMapper.addFileByUserId(myFile);
     }
@@ -44,15 +36,8 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
         return myFileMapper.updateFileByFileId(myFile);
     }
 
-    @Override
-<<<<<<< HEAD
-=======
-    public List<MyFile> getRootFilesByUserId(Integer userId) {
-        return myFileMapper.getRootFilesByUserId(userId);
-    }
 
     @Override
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     public List<MyFile> getFilesByUserIdAndParentFolderId(Integer userId, Integer parentFolderId) {
         String userFilesKey = RedisKeyUtil.getUserFilesKey(String.valueOf(userId), String.valueOf(parentFolderId));
         List<MyFile> files = (List<MyFile>) redisTemplate.opsForList().range(userFilesKey, 0, -1);

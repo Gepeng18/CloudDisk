@@ -31,8 +31,6 @@ private static final Logger logger= LoggerFactory.getLogger(FileFolderServiceImp
         return fileFolderMapper.addFileFolder(fileFolder);
     }
 
-
-
     @Override
     public List<FileFolder> getFileFoldersByUserIdAndParentFolderId(Integer userId,Integer parentFolderId) {
         String userFoldersKey = RedisKeyUtil.getUserFoldersKey(String.valueOf(userId), String.valueOf(parentFolderId));
@@ -49,21 +47,11 @@ private static final Logger logger= LoggerFactory.getLogger(FileFolderServiceImp
         return folders;
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     @Override
     public Integer updateFileFolderById(FileFolder fileFolder) {
         return fileFolderMapper.updateFileFolderById(fileFolder);
     }
 
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     @Override
     public FileFolder getFileFolderByFileFolderId(Integer fileFolderId) {
         if(fileFolderId==0)
@@ -71,11 +59,8 @@ private static final Logger logger= LoggerFactory.getLogger(FileFolderServiceImp
         return fileFolderMapper.getFileFolderById(fileFolderId);
     }
 
-<<<<<<< HEAD
-=======
     @Override
     public List<FileFolder> getRootFoldersByUserId(Integer userId) {
         return fileFolderMapper.getRootFoldersByUserId(userId);
     }
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
 }

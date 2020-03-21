@@ -25,19 +25,8 @@ public interface IMyFileService {
      */
     Integer deleteByFileId(Integer myFileId);
 
-    /**
-<<<<<<< HEAD
-=======
-     * @Description 根据父文件夹的id删除文件
-     * @Author xw
-     * @Date 2020/2/9 15:49
-     * @Param [id]
-     * @Return Integer
-     */
-    Integer deleteByParentFolderId(Integer id);
 
     /**
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
      * @Description 添加文件
      * @Author xw
      * @Date 2020/2/9 15:50
@@ -65,18 +54,6 @@ public interface IMyFileService {
     Integer updateFile(MyFile record);
 
     /**
-<<<<<<< HEAD
-=======
-     * @Description 获得仓库根目录下的所有文件
-     * @Author xw
-     * @Date 23:53 2020/2/9
-     * @Param [userId]
-     * @return java.util.List<com.molihub.entity.MyFile>
-     **/
-    List<MyFile> getRootFilesByUserId(Integer userId);
-
-    /**
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
      * @Description 根据父文件夹和用户ID获取文件夹下的文件
      * @Author xw
      * @Date 2020/2/9 16:34

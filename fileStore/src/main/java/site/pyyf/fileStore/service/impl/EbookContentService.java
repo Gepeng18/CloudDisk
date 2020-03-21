@@ -37,10 +37,6 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
                 .build();
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     @Autowired
     public IebookContentMapper iebookContentMapper;
 
@@ -59,13 +55,6 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
         return cacheContent;
     }
 
-<<<<<<< HEAD
-=======
-    public void insertEbookContent(EbookConent ebookConent){
-        iebookContentMapper.insertEbookContent(ebookConent);
-    }
-
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
     public void updateContentByContentId(String contentId,String content){
         logger.info("内容改变，修改缓存内容");
         String caffeineKey = "markdown:"+contentId;
