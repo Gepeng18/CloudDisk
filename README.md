@@ -8,14 +8,18 @@
 - 支持代码的在线预览(支持众多代码格式)，其中java代码可以直接运行
 - 提供markdown自动分页功能，方便在线预览
 - 增加redis和caffeine缓存，加快预览速度
+- 增加kafka消息队列来删除文件，这样加快文件的删除
 
 使用：
 请修改所有sample文件后进行部署
 
+2020.3.22
+- 引入kafka消息队列对文件进行删除
+
 2020.3.21
 - 所有的代码文件在预览时采用caffeine进行缓存，markdown的内容也采用caffeine进行存储
 - 网盘中所有文件夹的内容采用Redis进行缓存
-- 
+
 2020.3.20
 - 使用dubbo，因为在线编译模块会受到lombok的影响导致编译失败，所以cloudDisk主模块作为consumer依旧使用lombok，而compiler作为provider提供服务，
 此模块中不允许使用lombok，否则多个类编译时会出错

@@ -1,10 +1,10 @@
 package site.pyyf.fileStore.event;
 
 import com.alibaba.fastjson.JSONObject;
-import com.nowcoder.community.entity.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import site.pyyf.fileStore.entity.Event;
 
 @Component
 public class EventProducer {

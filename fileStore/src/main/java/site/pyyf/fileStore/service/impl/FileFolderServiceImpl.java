@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
 * @ClassName: FileFolderServiceImpl
-* @Description: TODO
 * @author: xw
 * @date 2020/2/8 23:00
 * @Version: 1.0

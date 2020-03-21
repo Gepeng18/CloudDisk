@@ -10,7 +10,7 @@ import java.util.Map;
 @Setter
 @Getter
 @ToString
-
+@Builder
 public class Event {
 
     //topic: 删除
@@ -22,8 +22,8 @@ public class Event {
     //entityType: 文件0/文件夹1
     private int entityType;
 
-    //entityId 文件夹Id
-    private int entityId;
+    // 文件or文件夹的information
+    private String entityInfo;
 
     //附加信息
     private Map<String, Object> data = new HashMap<>();

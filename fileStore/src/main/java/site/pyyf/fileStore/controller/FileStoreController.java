@@ -1,5 +1,6 @@
 package site.pyyf.fileStore.controller;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import site.pyyf.fileStore.entity.Event;
 import site.pyyf.fileStore.entity.FileFolder;
 import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.entity.User;
+import site.pyyf.fileStore.event.EventProducer;
 import site.pyyf.fileStore.service.IResolveHeaderService;
+import site.pyyf.fileStore.utils.CloudDiskConstant;
 import site.pyyf.fileStore.utils.FtpUtil;
 import site.pyyf.fileStore.utils.LogUtils;
 import site.pyyf.fileStore.utils.RedisKeyUtil;
@@ -34,10 +38,9 @@ import java.util.regex.Pattern;
  **/
 @Controller
 @Scope("prototype")
-public class FileStoreController extends BaseController {
+public class FileStoreController extends BaseController implements CloudDiskConstant {
 
     private Logger logger = LogUtils.getInstance(FileStoreController.class);
-
 
     @Autowired
     protected IResolveHeaderService iResolveHeaderService;
@@ -216,16 +219,15 @@ public class FileStoreController extends BaseController {
         //获得文件信息
         MyFile myFile = iMyFileService.getFileByFileId(fId);
 
-        iFileStoreService.deleteFile(myFile);
+        //删除真正的文件
+        Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getUserId())
+                                    .entityType(0).entityInfo(JSON.toJSONString(myFile)).build();
+        eventProducer.fireEvent(deletingEvent);
 
-        if (StringUtils.substringAfterLast(myFile.getMyFileName(), ".").equals("md")) {
-            iLibraryService.deleteByBookId(fId);
-            iEbookContentService.deleteByBookId(fId);
-        }
-
-        //删除成功,返回空间
+        // 删除成功,清理数据库
+        // 返回空间
         iUserService.subSize(myFile.getUserId(), Integer.valueOf(myFile.getSize()));
-        //删除文件表对应的数据
+        // 删除文件表对应的数据
         iMyFileService.deleteByFileId(fId);
 
         clearFilesCache(loginUser.getUserId(),folderId);
@@ -269,12 +271,11 @@ public class FileStoreController extends BaseController {
             logger.info("文件夹删除成功，文件夹缓存删除。。。。");
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
-                iFileStoreService.deleteFile(thisFile);
 
-                if (StringUtils.substringAfterLast(thisFile.getMyFileName(), ".").equals("md")) {
-                    iLibraryService.deleteByBookId(thisFile.getMyFileId());
-                    iEbookContentService.deleteByBookId(thisFile.getMyFileId());
-                }
+                //删除真正的文件
+                Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getUserId())
+                        .entityType(0).entityInfo(JSON.toJSONString(thisFile)).build();
+                eventProducer.fireEvent(deletingEvent);
 
                 //删除成功,返回空间
                 iUserService.subSize(thisFile.getUserId(), Integer.valueOf(thisFile.getSize()));
