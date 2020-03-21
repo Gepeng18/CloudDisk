@@ -44,7 +44,7 @@ public class MyFileServiceImpl extends BaseService implements IMyFileService {
         if (files == null || files.size() == 0) {
             logger.info("查询文件时缓存未击中或文件数量为空，查询数据库");
             files = myFileMapper.getFilesByUserIdAndParentFolderId(userId, parentFolderId);
-            //redis直接传collection，只能转化为array,并且value不能为空
+            //redis不能直接传collection，只能转化为array,并且value不能为空
             if (files.size() != 0)
                 redisTemplate.opsForList().rightPushAll(userFilesKey, files.toArray());
         } else {
