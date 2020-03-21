@@ -59,9 +59,7 @@ public class FileStoreController extends BaseController {
         Integer folderId = Integer.valueOf(request.getHeader("id"));
 
         //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folderId);
-
-            myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),folderId);
+        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),folderId);
 
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         for (int i = 0; i < myFiles.size(); i++) {
@@ -118,7 +116,7 @@ public class FileStoreController extends BaseController {
 
         //向数据库文件表写入数据
         iMyFileService.addFileByUserId(fileItem);
-        //更新仓库表的当前大小
+        //更新用户存储表的当前大小
         iUserService.addSize(user.getUserId(), Integer.valueOf(fileItem.getSize()));
 
         //如果是markdown，则再传一份到library表中
@@ -167,7 +165,6 @@ public class FileStoreController extends BaseController {
             logger.error("文件名编码失败");
             return;
         }
-
 
         if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
             //配置是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
