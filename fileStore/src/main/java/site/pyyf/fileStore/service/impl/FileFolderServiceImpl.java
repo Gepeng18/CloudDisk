@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
 * @ClassName: FileFolderServiceImpl
-* @Description: TODO
 * @author: xw
 * @date 2020/2/8 23:00
 * @Version: 1.0
@@ -38,11 +37,11 @@ private static final Logger logger= LoggerFactory.getLogger(FileFolderServiceImp
         if(folders==null||folders.size()==0){
             logger.info("查询文件夹时缓存未击中或文件夹数量为空，查询数据库");
             folders = fileFolderMapper.getFileFoldersByParentFolderIdAndUserId(userId,parentFolderId);
-            //redis直接传collection，只能转化为array,并且value不能为空
+            //redis不能直接传collection，只能转化为array,并且value不能为空
             if(folders.size()!=0)
                 redisTemplate.opsForList().rightPushAll(userFoldersKey,folders.toArray());
         }else{
-            logger.info("查询文件夹时缓存击中，查询缓存");
+            logger.info("查询文件夹时缓存击中，查询Redis缓存");
         }
         return folders;
     }

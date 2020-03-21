@@ -25,15 +25,15 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
     @Value("${caffeine.markdown.max-size}")
     private int maxSize;
 
-    @Value("${caffeine.markdown.expire-seconds}")
-    private int expireSeconds;
+    @Value("${caffeine.markdown.expire-hours}")
+    private int expireHours;
 
     @PostConstruct
     public void init() {
         // 初始化帖子列表缓存
         markdownCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
-                .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
+                .expireAfterWrite(expireHours, TimeUnit.HOURS)
                 .build();
     }
 

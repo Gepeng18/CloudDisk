@@ -7,7 +7,7 @@ import org.springframework.util.DigestUtils;
 import java.util.Map;
 import java.util.UUID;
 
-public class CommunityUtil {
+public class CloudDiskUtil {
 
     // 生成随机字符串
     public static String generateUUID() {

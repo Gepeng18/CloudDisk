@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import site.pyyf.cloudDiskInterface.service.IExecuteStringSourceService;
 import site.pyyf.fileStore.service.ISiteSettingService;
-import site.pyyf.fileStore.utils.CommunityUtil;
+import site.pyyf.fileStore.utils.CloudDiskUtil;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ public class OnlineExecutorController {
                             @RequestParam(value = "input",defaultValue = "") String input) {
 
         String runResult = "服务器发生了错误，请稍后再试";
-        return CommunityUtil.getJSONString(200, runResult);
+        return CloudDiskUtil.getJSONString(200, runResult);
     }
 
     @HystrixCommand(fallbackMethod="errorExec")
@@ -40,12 +40,12 @@ public class OnlineExecutorController {
     public String commpile(@RequestParam(value = "code") String code,
                            @RequestParam(value = "input",defaultValue = "") String input) throws IOException {
         if (iSiteSettingService.allowOnlineExecutor() == 0)
-            return CommunityUtil.getJSONString(200, "非常抱歉，该功能正在测试中，请谅解");
+            return CloudDiskUtil.getJSONString(200, "非常抱歉，该功能正在测试中，请谅解");
         //因为前端传来的代码不光是代码，还有前端加上的如：java copy这些字样，这是前端的显示格式，也一并传到了后端，所以这里把它都去掉
         String pureCode = code.substring(0, code.lastIndexOf("}")+1);
         String runResult = iExecuteStringSourceService.execute(pureCode, input);
         runResult = runResult.replaceAll(System.lineSeparator(), "\n"); // 处理html中换行的问题
-        return CommunityUtil.getJSONString(200, runResult);
+        return CloudDiskUtil.getJSONString(200, runResult);
     }
 
 }

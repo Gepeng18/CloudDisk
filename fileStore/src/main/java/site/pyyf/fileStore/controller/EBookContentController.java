@@ -8,9 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.pyyf.fileStore.entity.Directory;
 import site.pyyf.fileStore.entity.Ebook;
-import site.pyyf.fileStore.entity.EbookConent;
 import site.pyyf.fileStore.service.impl.LibraryServiceImpl;
-import site.pyyf.fileStore.utils.CommunityUtil;
+import site.pyyf.fileStore.utils.CloudDiskUtil;
 import site.pyyf.fileStore.utils.markdown.MarkdownToHtmlUtils;
 
 import java.util.Arrays;
@@ -41,7 +40,7 @@ public class EBookContentController extends BaseController {
         char buf;
         while (i < htmlContent.length()) {
             if ((buf = htmlContent.charAt(i)) == '\n' && i != 0) {
-                if (CommunityUtil.isChineseNumberAlpha(htmlContent.charAt(i - 1)))
+                if (CloudDiskUtil.isChineseNumberAlpha(htmlContent.charAt(i - 1)))
                     processedContent.append("<br>");
             }
             if (htmlContent.charAt(i) == '~')
@@ -52,7 +51,7 @@ public class EBookContentController extends BaseController {
         }
 
         StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(ifilePreviewService.addHtmlCompileModule(processedContent, "java"), Arrays.asList("java", "cpp", "python", "html"));
-        return CommunityUtil.getJSONString(200, newCode.toString());
+        return CloudDiskUtil.getJSONString(200, newCode.toString());
     }
 
     @RequestMapping(value = "/ebook/goupdate", method = RequestMethod.POST)

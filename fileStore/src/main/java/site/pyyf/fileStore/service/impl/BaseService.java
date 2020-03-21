@@ -13,7 +13,6 @@ import site.pyyf.fileStore.service.IOSSService;
 
 /**
  * @ClassName: BaseService
- * @Description: TODO
  * @author: xw
  * @date 2020/2/25 17:19
  * @Version: 1.0

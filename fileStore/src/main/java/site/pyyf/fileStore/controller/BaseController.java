@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import site.pyyf.fileStore.config.AliyunConfig;
 import site.pyyf.fileStore.config.CloudDiskConfig;
 import site.pyyf.fileStore.entity.User;
+import site.pyyf.fileStore.event.EventProducer;
 import site.pyyf.fileStore.service.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,6 @@ public class BaseController {
     protected AliyunConfig aliyunConfig;
     @Autowired
     protected CloudDiskConfig cloudDiskConfig;
-
     @Autowired
     protected IMediaTranfer iMediaTranfer;
     @Autowired
@@ -46,6 +46,9 @@ public class BaseController {
     protected IUserService iUserService;
     @Autowired
     protected RedisTemplate redisTemplate;
+    @Autowired
+    protected EventProducer eventProducer;
+
 
     protected HttpServletRequest request;
     protected HttpServletResponse response;

@@ -13,7 +13,7 @@ import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.entity.UploadResult;
 import site.pyyf.fileStore.entity.User;
 import site.pyyf.fileStore.service.IResolveHeaderService;
-import site.pyyf.fileStore.utils.CommunityUtil;
+import site.pyyf.fileStore.utils.CloudDiskUtil;
 import site.pyyf.fileStore.utils.FtpUtil;
 import site.pyyf.fileStore.utils.QRCodeUtil;
 import site.pyyf.fileStore.utils.RedisKeyUtil;
@@ -141,7 +141,7 @@ public class ShareController extends BaseController {
         // 将验证码存入Redis
         String shareKey = RedisKeyUtil.getShareKey(pwd);
         redisTemplate.opsForValue().set(shareKey, typeAndId, 7, TimeUnit.DAYS);
-        return CommunityUtil.getJSONString(200, pwd);
+        return CloudDiskUtil.getJSONString(200, pwd);
 
     }
 
@@ -161,7 +161,7 @@ public class ShareController extends BaseController {
         String shareKey = RedisKeyUtil.getShareKey(pwd);
         String typeAndFid = (String) redisTemplate.opsForValue().get(shareKey);
         if (StringUtils.isBlank(typeAndFid))
-            return CommunityUtil.getJSONString(502, map.get(502));
+            return CloudDiskUtil.getJSONString(502, map.get(502));
 
 
         String[] split = typeAndFid.split("-");
@@ -169,15 +169,15 @@ public class ShareController extends BaseController {
             //分享的是文件夹
             FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[1]));
             int result = transferSaveFolder(fileFolder, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
+            return CloudDiskUtil.getJSONString(result, map.get(result));
         } else if (split[0].equals("file")) {
             MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[1]));
             int result = transferSaveFile(shareFile, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
+            return CloudDiskUtil.getJSONString(result, map.get(result));
 
         } else {
             logger.error("传来一个不知名的内容");
-            return CommunityUtil.getJSONString(500, map.get(500));
+            return CloudDiskUtil.getJSONString(500, map.get(500));
         }
     }
 
