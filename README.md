@@ -14,8 +14,8 @@
 
 2020.3.21
 - 所有的代码文件在预览时采用caffeine进行缓存，markdown的内容也采用caffeine进行存储
-- 网盘中所有文件夹的内容采用redis进行缓存
-
+- 网盘中所有文件夹的内容采用Redis进行缓存
+- 
 2020.3.20
 - 使用dubbo，因为在线编译模块会受到lombok的影响导致编译失败，所以cloudDisk主模块作为consumer依旧使用lombok，而compiler作为provider提供服务，
 此模块中不允许使用lombok，否则多个类编译时会出错
