@@ -2,7 +2,7 @@ package site.pyyf.fileStore.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.pyyf.fileStore.mapper.IlibraryMapper;
+import site.pyyf.fileStore.mapper.IEbooksMapper;
 import site.pyyf.fileStore.entity.Ebook;
 import site.pyyf.fileStore.service.ILibraryService;
 
@@ -12,7 +12,7 @@ public class LibraryServiceImpl implements ILibraryService {
 
 
     @Autowired
-    private IlibraryMapper ilibraryMapper;
+    private IEbooksMapper ilibraryMapper;
 
     public void insertEbook(Ebook eBook) {
         ilibraryMapper.insertEbook(eBook);
