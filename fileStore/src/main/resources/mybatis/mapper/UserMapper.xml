@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.fileStore.mapper.UserMapper">
+<mapper namespace="site.pyyf.fileStore.mapper.IUserMapper">
     <!--开启二级缓存,使用Ehcache缓存框架-->
     <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 

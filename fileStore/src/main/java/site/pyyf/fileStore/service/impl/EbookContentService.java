@@ -66,8 +66,8 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
         return iebookContentMapper.selectEbookIdByContentId(contentId);
     }
 
-    public void deleteByBookId(int bookId) {
-       iebookContentMapper.deleteByBookId(bookId);
+    public void deleteByFileId(int fileId) {
+       iebookContentMapper.deleteByFileId(fileId);
     }
 }
 

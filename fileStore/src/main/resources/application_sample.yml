@@ -1,36 +1,24 @@
-aliyun:
-  accessKeyId:
-  accessKeySecret:
-  endpoint:
-  bucketName:
-  urlPrefix:
-
 # 配置项目名和session的过期时间
 server:
   servlet:
-    context-path: /cloudpan
+    context-path: /cloudDisk
     session:
       timeout: 600m
   tomcat:
     uri-encoding: UTF-8
-# 日志的存放位置与级别
-logging:
-  #  config: classpath:logback.xml
-  file:
-    name: log/cloudDisk.log
-  level:
-    root: info
+
+# 配置OSS
+aliyun:
+  accessKeyId: *
+  accessKeySecret: *
+  endpoint: *
+  bucketName: *
+  urlPrefix: *
+
 # 配置Mybatis
 mybatis:
   config-location: classpath:mybatis/mybatis-config.xml
   mapper-locations: classpath:mybatis/mapper/*.xml
-
-clouddisk:
-  maxShowSize: 40
-  type: OSS
-
-
-
 
 spring:
   #  静态资源的访问路径
@@ -38,9 +26,9 @@ spring:
     static-path-pattern: /**
   datasource:
     # 配置数据源
-    username: root
-    password: root
-    url: jdbc:mysql://localhost/cloudpan?serverTimezone=Hongkong&useAffectedRows=true
+    username: *
+    password: *
+    url: jdbc:mysql://localhost/cloudDisk?serverTimezone=Hongkong&useAffectedRows=true
     driver-class-name: com.mysql.cj.jdbc.Driver
 
     type: com.zaxxer.hikari.HikariDataSource
@@ -48,6 +36,7 @@ spring:
       maximum-pool-size: 15
       minimum-idle: 5
       idle-timeout: 30000
+
   # RedisProperties
   redis:
     database: 11
@@ -69,9 +58,32 @@ spring:
       max-file-size: 100MB
       max-request-size: 1024MB
 
+  # KafkaProperties
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: *
+      enable-auto-commit: true
+      auto-commit-interval: 3000
+
+# caffeine
+caffeine:
+  code:
+    max-size: 10000
+    expire-hours: 180
+  markdown:
+    max-size: 50000
+    expire-hours: 180
+
 #dubbo
 dubbo:
   application:
     name: clouddisk
   registry:
     address: zookeeper://localhost:2181
+
+clouddisk:
+  maxShowSize: 40
+  type: OSS
+
+

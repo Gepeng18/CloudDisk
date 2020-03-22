@@ -18,7 +18,7 @@ public interface IebookContentMapper {
     void updateContentByContentId(String contentId, String content);
 
 
-    void deleteByBookId(int bookId);
+    void deleteByFileId(int fileId);
 
     int insertAllEbookContent(List<EbookConent> allContent);
 

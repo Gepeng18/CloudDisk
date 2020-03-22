@@ -15,9 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import site.pyyf.fileStore.mapper.IebookContentMapper;
-import site.pyyf.fileStore.entity.Directory;
+import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
 import site.pyyf.fileStore.entity.EbookConent;
+import site.pyyf.fileStore.service.IEbooksService;
 import site.pyyf.fileStore.service.IResolveHeaderService;
 import site.pyyf.fileStore.utils.FtpUtil;
 
@@ -35,20 +36,20 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
     private IebookContentMapper iebookContentMapper;
 
     @Autowired
-    private LibraryServiceImpl iLibraryService;
+    private IEbooksService iEbooksService;
 
     private List<EbookConent> allContent = new ArrayList<>();
     private boolean jugleFirstLevelHeader = false;
-    private int ebookId;
+    private int fileId;
     private int firstLevelHeader;
     private String preContentId;
     private StringBuilder preContent = new StringBuilder();
-    private Directory root;//树根（相当于链表的头指针）
+    private Header root;//树根（相当于链表的头指针）
     private boolean detect = true;
-    private Map<String, Directory> records = new HashMap<>();
+    private Map<String, Header> records = new HashMap<>();
 
 
-    private void insertHeader(Directory head, int level) {
+    private void insertHeader(Header head, int level) {
         if (level == firstLevelHeader) {
             if (records.containsKey("" + level))
                 records.remove("" + level);
@@ -72,13 +73,13 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
         }
 
         /* ------------------- 更新记录和插入节点 ----------------- */
-        Directory preList = records.get("" + preLevel);
+        Header preList = records.get("" + preLevel);
         preList.addSubNode(head);
         records.put("" + level, head);
     }
 
     public ResolveHeaderServiceImpl() {
-        root = new Directory();//树根（相当于链表的头指针）
+        root = new Header();//树根（相当于链表的头指针）
     }
 
     public boolean isNHeader(String buffer, int n) {
@@ -126,7 +127,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
                     String content = preContent.toString();
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
-                    ebookConent.setEbookId(ebookId);
+                    ebookConent.setFileId(fileId);
                     ebookConent.setContent(content);
                     allContent.add(ebookConent);
 
@@ -135,7 +136,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
                 }
 
                 /* ------------------- 标题加入root队伍 ----------------- */
-                Directory newDir = new Directory();
+                Header newDir = new Header();
                 String contentId = UUID.randomUUID().toString().replaceAll("-", "");
                 newDir.setHeader(buffer.substring(firstLevelHeader));
                 newDir.setContentId(contentId);
@@ -154,13 +155,13 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
                     EbookConent ebookConent = new EbookConent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setContent(content);
-                    ebookConent.setEbookId(ebookId);
+                    ebookConent.setFileId(fileId);
                     allContent.add(ebookConent);
                     preContent = new StringBuilder();
 
                     /* ------------------- 标题加入root队伍 ----------------- */
                     String contentId = UUID.randomUUID().toString().replaceAll("-", "");
-                    Directory newDir = new Directory();
+                    Header newDir = new Header();
                     newDir.setHeader(buffer.substring(i));
                     newDir.setContentId(contentId);
                     preContentId = contentId;
@@ -181,11 +182,11 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
      * 函数名：getFile
      * 作用：实现将指定文件夹的所有文件存入树中
      */
-    public void readFile(InputStream in, String ebookName, int id) throws Exception {
+    public void readFile(InputStream in, String ebookName, int fileId) throws Exception {
+        this.fileId = fileId;
         logger.info("开始处理markdown文件");
-        ebookId = id;
         Ebook eBook = new Ebook();
-        eBook.setEbookId(ebookId);
+        eBook.setFileId(this.fileId);
         eBook.setEbookName(ebookName);
 
         BufferedReader bfr = new BufferedReader(new InputStreamReader(in));
@@ -194,32 +195,33 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
             resolveHeader(buffer);
         }
 
+
         /* ------------------- 插入内容表 ----------------- */
         String content = preContent.toString();
         EbookConent ebookConent = new EbookConent();
         ebookConent.setContentId(preContentId);
         ebookConent.setContent(content);
-        ebookConent.setEbookId(ebookId);
+        ebookConent.setFileId(this.fileId);
         allContent.add(ebookConent);
-
         iebookContentMapper.insertAllEbookContent(allContent);
 
         /* ------------------- 将标题的所有内容插入标题表中 ----------------- */
         eBook.setHeader(JSON.toJSONString(root));
-        iLibraryService.insertEbook(eBook);
+        iEbooksService.insertEbook(eBook);
+
         logger.info("markdown文件处理完毕");
 
     }
 
 
-    public void readFile(String remotePath, String fileName, int id) throws Exception {
-        if(!new File("tmp").exists())
-            new File("tmp").mkdirs();
-        String tmpFilePath = "tmp/"+UUID.randomUUID().toString().replaceAll("-", "");
+    public void readFile(String remotePath, String fileName, int fileId) throws Exception {
+        if(!new File("data/temp").exists())
+            new File("data/temp").mkdirs();
+        String tmpFilePath = "data/temp/"+UUID.randomUUID().toString().replaceAll("-", "");
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFilePath);
         FtpUtil.downloadFile("/"+remotePath, fileOutputStream);
         FileInputStream fileInputStream = new FileInputStream(tmpFilePath);
-        readFile(fileInputStream, fileName, id);
+        readFile(fileInputStream, fileName, fileId);
         new File(tmpFilePath).delete();
         fileInputStream.close();
         fileOutputStream.close();
@@ -229,8 +231,8 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
      * 函数名：printTree
      * 作用：输出树中的内容
      */
-    public void printTree(Directory node, int deep) {
-        for (Directory directory : node.getSubNodes()) {
+    public void printTree(Header node, int deep) {
+        for (Header directory : node.getSubNodes()) {
             for (int j = 0; j < deep; j++)//输出前置空格
                 System.out.print("       ");
             System.out.println(directory.getContentId());
@@ -239,7 +241,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
         }
     }
 
-    public void printTree(Directory node) {
+    public void printTree(Header node) {
         printTree(node, 0);
     }
 

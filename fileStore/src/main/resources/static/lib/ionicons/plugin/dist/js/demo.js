@@ -5,7 +5,7 @@ var skin = function(color) {
 	if(color == 'default') return;
 	$("head").append($("<link/>", {
 		rel: 'stylesheet',
-		href: 'https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/css/skins/' + color + '.css',
+		href: 'https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons/plugin/dist/css/skins/' + color + '.css',
 		id: 'skin-css'
 	}));
 }

@@ -39,8 +39,8 @@ public class EventConsumer extends BaseController implements CloudDiskConstant {
 
             if (StringUtils.substringAfterLast(deletingFile.getMyFileName(), ".").equals("md")) {
                 logger.info("我kafka把markdown文件 "+deletingFile.getMyFileName()+" 的content删除啦");
-                iLibraryService.deleteByBookId(deletingFile.getMyFileId());
-                iEbookContentService.deleteByBookId(deletingFile.getMyFileId());
+                iLibraryService.deleteByFileId(deletingFile.getMyFileId());
+                iEbookContentService.deleteByFileId(deletingFile.getMyFileId());
             }
         }
 

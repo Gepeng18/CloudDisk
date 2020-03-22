@@ -37,7 +37,7 @@ public class BaseController {
     @Autowired
     protected IFileFolderService iFileFolderService;
     @Autowired
-    protected ILibraryService iLibraryService;
+    protected IEbooksService iLibraryService;
     @Autowired
     protected IOSSService iossService;
     @Autowired

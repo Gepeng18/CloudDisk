@@ -21,7 +21,7 @@
             console.log("logggg" + fileFolderId + "  " + pwd);
 
             $.ajax({
-                url: '/cloudpan/share',
+                url: '/cloudDisk/share',
                 type: 'post',
                 data: {
                     fileFolderId: $('#fileFolderId').val(),
@@ -83,9 +83,9 @@
                 callback: function () {
                     let id = $('#tarFile').html();
                     var location = window.location.href;
-                    let strings = location.split("cloudpan");
+                    let strings = location.split("cloudDisk");
                     if (id != "") {
-                        window.location.href = strings[0] + "cloudpan/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
+                        window.location.href = strings[0] + "cloudDisk/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
                     } else {
                         return;
                     }
@@ -110,9 +110,9 @@
                     text: "直链下载地址",
                     callback: function () {
                         var location = window.location.href;
-                        let strings = location.split("cloudpan");
+                        let strings = location.split("cloudDisk");
                         $.ajax({
-                            url: "getQrCode/?id=" + $('#tarFile').html() + "&url=" + strings[0] + "cloudpan",
+                            url: "getQrCode/?id=" + $('#tarFile').html() + "&url=" + strings[0] + "cloudDisk",
                             type: "get",
                             async: false,
                             success: function (data) {
@@ -140,11 +140,11 @@
                         var supVideo = ["mp4", "wmv", "flv"];
                         var supAudio = ["mp3", "wma", "flac"];
                         if (supLang.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
-                            window.location.href = "/cloudpan/code/preview?fId=" + id;
+                            window.location.href = "/cloudDisk/code/preview?fId=" + id;
                         } else if (supImg.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
                             var image = new Image();
                             // var location = window.location.href;
-                            // let strings = location.split("cloudpan");
+                            // let strings = location.split("cloudDisk");
 
                             image.src = showPath;
 
@@ -186,14 +186,14 @@
 
                             if (showType == "FTP"){
                                 var location = window.location.href;
-                                let strings = location.split("cloudpan");
-                                $("#videoPlayer").attr("src", strings[0] + "cloudpan/video?fId=" + id);
+                                let strings = location.split("cloudDisk");
+                                $("#videoPlayer").attr("src", strings[0] + "cloudDisk/video?fId=" + id);
                             }
                             else
                                 $("#videoPlayer").attr("src",showPath);
 
                             // if (showType == "FTP")
-                            //     $("#videoPlayer").html("<source  src=\"" + strings[0] + "cloudpan/video?fId=" + id + "\" type=\"video/mp4\">");
+                            //     $("#videoPlayer").html("<source  src=\"" + strings[0] + "cloudDisk/video?fId=" + id + "\" type=\"video/mp4\">");
                             // else
                             //     $("#videoPlayer").html("<source  src=" + showPath + ">");
 
@@ -230,16 +230,16 @@
 
                             if (showType == "FTP") {
                                 var location = window.location.href;
-                                let strings = location.split("cloudpan");
+                                let strings = location.split("cloudDisk");
                                 //注意是设置audio的属性，不是source的属性，这里我被折腾了两个小时，哎
-                                $("#audioPlayer").attr("src", strings[0] + "cloudpan/audio?fId=" + id);
+                                $("#audioPlayer").attr("src", strings[0] + "cloudDisk/audio?fId=" + id);
                             } else
                                 $("#audioPlayer").attr("src", showPath);
 
 
                             // audio.play(); //播放控制
                             // audio.pause();
-                            // $("#audioPlayer").html("<source  src=\"" + strings[0] + "cloudpan/audio?fId=" + id + "\" type=\"audio/mp3\">");
+                            // $("#audioPlayer").html("<source  src=\"" + strings[0] + "cloudDisk/audio?fId=" + id + "\" type=\"audio/mp3\">");
                             // $("#audioPlayer-container").slideToggle(300);
 
                             $("#audioPlayerTool").animate({
@@ -273,9 +273,9 @@
                     callback: function () {
                         let id = $('#tarFile').html();
                         var location = window.location.href;
-                        let strings = location.split("cloudpan");
+                        let strings = location.split("cloudDisk");
                         if (id != "") {
-                            window.location.href = strings[0] + "cloudpan/deleteFile?fId=" + id + "&folder=" + $('#nowF').html();
+                            window.location.href = strings[0] + "cloudDisk/deleteFile?fId=" + id + "&folder=" + $('#nowF').html();
                         } else {
                             return;
                         }
@@ -351,9 +351,9 @@
                     callback: function () {
                         let id = $('#tarFolder').html();
                         var location = window.location.href;
-                        let strings = location.split("cloudpan");
+                        let strings = location.split("cloudDisk");
                         if (id != "") {
-                            window.location.href = strings[0] + "cloudpan/deleteFolder?fId=" + id;
+                            window.location.href = strings[0] + "cloudDisk/deleteFolder?fId=" + id;
                         } else {
                             return;
                         }
@@ -473,10 +473,10 @@
             $('.files').dblclick(function () {
                 let id = $(this).children("td").children("span").html();
                 var location = window.location.href;
-                let strings = location.split("cloudpan");
+                let strings = location.split("cloudDisk");
 
                 if (id != "") {
-                    window.location.href = strings[0] + "cloudpan/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
+                    window.location.href = strings[0] + "cloudDisk/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
                 } else {
                     return;
                 }

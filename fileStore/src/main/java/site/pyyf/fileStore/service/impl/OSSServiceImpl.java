@@ -137,9 +137,9 @@ public class OSSServiceImpl implements IOSSService {
     }
 
     public UploadResult transfer(String srcPath, String dstSuffix) {
-        if (!new File("tmp").exists())
-            new File("tmp").mkdirs();
-        File tmpFile = new File("tmp/" + UUID.randomUUID().toString() + "." + StringUtils.substringAfterLast(srcPath, "."));
+        if (!new File("data/temp").exists())
+            new File("data/temp").mkdirs();
+        File tmpFile = new File("data/temp/" + UUID.randomUUID().toString() + "." + StringUtils.substringAfterLast(srcPath, "."));
 
         try {
             download(srcPath, new FileOutputStream(tmpFile));

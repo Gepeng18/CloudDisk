@@ -11,7 +11,7 @@ public class AlphaController extends BaseController{
 
     @RequestMapping("/alpha")
     public String getImg() {
-        return "ebook/test";
+        return "";
     }
 
 }

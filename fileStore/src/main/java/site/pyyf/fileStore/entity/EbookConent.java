@@ -13,5 +13,5 @@ public class EbookConent {
     private int id;
     private String contentId;
     private String content;
-    private int ebookId;
+    private int fileId;
 }

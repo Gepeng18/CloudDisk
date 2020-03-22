@@ -96,11 +96,11 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         String remotePath = file.getMyFilePath();
 
         try {
-            File temp = new File("temp");
+            File temp = new File("data/temp");
             if (!temp.exists()) {
                 temp.mkdirs();
             }
-            String tempStr = "temp/" + UUID.randomUUID().toString();
+            String tempStr = "data/temp/" + UUID.randomUUID().toString();
             //去FTP上拉取
             OutputStream tmpFileStream = new FileOutputStream(new File(tempStr));
             boolean flag = FtpUtil.downloadFile("/" + remotePath, tmpFileStream);

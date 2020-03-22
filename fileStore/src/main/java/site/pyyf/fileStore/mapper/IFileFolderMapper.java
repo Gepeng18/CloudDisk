@@ -14,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  **/
 @Mapper
-public interface FileFolderMapper {
+public interface IFileFolderMapper {
 
     /**
      * @Description 根据文件夹的id删除文件夹
