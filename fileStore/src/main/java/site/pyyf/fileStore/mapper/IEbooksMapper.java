@@ -4,15 +4,15 @@ import org.apache.ibatis.annotations.Mapper;
 import site.pyyf.fileStore.entity.Ebook;
 
 @Mapper
-public interface IlibraryMapper {
+public interface IEbooksMapper {
 
-    Ebook selectByBookId(int bookId);
+    Ebook selectByFileId(int fileId);
 
     void insertEbook(Ebook eBook);
 
-    String selectHeaderByBookId(int ebookId);
+    String selectHeaderByFileId(int fileId);
 
-    void deleteByBookId(int ebookId);
+    void deleteByFileId(int efileId);
 
-    void updateEbookNameByBookId(int ebookId, String ebookName);
+    void updateEbookNameByFileId(int fileId, String ebookName);
 }

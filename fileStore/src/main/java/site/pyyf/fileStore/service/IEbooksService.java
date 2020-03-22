@@ -2,14 +2,14 @@ package site.pyyf.fileStore.service;
 
 import site.pyyf.fileStore.entity.Ebook;
 
-public interface ILibraryService {
+public interface IEbooksService {
     public void insertEbook(Ebook eBook);
 
-    public Ebook selectByBookId(int ebookId);
+    public Ebook selectByFileId(int fileId);
 
 
-    public void deleteByBookId(int ebookId);
+    public void deleteByFileId(int fileId);
 
-    public void updateEbookNameByBookId(int ebookId, String ebookName);
+    public void updateEbookNameByFileId(int fileId, String ebookName);
 
 }

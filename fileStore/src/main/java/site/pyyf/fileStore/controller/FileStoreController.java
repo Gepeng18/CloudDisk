@@ -376,7 +376,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
                         MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
                 if (integer == 1) {
                     if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
-                        iLibraryService.updateEbookNameByBookId(myFile.getMyFileId(), newName);
+                        iLibraryService.updateEbookNameByFileId(myFile.getMyFileId(), newName);
                     }
                     logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
                 } else {
@@ -438,7 +438,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      **/
     @Scheduled(cron = "0 0 1,2,3 * * ?")
     public void flushCache() {
-        File file = new File("temp");
+        File file = new File("data/temp");
         if (file == null || !file.exists()) {
             return;
         }

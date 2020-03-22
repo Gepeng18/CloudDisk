@@ -11,7 +11,7 @@
     <groupId>site.pyyf</groupId>
     <artifactId>pyyf-cloud</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>cloudpan</name>
+    <name>cloudDisk</name>
     <description>Demo project for Spring Boot</description>
 
     <properties>

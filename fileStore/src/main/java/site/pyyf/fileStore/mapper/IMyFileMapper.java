@@ -14,7 +14,7 @@ import java.util.List;
  * @Version: 1.0
  **/
 @Mapper
-public interface MyFileMapper {
+public interface IMyFileMapper {
 
     /**
      * @Description 添加文件

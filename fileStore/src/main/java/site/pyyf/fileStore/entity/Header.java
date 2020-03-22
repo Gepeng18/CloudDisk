@@ -10,13 +10,13 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Directory {
+public class Header {
     private String contentId;
     private String header;
-    private LinkedList<Directory> subNodes = new LinkedList<>();
+    private LinkedList<Header> subNodes = new LinkedList<>();
 
     // 添加子节点
-    public void addSubNode(Directory node) {
+    public void addSubNode(Header node) {
         subNodes.add(node);
     }
 

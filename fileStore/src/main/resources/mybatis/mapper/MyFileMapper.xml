@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="site.pyyf.fileStore.mapper.MyFileMapper">
+<mapper namespace="site.pyyf.fileStore.mapper.IMyFileMapper">
   <!--开启二级缓存,使用Ehcache缓存框架-->
   <cache type="org.mybatis.caches.ehcache.EhcacheCache"/>
 

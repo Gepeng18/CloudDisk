@@ -2,10 +2,10 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/font-awesome-4.7.0/css/font-awesome.min.css"
           rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/typo.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/typo.css" rel="stylesheet">
 
     <style type="text/css">/*文档内嵌样式表*/
     body {
@@ -95,7 +95,7 @@
 
 
 </div>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.js"></script>
 <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" crossorigin="anonymous"
         type="text/javascript"></script>
@@ -117,7 +117,7 @@
         formData.append('contentId', contentId);
 
         $.ajax({
-            url: '/cloudpan/ebook/getcontent',
+            url: '/cloudDisk/ebook/getcontent',
             type: 'POST',
             data: formData,
             dataType: "json",
@@ -150,7 +150,7 @@
         var formData = new FormData();
         formData.append('code', code);
         $.ajax({
-            url: '/cloudpan/compile',
+            url: '/cloudDisk/compile',
             type: 'POST',
             data: formData,
             dataType: "json",

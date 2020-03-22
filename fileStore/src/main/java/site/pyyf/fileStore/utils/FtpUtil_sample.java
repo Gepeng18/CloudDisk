@@ -184,9 +184,9 @@ public class FtpUtil_sample {
      * @return
      */
     public static boolean transferFile(String srcPath, String dstPath) throws Exception {
-        if(!new File("tmp").exists())
-            new File("tmp").mkdirs();
-        String tmpFilePath = "tmp/"+UUID.randomUUID().toString();
+        if(!new File("data/temp").exists())
+            new File("data/temp").mkdirs();
+        String tmpFilePath = "data/temp/"+UUID.randomUUID().toString();
         FileOutputStream fileOutputStream = new FileOutputStream(tmpFilePath);
         downloadFile(srcPath,fileOutputStream);
         FileInputStream fileInputStream = new FileInputStream(tmpFilePath);

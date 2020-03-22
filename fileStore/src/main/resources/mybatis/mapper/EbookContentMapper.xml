@@ -4,29 +4,29 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="site.pyyf.fileStore.mapper.IebookContentMapper">
     <sql id="selectContentFields">
-        id, content_id,content,ebook_id
+        id,content_id,content,file_id
     </sql>
 
     <sql id="insertContentFields">
-        content_id,content,ebook_id
+        content_id,content,file_id
     </sql>
 
 
     <insert id="insertEbookContent">
-        insert into ebook_content(<include refid="insertContentFields"></include>)
-        values(#{contentId},#{content},#{ebookId})
+        insert into ebook_contents(<include refid="insertContentFields"></include>)
+        values(#{contentId},#{content},#{fileId})
     </insert>
 
     <select id="selectEbookIdByContentId" resultType="java.lang.Integer">
         select
-        ebook_id
-        from ebook_content
-        where content_id=#{contentId}
+        file_id
+        from ebook_contents
+        where content_id like #{contentId}
     </select>
 
 
     <update id="updateContentByContentId">
-        update ebook_content
+        update ebook_contents
         set content = #{content}
         where content_id like #{contentId}
     </update>
@@ -34,26 +34,26 @@
 
     <select id="selectContentByContentId" resultType="java.lang.String">
          select content
-        from ebook_content
+        from ebook_contents
         where content_id like #{contentId}
     </select>
 
 
-    <delete id="deleteByBookId">
+    <delete id="deleteByFileId">
         delete
-        from ebook_content
-        where ebook_id=#{bookId}
+        from ebook_contents
+        where file_id=#{fileId}
     </delete>
 
     <insert id="insertAllEbookContent" parameterType="java.util.List" useGeneratedKeys="false">
-        insert into ebook_content
+        insert into ebook_contents
         (<include refid="insertContentFields"></include>)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (
             #{item.contentId},
             #{item.content},
-            #{item.ebookId}
+            #{item.fileId}
             )
         </foreach>
     </insert>

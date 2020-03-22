@@ -13,7 +13,7 @@ import java.util.List;
  * @Version: 1.0
  **/
 @Mapper
-public interface UserMapper {
+public interface IUserMapper {
 
     /**
      * @Description 添加User

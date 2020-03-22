@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/font-awesome-4.7.0/css/font-awesome.min.css"
           rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/typo.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/typo.css" rel="stylesheet">
 
     <style type="text/css">/*文档内嵌样式表*/
     body {
@@ -19,7 +19,7 @@
 <div class="nk-container" style="margin:80px">
     <div id="markdown2" class="typo  typo-selection" th:utext="${code}"></div>
 </div>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.js"></script>
 <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" crossorigin="anonymous"
         type="text/javascript"></script>
@@ -35,7 +35,7 @@
         var formData = new FormData();
         formData.append('code', code);
         $.ajax({
-            url: '/cloudpan/java/compile',
+            url: '/cloudDisk/java/compile',
             type: 'POST',
             data: formData,
             dataType: "json",
