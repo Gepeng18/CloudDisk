@@ -1,5 +1,9 @@
 
+# CloudDisk
+CloudDisk是一款云盘应用程序，前端基于Bootstrap和jquery进行开发，后端采用springboot开发，同时使用redis和caffeine作为缓存，kafka作为消息队列进行异步事件调用。
+
 本项目基于[莫提网盘](https://github.com/373675032/moti-cloud) 进行二次开发
+## CloudDisk功能
 - 支持分享功能，可以分享文件和文件夹给其他的本网盘使用者
 - java代码提供在线编译系统
 - 支持视频在线播放(支持众多视频格式)
@@ -9,10 +13,16 @@
 - 提供markdown自动分页功能，方便在线预览
 - 增加redis和caffeine缓存，加快预览速度
 - 增加kafka消息队列来删除文件，这样加快文件的删除
+- 使用dubbo作为分布式开发框架，compiler作为provider提供编译功能，fileStore作为consumer进行在线编译
 
-使用：
+
+
+
+
+## CloudDisk环境搭建：
 请修改所有sample文件后进行部署
 
+## 更新日志
 2020.3.22
 - 引入kafka消息队列对文件进行删除
 
@@ -89,7 +99,7 @@
 
 
 
-## 界面展示
+## 项目截图
 
 ##### 完整页面
 
