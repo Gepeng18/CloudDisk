@@ -5,130 +5,41 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no"
           name="viewport">
     <title>鹏圆云盘-我的文件</title>
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/bootstrap-fileinput-5.0.8/css/fileinput.css" media="all" rel="stylesheet"
-          type="text/css" crossorigin="anonymous"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/bootstrap-4.4.1-dist/css/bootstrap.min.css"
-          crossorigin="anonymous" type="text/css"/>
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/ionicons-2.0.0/css/ionicons.min.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/font-awesome-4.7.0/css/font-awesome.min.css">
-
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/summernote-0.8.9/summernote-lite.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/ionicons-2.0.0/plugin/dist/css/style.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/cloudDisk/css/upload-file.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/xcConfirm/css/xcConfirm.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/context-menu/css/contextMenu.css">
-
-    <!--    视频播放器-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/normalize.min.css">
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/build/mediaelementplayer.css">
-
-<!--    图片播放器-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/viewerjs-1.5.0/docs/css/viewer.css">
-<!--    缩略图-->
-    <style>
-        .smallImg {
-            width:32px;
-            height:32px;
-        }
-
-    </style>
-    <!--    视频播放器-->
-    <style>
-
-        html, body {
-            overflow-x: hidden;
-        }
-
-
-        a {
-            word-wrap: break-word;
-        }
-
-        code {
-            font-size: 0.8em;
-        }
-
-        #audioPlayer-container .mejs__time-buffering, #audioPlayer-container .mejs__time-current, #audioPlayer-container .mejs__time-handle,
-        #audioPlayer-container .mejs__time-loaded, #audioPlayer-container .mejs__time-hovered, #audioPlayer-container .mejs__time-marker, #audioPlayer-container .mejs__time-total {
-            height: 2px;
-        }
-
-        #audioPlayer-container .mejs__time-total {
-            margin-top: 9px;
-        }
-
-        #audioPlayer-container .mejs__time-handle {
-            left: -5px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ffffff;
-            top: -5px;
-            cursor: pointer;
-            display: block;
-            position: absolute;
-            z-index: 2;
-            border: none;
-        }
-
-        #audioPlayer-container .mejs__time-handle-content {
-            top: 0;
-            left: 0;
-            width: 12px;
-            height: 12px;
-        }
-    </style>
-
-
-    <style>
-        .files-items {
-            margin-top: -20px;
-            border-bottom: 1px dashed #bdc3c7;
-            border-top: 1px dashed #bdc3c7;
-        }
-
-        .files-items:hover {
-            background: #F4FBFF;
-        }
-    </style>
-
+    <th:block th:replace="commons/cloudDisk-fragments::fileSystemCss"></th:block>
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.25/cloudDisk/css/videoPlayer.css" media="all" rel="stylesheet"
+           type="text/css" crossorigin="anonymous"/>
     <style>
         body {
             /*背景图片*/
             background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/email-pattern.png");
+        }
+        .card{
+            background-color: #ffffff9c
+        }
+        .section-header{
+            background-color: #ffffff9c
         }
     </style>
 </head>
 
 <body>
 
-<th:block th:replace="commons/fragments::setting">
+<th:block th:replace="commons/cloudDisk-fragments::setting">
 
 </th:block>
 <div id="app">
     <div class="main-wrapper">
-        <div class="navbar-bg" style="background-color:#808080b0;"></div>
+        <div class="navbar-bg" style="background-color:#bdbdbd;"></div>
         <div th:replace="commons/bar::#top" ></div>
         <div th:replace="commons/bar::#sidebar(currUri='all',statistics = ${statistics})"></div>
 
         <div class="main-content">
             <section class="section">
-                <h1 class="section-header" style="height:80px">
+                <h1 class="section-header" style="height:80px;background-color: #fbfbfb">
                     <div style="float:left"><i class="ion ion-folder"></i> 全部文件
                     </div>
                     <div style="float:left;margin-left:20px;margin-top:-20px">
-                        <img src="https://img-blog.csdnimg.cn/20181121162612115.gif" style="width:80px">
+                        <img src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/3.gif" style="width:80px">
                     </div>
                 </h1>
                 <div class="row">
@@ -297,8 +208,6 @@
                 <span id="preF" style="display: none" th:text="${nowFolder.parentFolderId}"></span>
                 <span id="tarFolder" style="display: none"></span>
                 <span id="tarFile" style="display: none"></span>
-                <span id="preAudioName" style="display: none"></span>
-                <span id="preAudioId" style="display: none"></span>
 
                 <div class="row" th:if="${(files.size() == 0)&&(folders.size()==0)}">
                     <div class="col-12 col-sm-12 col-lg-12">
@@ -459,53 +368,10 @@
 </div>
 <span id="audioPlayerPosition"></span>
 
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/jquery.min.js-3.2.1/jquery.min.js"></script>
-<th:block th:replace="commons/fragments::hoverAndDblick">
+<th:block th:replace="commons/cloudDisk-fragments::fileSystemJs"></th:block>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.25/cloudDisk/js/contextMenu.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.25/cloudDisk/js/someFunction.js"></script>
 
-</th:block>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/context-menu/js/jquery.contextMenu.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/xcConfirm/js/xcConfirm.js"></script>
-
-<!--音乐播放器缩小-->
-<th:block th:replace="commons/fragments::someFunction"></th:block>
-<!--    播放器-->
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/build/mediaelement-and-player.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/build/renderers/dailymotion.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/build/renderers/soundcloud.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/build/renderers/vimeo.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/mediaelement-4.2.x/demo/demo.js"></script>
-<th:block th:replace="commons/fragments::contextMenu"></th:block>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/cloudDisk/js/easyUploader.jq.js"></script>
-
-<!--<script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" crossorigin="anonymous" type="text/javascript"></script>-->
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/jquery.min.js-3.2.1/jquery.min.js"></script>
-
-<!--图片播放器-->
-<!--<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>-->
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/viewerjs-1.5.0/docs/js/viewer.js"></script>
-
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/popper.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/bootstrap-4.4.1-dist/js/bootstrap.min.js" crossorigin="anonymous"
-        type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/tooltip.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/nicescroll-3.7.6/jquery.nicescroll.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/scroll-up-bar-v0.3.0/dist/scroll-up-bar.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/ionicons-2.0.0/plugin/dist/js/sa-functions.js"></script>
-
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/chart.min.js-2.7.1/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/summernote-0.8.9/summernote-lite.js"></script>
-
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/ionicons-2.0.0/plugin/dist/js/scripts.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/ionicons-2.0.0/plugin/dist/js/custom.js"></script>
-<link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/font-awesome-4.7.0/css/font-awesome.min.css"
-      rel="stylesheet">
-
-
-<!--不加就凉凉-->
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/jquery.min.js-3.2.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.24/lib/nicescroll-3.7.6/jquery.nicescroll.min.js"></script>
-
-<th:block th:replace="commons/fragments::share"></th:block>
 
 <!--上传模块-->
 <script>
