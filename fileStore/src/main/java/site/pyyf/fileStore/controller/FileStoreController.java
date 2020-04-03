@@ -22,7 +22,9 @@ import site.pyyf.fileStore.utils.CloudDiskConstant;
 import site.pyyf.fileStore.utils.FtpUtil;
 import site.pyyf.fileStore.utils.RedisKeyUtil;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -170,8 +172,8 @@ public class FileStoreController extends BaseController implements CloudDiskCons
         }
 
 
-        if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
-            //配置是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
+        if (myFile.getMyFilePath().startsWith("http")) {
+            //以http开头则是OSS存储的
             try {
                 logger.info("开始下载");
                 iossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);

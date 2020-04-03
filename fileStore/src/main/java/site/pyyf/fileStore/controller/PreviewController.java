@@ -32,7 +32,6 @@ public class PreviewController extends BaseController {
         //获取文件信息
         MyFile myFile = iMyFileService.getFileByFileId(fId);
 
-
         //可以将条件合并，但为方便理解这里没有合并
         if(myFile.getShowPath().equals("")||myFile.getShowPath()==null)
             if(!myFile.getPostfix().equals("mp4"))

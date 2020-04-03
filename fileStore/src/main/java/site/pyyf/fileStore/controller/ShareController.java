@@ -100,9 +100,9 @@ public class ShareController extends BaseController {
         if (myFile == null) {
             return;
         }
-        String remotePath = myFile.getMyFilePath();
+        String filePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
-        System.out.println("文件位置" + remotePath + fileName);
+        logger.info("文件位置" + filePath + fileName);
 
         OutputStream os = null;
         try {
@@ -117,11 +117,11 @@ public class ShareController extends BaseController {
             e.printStackTrace();
         }
 
-        if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
+        if (filePath.startsWith("http")) {
             //配置是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
             try {
                 logger.info("开始下载");
-                iossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
+                iossService.download(filePath.substring(aliyunConfig.getUrlPrefix().length()), os);
                 iMyFileService.updateFile(
                         MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 logger.info("文件从OSS下载成功");
@@ -134,7 +134,7 @@ public class ShareController extends BaseController {
         } else {
             //去FTP上拉取
             logger.info("开始下载");
-            boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + remotePath, os);
+            boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + filePath, os);
             if (FTPdownLoadRes){
                 logger.info("文件从FTP下载成功");
                 iMyFileService.updateFile(
@@ -227,18 +227,13 @@ public class ShareController extends BaseController {
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
         User user = iUserService.getUserByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = null;
-        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
-
-        //当前目录为其他目录
-        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
+        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
                 logger.error("当前文件已存在!上传失败...");
                 return 501;
             }
         }
-
 
         Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
         //是否仓库放不下该文件

@@ -23,7 +23,7 @@
             console.log("logggg" + fileFolderId + "  " + pwd);
 
             $.ajax({
-                url: domain+'/share',
+                url: domain + '/share',
                 type: 'post',
                 data: {
                     fileFolderId: $('#fileFolderId').val(),
@@ -116,7 +116,7 @@
                         var location = window.location.href;
                         let strings = location.split("/");
                         $.ajax({
-                            url: "getQrCode/?id=" + $('#tarFile').html() + "&url=" + strings[2] +domain,
+                            url: "getQrCode/?id=" + $('#tarFile').html() + "&url=" + strings[2] + domain,
                             type: "get",
                             async: false,
                             success: function (data) {
@@ -144,7 +144,7 @@
                         var supVideo = ["mp4", "wmv", "flv"];
                         var supAudio = ["mp3", "wma", "flac"];
                         if (supLang.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
-                            window.location.href = domain+"/code/preview?fId=" + id;
+                            window.location.href = domain + "/code/preview?fId=" + id;
                         } else if (supImg.indexOf(name.substring(name.lastIndexOf(".") + 1)) > -1) {
                             var image = new Image();
                             // var location = window.location.href;
@@ -178,6 +178,23 @@
                             var scrollLeft = $(document).scrollLeft();
 
                             console.log("在线播放打开");
+
+                            //播放视频时，如果音乐开着在，就关闭
+                            var audio = document.getElementById('audioPlayer');
+                            if (audio.play()) {
+                                audio.pause();
+                            }
+
+                            var postion = $("#audioPlayerPosition").text();
+                            if (postion == 250) {
+                                $("#audioPlayerTool").animate({
+                                    left: "5px"
+                                }, "slow");
+                                $('#audioPlayerPosition').html(5);
+                                $('#audioPlayerSrc').attr("src", "https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/右.png");
+                            }
+
+
                             let id = $('#tarFile').html();
 
                             $("#videoElasticframe").css({
@@ -187,15 +204,19 @@
                                 zIndex: 10
                             });
 
+                            $('#preMediaId').html("");
+                            $('#preMediaId').attr("id", "");
 
-                            if (showType == "FTP"){
+                            $('.flag td div').attr("id", "preMediaId");
+                            $('.flag td div').html(" &nbsp; &nbsp; <i class=\"fa fa-refresh fa-spin\"></i>&nbsp; &nbsp;");
+
+                            if (showType == "FTP") {
                                 var location = window.location.href;
                                 let strings = location.split("/");
 
-                                $("#videoPlayer").attr("src", strings[0] + domain+"/video?fId=" + id);
-                            }
-                            else
-                                $("#videoPlayer").attr("src",showPath);
+                                $("#videoPlayer").attr("src", strings[0] + domain + "/video?fId=" + id);
+                            } else
+                                $("#videoPlayer").attr("src", showPath);
 
                             // if (showType == "FTP")
                             //     $("#videoPlayer").html("<source  src=\"" + strings[0] + "cloudDisk/video?fId=" + id + "\" type=\"video/mp4\">");
@@ -222,22 +243,18 @@
                                 audio.pause();
                             }
 
-                            var preAudioName = $('#preAudioName').html();
-                            if (preAudioName != null) {
-                                $('#preAudioId').html(preAudioName);
+                            //存在preAudioId，表明这次是切歌
+                            $('#preMediaId').html("");
+                            $('#preMediaId').attr("id", "");
 
-                                $('#preAudioId').attr("id", "");
-                            }
-
-                            $('#preAudioName').html(name);
-                            $('.flag td a').attr("id", "preAudioId");
-                            $('.flag td a').html(name + " &nbsp; &nbsp; <i class=\"fa fa-refresh fa-spin\"></i>&nbsp; &nbsp;");
+                            $('.flag td div').attr("id", "preMediaId");
+                            $('.flag td div').html(" &nbsp; &nbsp; <i class=\"fa fa-refresh fa-spin\"></i>&nbsp; &nbsp;");
 
                             if (showType == "FTP") {
                                 var location = window.location.href;
                                 let strings = location.split("/");
                                 //注意是设置audio的属性，不是source的属性，这里我被折腾了两个小时，哎
-                                $("#audioPlayer").attr("src", strings[0] + domain+"/audio?fId=" + id);
+                                $("#audioPlayer").attr("src", strings[0] + domain + "/audio?fId=" + id);
                             } else
                                 $("#audioPlayer").attr("src", showPath);
 
@@ -281,7 +298,7 @@
                         var domain = $("#domain").html();
                         let strings = location.split("/");
                         if (id != "") {
-                            window.location.href = strings[0] +domain+ "/deleteFile?fId=" + id + "&folder=" + $('#nowF').html();
+                            window.location.href = strings[0] + domain + "/deleteFile?fId=" + id + "&folder=" + $('#nowF').html();
                         } else {
                             return;
                         }
@@ -360,7 +377,7 @@
                         var domain = $("#domain").html();
                         let strings = location.split("/");
                         if (id != "") {
-                            window.location.href = strings[0] + domain+"/deleteFolder?fId=" + id;
+                            window.location.href = strings[0] + domain + "/deleteFolder?fId=" + id;
                         } else {
                             return;
                         }
@@ -483,7 +500,7 @@
                 let strings = location.split("cloudDisk");
                 var domain = $("#domain").html();
                 if (id != "") {
-                    window.location.href = strings[0] + domain+"/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
+                    window.location.href = strings[0] + domain + "/downloadFile?time=" + new Date().getTime() + "&tip=" + Math.random() * 1000000 + "&fId=" + id;
                 } else {
                     return;
                 }
@@ -551,6 +568,9 @@
             // }else{ // 已播放点击则暂停
             //     video.pause(); //暂停控制
             // }
+            $('#preMediaId').html("");
+            $('#preMediaId').attr("id", "");
+
             $("#videoElasticframe").slideToggle(300);
         };
 

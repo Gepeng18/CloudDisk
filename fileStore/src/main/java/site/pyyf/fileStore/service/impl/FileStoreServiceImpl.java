@@ -132,7 +132,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     public void deleteFile(MyFile myFile) {
         String remotePath = myFile.getMyFilePath();
         String showPath = myFile.getShowPath();
-        if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
+        if (myFile.getMyFilePath().startsWith("http")) {
 
             boolean OSSdeleteRes = iossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
             if (OSSdeleteRes)
@@ -435,7 +435,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     public void transeferFile(MyFile shareFile, MyFile fileItem) {
         String insertRemotePath = null;
         String insertShowPath = null;
-        if (cloudDiskConfig.getType().equals("OSS") || shareFile.getType() == 2) {
+        if (shareFile.getMyFilePath().startsWith("http")) {
             //提交到OSS服务器
             UploadResult OSStransferRes = iossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
                     StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));
