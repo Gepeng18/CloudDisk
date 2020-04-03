@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import site.pyyf.fileStore.utils.CommunityUtil;
+import site.pyyf.fileStore.utils.CloudDiskUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,7 +26,7 @@ public class ExceptionAdvice {
         if ("XMLHttpRequest".equals(xRequestedWith)) {
             response.setContentType("application/plain;charset=utf-8");
             PrintWriter writer = response.getWriter();
-            writer.write(CommunityUtil.getJSONString(1, "服务器异常!"));
+            writer.write(CloudDiskUtil.getJSONString(1, "服务器异常!"));
         } else {
             response.sendRedirect(request.getContextPath() + "/error");
         }

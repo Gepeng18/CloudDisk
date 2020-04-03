@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.utils.FtpUtil;
-import site.pyyf.fileStore.utils.markdown.MarkdownToHtmlUtils;
+import site.pyyf.fileStore.utils.MarkdownToHtmlUtil;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -117,20 +117,20 @@ public class PreviewController extends BaseController {
         if (supportPreviewLang.containsKey(suffix)) {
             if (suffix.equals("java")) {
                 StringBuilder fileContentByMyFile = iFileStoreService.getFileContentByMyFile(file);
-                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
-                String htmlContent = MarkdownToHtmlUtils.markdownToHtmlExtensions(code);
+                String code = iCodeService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                String htmlContent = MarkdownToHtmlUtil.markdownToHtmlExtensions(code);
 
-                StringBuilder addJavaCompileHtml = ifilePreviewService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
+                StringBuilder addJavaCompileHtml = iCodeService.addHtmlCompileModule(new StringBuilder(htmlContent), "java");
 
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(addJavaCompileHtml, Arrays.asList("java"));
+                StringBuilder newCode = iCodeService.addHtmlShowStyle(addJavaCompileHtml, Arrays.asList("java"));
                 model.addAttribute("code", newCode.toString());
                 return "clouddisk/show-code";
             } else {
                 StringBuilder fileContentByMyFile = iFileStoreService.getFileContentByMyFile(file);
-                String code = ifilePreviewService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
+                String code = iCodeService.addQuotationMarks(supportPreviewLang.get(suffix), fileContentByMyFile);
                 // 其他语言 启动mardown显示
-                String htmlContent = MarkdownToHtmlUtils.markdownToHtmlExtensions(code);
-                StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(new StringBuilder(htmlContent), new ArrayList<>(supportPreviewLang.values()));
+                String htmlContent = MarkdownToHtmlUtil.markdownToHtmlExtensions(code);
+                StringBuilder newCode = iCodeService.addHtmlShowStyle(new StringBuilder(htmlContent), new ArrayList<>(supportPreviewLang.values()));
                 model.addAttribute("code", newCode.toString());
                 return "clouddisk/show-code";
             }

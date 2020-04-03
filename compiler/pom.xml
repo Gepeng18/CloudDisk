@@ -12,6 +12,7 @@
     <groupId>site.pyyf</groupId>
     <artifactId>compiler</artifactId>
     <version>1.0-SNAPSHOT</version>
+
     <dependencies>
         <dependency>
             <groupId>site.pyyf</groupId>

@@ -1,13 +1,13 @@
 package site.pyyf.fileStore.controller;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.pyyf.fileStore.entity.FileFolder;
 import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.entity.UserStatistics;
-import site.pyyf.fileStore.utils.LogUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,17 +24,17 @@ import java.util.Map;
 @Controller
 public class SystemController extends BaseController {
 
-    Logger logger = LogUtils.getInstance(SystemController.class);
+    private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
 
     /**
      * @return java.lang.String
-     * @Description 前往我的网盘
+     * @Description 前往我的云盘
      * @Author xw
      * @Date 23:28 2020/2/10
      * @Param [fId, fName, error, map]
      **/
     @GetMapping("/files")
-    public String toUserPage(@RequestParam(value = "fId",defaultValue = "0") Integer fId,
+    public String toUserPage(@RequestParam(value = "fId", defaultValue = "0") Integer fId,
                              Integer error, Map<String, Object> map) {
         //判断是否包含错误信息
         if (error != null) {
@@ -55,8 +55,8 @@ public class SystemController extends BaseController {
         List<FileFolder> location = new ArrayList<>();
 
         //当前为具体目录
-        folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(),fId);
-        files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(),fId);
+        folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), fId);
+        files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), fId);
         nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
         if (fId == 0) {
             location.add(nowFolder);
@@ -76,107 +76,107 @@ public class SystemController extends BaseController {
         map.put("files", files);
         map.put("nowFolder", nowFolder);
         map.put("location", location);
-        logger.info("网盘页面域中的数据显示成功");
+        logger.info("云盘页面域中的数据显示成功");
         return "clouddisk/files";
     }
 
 
     /**
+     * @return java.lang.String
      * @Description 前往所有文档页面
      * @Author xw
      * @Date 10:26 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/doc-files")
-    public String toDocFilePage( Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(),1);
+    public String toDocFilePage(Map<String, Object> map) {
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 1);
         //获得统计信息
         UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
         map.put("statistics", statistics);
         map.put("files", files);
-        map.put("currUri","doc");
+        map.put("currUri", "doc");
         return "clouddisk/subFiles";
     }
 
     /**
+     * @return java.lang.String
      * @Description 前往所有图像页面
      * @Author xw
      * @Date 10:26 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/image-files")
-    public String toImageFilePage( Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(),2);
+    public String toImageFilePage(Map<String, Object> map) {
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 2);
         //获得统计信息
         UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
         map.put("statistics", statistics);
         map.put("files", files);
-        map.put("currUri","image");
+        map.put("currUri", "image");
         return "clouddisk/subFiles";
     }
 
     /**
+     * @return java.lang.String
      * @Description 前往所有视频页面
      * @Author xw
      * @Date 10:26 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/video-files")
-    public String toVideoFilePage( Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(),3);
+    public String toVideoFilePage(Map<String, Object> map) {
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 3);
         //获得统计信息
         UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
         map.put("statistics", statistics);
         map.put("files", files);
-        map.put("currUri","video");
+        map.put("currUri", "video");
         return "clouddisk/subFiles";
     }
 
     /**
+     * @return java.lang.String
      * @Description 前往所有音频页面
      * @Author xw
      * @Date 10:26 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/music-files")
-    public String toMusicFilePage( Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(),4);
+    public String toMusicFilePage(Map<String, Object> map) {
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 4);
         //获得统计信息
         UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
         map.put("statistics", statistics);
         map.put("files", files);
-        map.put("currUri","music");
+        map.put("currUri", "music");
         return "clouddisk/subFiles";
     }
 
     /**
+     * @return java.lang.String
      * @Description 前往其他文件页面
      * @Author xw
      * @Date 10:26 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/other-files")
-    public String toOtherFilePage( Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(),5);
+    public String toOtherFilePage(Map<String, Object> map) {
+        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 5);
         //获得统计信息
         UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
         map.put("statistics", statistics);
         map.put("files", files);
-        map.put("currUri","other");
+        map.put("currUri", "other");
         return "clouddisk/subFiles";
     }
 
     /**
+     * @return java.lang.String
      * @Description 登录之后的用户主页
      * @Author xw
      * @Date 10:28 2020/2/26
      * @Param [map]
-     * @return java.lang.String
      **/
     @GetMapping("/index")
     public String index(Map<String, Object> map) {
@@ -187,18 +187,4 @@ public class SystemController extends BaseController {
         return "clouddisk/index";
     }
 
-    /**
-     * @Description 前往帮助页面
-     * @Author xw
-     * @Date 15:17 2020/2/26
-     * @Param [map]
-     * @return java.lang.String
-     **/
-    @GetMapping("/help")
-    public String helpPage(Map<String, Object> map) {
-        //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
-        map.put("statistics", statistics);
-        return "clouddisk/help";
-    }
 }

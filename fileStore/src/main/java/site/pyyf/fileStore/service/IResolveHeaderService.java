@@ -1,6 +1,6 @@
 package site.pyyf.fileStore.service;
 
-import site.pyyf.fileStore.entity.Directory;
+import site.pyyf.fileStore.entity.Header;
 
 import java.io.*;
 
@@ -15,15 +15,15 @@ public interface IResolveHeaderService {
      */
     public void readFile(InputStream in, String ebookName, int id) throws Exception;
 
-    public void readFile(String remotePath, String fileName, int id) throws Exception;
+    public void readFile(String remotePath, String fileName, int fileId) throws Exception;
 
     /*
      * 函数名：printTree
      * 作用：输出树中的内容
      */
-    public void printTree(Directory node, int deep);
+    public void printTree(Header node, int deep);
 
-    public void printTree(Directory node);
+    public void printTree(Header node);
 
     public void printTree();
 

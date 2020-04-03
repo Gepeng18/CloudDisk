@@ -13,15 +13,12 @@ import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.entity.UploadResult;
 import site.pyyf.fileStore.entity.User;
 import site.pyyf.fileStore.service.IResolveHeaderService;
-import site.pyyf.fileStore.utils.CommunityUtil;
+import site.pyyf.fileStore.utils.CloudDiskUtil;
 import site.pyyf.fileStore.utils.FtpUtil;
 import site.pyyf.fileStore.utils.QRCodeUtil;
 import site.pyyf.fileStore.utils.RedisKeyUtil;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -66,7 +63,7 @@ public class ShareController extends BaseController {
                     if (!f.exists()) {
                         //文件不存在,开始生成二维码并保存文件
                         OutputStream os = new FileOutputStream(f);
-                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
+                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cloud.png"), os, true);
                         os.close();
                     }
                     UploadResult upload = iossService.upload(f, "cloudDisk/QrCode");
@@ -90,7 +87,7 @@ public class ShareController extends BaseController {
      * @Param [fId]
      **/
     @GetMapping("/file/linearDownload")
-    public void linearDownload(Integer f, String p, String t) {
+    public void linearDownload(Integer f, String p, String t) throws IOException {
         //获取文件信息
         MyFile myFile = iMyFileService.getFileByFileId(f);
         String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
@@ -106,28 +103,52 @@ public class ShareController extends BaseController {
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
         System.out.println("文件位置" + remotePath + fileName);
-        try {
 
-            //去FTP上拉取
-            OutputStream os = new BufferedOutputStream(response.getOutputStream());
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(response.getOutputStream());
             logger.info("开始下载");
             response.setCharacterEncoding("utf-8");
             // 设置返回类型
             response.setContentType("multipart/form-data");
             // 文件名转码一下，不然会出现中文乱码
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
-            logger.info("下载完成");
-            if (flag) {
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
-                os.flush();
-                os.close();
-                logger.info("文件下载成功!  ----->>>>>  " + myFile.getMyFileName());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        if ((cloudDiskConfig.getType().equals("OSS")) || myFile.getType() == 2) {
+            //配置是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
+            try {
+                logger.info("开始下载");
+                iossService.download(remotePath.substring(aliyunConfig.getUrlPrefix().length()), os);
+                iMyFileService.updateFile(
+                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                logger.info("文件从OSS下载成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("文件从OSS下载失败");
+                os.close();
+                return;
+            }
+        } else {
+            //去FTP上拉取
+            logger.info("开始下载");
+            boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + remotePath, os);
+            if (FTPdownLoadRes){
+                logger.info("文件从FTP下载成功");
+                iMyFileService.updateFile(
+                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+            }
+            else {
+                logger.info("文件从FTP下载失败!" + myFile);
+                os.close();
+                return;
+            }
+        }
+        os.flush();
+        os.close();
+
     }
 
 
@@ -141,7 +162,7 @@ public class ShareController extends BaseController {
         // 将验证码存入Redis
         String shareKey = RedisKeyUtil.getShareKey(pwd);
         redisTemplate.opsForValue().set(shareKey, typeAndId, 7, TimeUnit.DAYS);
-        return CommunityUtil.getJSONString(200, pwd);
+        return CloudDiskUtil.getJSONString(200, pwd);
 
     }
 
@@ -161,7 +182,7 @@ public class ShareController extends BaseController {
         String shareKey = RedisKeyUtil.getShareKey(pwd);
         String typeAndFid = (String) redisTemplate.opsForValue().get(shareKey);
         if (StringUtils.isBlank(typeAndFid))
-            return CommunityUtil.getJSONString(502, map.get(502));
+            return CloudDiskUtil.getJSONString(502, map.get(502));
 
 
         String[] split = typeAndFid.split("-");
@@ -169,15 +190,15 @@ public class ShareController extends BaseController {
             //分享的是文件夹
             FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[1]));
             int result = transferSaveFolder(fileFolder, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
+            return CloudDiskUtil.getJSONString(result, map.get(result));
         } else if (split[0].equals("file")) {
             MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[1]));
             int result = transferSaveFile(shareFile, toFileFolderId);
-            return CommunityUtil.getJSONString(result, map.get(result));
+            return CloudDiskUtil.getJSONString(result, map.get(result));
 
         } else {
             logger.error("传来一个不知名的内容");
-            return CommunityUtil.getJSONString(500, map.get(500));
+            return CloudDiskUtil.getJSONString(500, map.get(500));
         }
     }
 

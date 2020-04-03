@@ -37,18 +37,18 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     // 代码缓存
     private Cache<String, Object> previewCodeCache;
 
-    @Value("${caffeine.posts.max-size}")
+    @Value("${caffeine.code.max-size}")
     private int maxSize;
 
-    @Value("${caffeine.posts.expire-seconds}")
-    private int expireSeconds;
+    @Value("${caffeine.code.expire-hours}")
+    private int expireHours;
 
     @PostConstruct
     public void init() {
         // 初始化帖子列表缓存
         previewCodeCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
-                .expireAfterWrite(expireSeconds, TimeUnit.SECONDS)
+                .expireAfterWrite(expireHours, TimeUnit.HOURS)
                 .build();
     }
 
@@ -96,11 +96,11 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         String remotePath = file.getMyFilePath();
 
         try {
-            File temp = new File("temp");
+            File temp = new File("data/temp");
             if (!temp.exists()) {
                 temp.mkdirs();
             }
-            String tempStr = "temp/" + UUID.randomUUID().toString();
+            String tempStr = "data/temp/" + UUID.randomUUID().toString();
             //去FTP上拉取
             OutputStream tmpFileStream = new FileOutputStream(new File(tempStr));
             boolean flag = FtpUtil.downloadFile("/" + remotePath, tmpFileStream);

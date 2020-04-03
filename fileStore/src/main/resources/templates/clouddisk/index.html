@@ -3,22 +3,33 @@
 <head>
 	<meta charset="UTF-8">
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" name="viewport">
-	<title>鹏圆网盘-使用情况</title>
+	<title>鹏圆云盘-使用情况</title>
 
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/css/ionicons.min.css">
-	<link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/font-awesome-4.7.0/css/font-awesome.min.css"
-		  rel="stylesheet">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/summernote/summernote-lite.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/flag-icon-css/css/flag-icon.min.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/css/demo.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/css/style.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/bootstrap-4.4.1-dist/css/bootstrap.min.css"
+		  crossorigin="anonymous" type="text/css"/>
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons-2.0.0/css/ionicons.min.css">
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/font-awesome-4.7.0/css/font-awesome.min.css">
+
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/summernote-0.8.9/summernote-lite.css">
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/flag-icon-css/css/flag-icon.min.css">
+	<link rel="stylesheet"
+		  href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons-2.0.0/plugin/dist/css/style.css">
+	<style type="text/css">/*文档内嵌样式表*/
+	body {
+		background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/email-pattern.png");
+	}
+
+	</style>
 </head>
 
 <body>
 <div id="app">
 	<div class="main-wrapper">
-		<div class="navbar-bg"></div>
+		<div class="navbar-bg" style="background-color:#808080b0;"></div>
 
 		<div th:replace="commons/bar::#top"></div>
 		<div th:replace="commons/bar::#sidebar(currUri='index',statistics = ${statistics})"></div>
@@ -36,8 +47,8 @@
 						<div class="row">
 							<div class="col-lg-6 col-md-6 col-12">
 								<div class="card card-sm-4">
-									<div class="card-icon bg-primary">
-										<i class="ion ion-ios-folder"></i>
+									<div class="card-icon bg-secondary">
+										<i class="fa fa-folder-o"></i>
 									</div>
 									<div class="card-wrap">
 										<div class="card-header">
@@ -49,8 +60,8 @@
 							</div>
 							<div class="col-lg-6 col-md-6 col-12">
 								<div class="card card-sm-4">
-									<div class="card-icon bg-danger">
-										<i class="ion ion-android-document"></i>
+									<div class="card-icon bg-secondary">
+										<i class="fa fa-file-text-o"></i>
 									</div>
 									<div class="card-wrap">
 										<div class="card-header">
@@ -93,23 +104,23 @@
 								<h4>来自系统通知</h4>
 							</div>
 							<div class="card-body">
-								<p>
-									鹏圆网盘（英文名：moti-cloud）是由个人开发者推出的在线存储服务。
-								</p>
+								<p>鹏圆云盘是一个在线存储平台</p>
+								<p>支持多种格式的音频，视频在线播放</p>
+								<p>支持多种格式的代码在线预览和java代码的在线编译</p>
+								<p>支持markdown文件自动生成目录，自动分页</p>
 								<hr>
 								<p>
-									用户可以轻松将自己的文件上传到网盘上，并可跨终端随时随地查看和分享。<br>
-									无需注册，使用QQ一键登录，注重用户的隐私。<br>
-									具有安全、简约、高效、不限速的特点。
+									<a href="http://wd.pyyf.site"> 友情链接：鹏圆云方论坛</a>
+								</p>
+								<p>
+									<a href="http://wd.pyyf.site/blogs">友情链接： 个人博客</a>
 								</p>
 								<hr>
 								<p class='author'>
-									作者：<a href="http://xuewei.world:8000/cn%e4%b8%b6moti/">鹏圆</a>
+									作者：鹏圆云方
 								</p>
 							</div>
-							<div class="card-footer">
-								<small>COPYRIGHT © 2020  版权所有 鹏圆网盘</small>
-							</div>
+
 						</div>
 					</div>
 				</div>
@@ -118,7 +129,7 @@
 		<div th:replace="commons/bar::#footer"></div>
 	</div>
 </div>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/jquery.min.js"></script>
 <script>
 	$(function () {
 		var cur = [[${statistics.user.currentSize}]];
@@ -127,20 +138,22 @@
 		$('#progress').css('width',w+'%');
 	})
 </script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/popper.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/tooltip.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/bootstrap/js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/nicescroll/jquery.nicescroll.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/scroll-up-bar/dist/scroll-up-bar.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/js/sa-functions.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/popper.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/tooltip.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/bootstrap-4.4.1-dist/js/bootstrap.min.js" crossorigin="anonymous"
+		type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/nicescroll-3.7.6/jquery.nicescroll.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/scroll-up-bar-v0.3.0/dist/scroll-up-bar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons-2.0.0/plugin/dist/js/sa-functions.js"></script>
 
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/chart.min.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/summernote/summernote-lite.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/chart.min.js-2.7.1/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/summernote-0.8.9/summernote-lite.js"></script>
 
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/js/scripts.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/js/custom.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/ionicons/plugin/dist/js/demo.js"></script>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons-2.0.0/plugin/dist/js/scripts.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/ionicons-2.0.0/plugin/dist/js/custom.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/chart.min.js-2.7.1/chart.min.js"></script>
+<link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+	  rel="stylesheet">
 <script>
 	var ctx = document.getElementById("myChart").getContext('2d');
 	var myChart = new Chart(ctx, {

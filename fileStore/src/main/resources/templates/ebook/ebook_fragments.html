@@ -15,9 +15,10 @@
                 style="height: 0px;">
                 <li th:each="header:${headers.getSubNodes()}" th:style="|margin-left:${n}px|"  >
                     <!--                    这一项的key-->
-                    <a th:href="@{|#${header.getContentId()}|}" th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed" data-toggle="collapse"
-                       th:text="${header.getHeader()}" style="word-wrap:break-word;">
-                        系统管理
+                    <a th:href="@{|#${header.getContentId()}|}" th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed" data-toggle="collapse">
+                        <i th:id="${header.getContentId()}+'parent'" class="fa fa-angle-right" th:if="${header.hasSub}"></i>
+                        <p style="display: inline;" th:if="!${header.hasSub}">&nbsp;</p>
+                        <span th:text="${header.getHeader()}" style="word-wrap:break-word;"></span>
                     </a>
                     <!--                    这一项的value,也就是下一个dir-->
                     <th:block th:replace="ebook/ebook_fragments::headFragment(${header},${n}+10)">

@@ -7,7 +7,7 @@ import site.pyyf.fileStore.entity.EbookConent;
 import java.util.List;
 
 @Mapper
-public interface IebookContentMapper {
+public interface IEbookContentMapper {
 
     String selectContentByContentId(String content_id);
 
@@ -18,7 +18,7 @@ public interface IebookContentMapper {
     void updateContentByContentId(String contentId, String content);
 
 
-    void deleteByBookId(int bookId);
+    void deleteByFileId(int fileId);
 
     int insertAllEbookContent(List<EbookConent> allContent);
 

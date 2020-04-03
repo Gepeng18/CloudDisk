@@ -43,16 +43,13 @@ community.vpp.*
 ### VS Code ###
 .vscode/
 
-
 ### Ebook ###
 /fileStore/src/main/resources/application.properties
 /fileStore/src/main/resources/qqconnectconfig.properties
-/fileStore/src/main/java/site/pyyf/fileStore/utils/OSS/OssUpload.java
+/fileStore/src/main/java/site/pyyf/fileStore/IndependentRunning/OssUpload.java
 /fileStore/src/main/java/site/pyyf/fileStore/utils/FtpUtil.java
 /fileStore/src/main/resources/application.yml
 /compiler/src/main/resources/application.yml
-
-
 
 *.log
 *.log.*

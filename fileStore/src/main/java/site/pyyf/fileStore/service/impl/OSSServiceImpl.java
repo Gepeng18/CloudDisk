@@ -33,7 +33,7 @@ public class OSSServiceImpl implements IOSSService {
             "mp4", "wmv", "flv",
             "mp3", "wma","flac"};
 
-    private String getFilePath(String fileName, String suffix) {
+    private String getFilePath( String suffix,String fileName) {
 
         return suffix + "/" + fileName;
     }
@@ -57,7 +57,7 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
 
-        String remotePath = getFilePath(fileName, suffix);
+        String remotePath = getFilePath(suffix, fileName);
         // 上传到阿里云
         try {
             ossClient.putObject(aliyunConfig.getBucketName(), remotePath, new FileInputStream(file));
@@ -92,7 +92,7 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
 
-        String remotePath = getFilePath(fileName, suffix);
+        String remotePath = getFilePath(suffix, fileName);
         // 上传到阿里云
         try {
             ossClient.putObject(aliyunConfig.getBucketName(), remotePath, inputStream);
@@ -137,9 +137,9 @@ public class OSSServiceImpl implements IOSSService {
     }
 
     public UploadResult transfer(String srcPath, String dstSuffix) {
-        if (!new File("tmp").exists())
-            new File("tmp").mkdirs();
-        File tmpFile = new File("tmp/" + UUID.randomUUID().toString() + "." + StringUtils.substringAfterLast(srcPath, "."));
+        if (!new File("data/temp").exists())
+            new File("data/temp").mkdirs();
+        File tmpFile = new File("data/temp/" + UUID.randomUUID().toString() + "." + StringUtils.substringAfterLast(srcPath, "."));
 
         try {
             download(srcPath, new FileOutputStream(tmpFile));

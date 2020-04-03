@@ -10,8 +10,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Ebook {
-    private int id;
-    private String ebookName;
     private int ebookId;
+    private String ebookName;
+    private int fileId;
     private String header;
 }

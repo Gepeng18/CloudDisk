@@ -5,8 +5,8 @@ dubbo:
   registry:
     address: zookeeper://localhost:2181
   protocol:
-    name:
-    port:
+    name: *
+    port: *
 server:
-  port:
+  port: *
 

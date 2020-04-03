@@ -9,5 +9,5 @@ public interface IEbookContentService {
 
     public int selectEbookIdByContentId(String contentId);
 
-    public void deleteByBookId(int bookId);
+    public void deleteByFileId(int fileId);
 }

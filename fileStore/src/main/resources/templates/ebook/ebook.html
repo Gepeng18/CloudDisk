@@ -2,16 +2,22 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/font-awesome-4.7.0/css/font-awesome.min.css"
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/font-awesome-4.7.0/css/font-awesome.min.css"
           rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/typo.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/typo.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 
     <style type="text/css">/*文档内嵌样式表*/
     body {
-        background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/greek-vase.png");
+        background-image: url("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/email-pattern.png");
     }
 
+    </style>
+    <style>
+        .nav > li > a:hover, .nav > li > a:focus {
+            background-color: #9aa2981c;
+        }
     </style>
 </head>
 <body>
@@ -69,9 +75,10 @@
                     <!--                       onclick="window.location.href='/content?uuid=${header.getValue().getUuid()}'"-->
                     <a th:href="@{|#${header.getContentId()}|}"
                        th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed"
-                       data-toggle="collapse" th:text="${header.getHeader()}" style="word-wrap:break-word;">
-
-                        系统管理
+                       data-toggle="collapse" >
+                        <i th:id="${header.getContentId()}+'parent'"  class="fa fa-angle-right" th:if="${header.hasSub}"></i>
+                        <p style="display: inline;" th:if="!${header.hasSub}">&nbsp;</p>
+                        <span th:text="${header.getHeader()}" style="word-wrap:break-word;"></span>
                     </a>
 
                     <th:block
@@ -95,11 +102,10 @@
 
 
 </div>
-<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.15/lib/prism/prism.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.0.16/lib/prism/prism.js"></script>
 <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/marked/marked.min.js'></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.2/dist/jquery.min.js" crossorigin="anonymous"
         type="text/javascript"></script>
-<link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
 <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
 <script>
@@ -112,12 +118,18 @@
 </script>
 <script>
     function getContent(contentId) {
+        var element = contentId+"parent";
+        if($("#"+element).hasClass("fa fa-angle-right"))
+            $("#"+element).removeClass("fa fa-angle-right").addClass("fa fa-angle-down");
+        else
+            $("#"+element).removeClass("fa fa-angle-down").addClass("fa fa-angle-right");
         $("#contentId").val(contentId);
         var formData = new FormData();
-        formData.append('contentId', contentId);
 
+        formData.append('contentId', contentId);
+        var domain = $("#domain").html();
         $.ajax({
-            url: '/cloudpan/ebook/getcontent',
+            url: domain+'/ebook/getcontent',
             type: 'POST',
             data: formData,
             dataType: "json",
@@ -147,10 +159,11 @@
         $("#button" + id).html('<i class="fa fa-spinner fa-pulse"></i>&nbsp;  运行中\n');
         var code = $('#code' + id).text();
         console.log("code=" + code);
+        var domain = $("#domain").html();
         var formData = new FormData();
         formData.append('code', code);
         $.ajax({
-            url: '/cloudpan/compile',
+            url: domain+'/compile',
             type: 'POST',
             data: formData,
             dataType: "json",
@@ -176,7 +189,7 @@
     $(function () {
         $("#btngoupdate").click(function () {
             //编辑按钮就算是disable,用户强行点击也会发送请求，所以这里拦截这个请求
-            if($("#contentId").val()!=null&&$("#contentId").val()!="")
+            if ($("#contentId").val() != null && $("#contentId").val() != "")
                 $("#goupdate").submit();
         });
     });
