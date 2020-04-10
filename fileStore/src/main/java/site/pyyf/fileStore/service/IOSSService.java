@@ -8,7 +8,7 @@ import java.io.*;
 public interface IOSSService {
 
 
-    public UploadResult upload(File file, String suffix);
+    public UploadResult upload( String suffix,File file);
 
     public UploadResult upload(InputStream inputStream, String fileName, String suffix);
 

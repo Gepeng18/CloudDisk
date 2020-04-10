@@ -132,7 +132,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     public void deleteFile(MyFile myFile) {
         String remotePath = myFile.getMyFilePath();
         String showPath = myFile.getShowPath();
-        if (cloudDiskConfig.getType().equals("OSS") || (myFile.getType() == 2)) {
+        if (myFile.getMyFilePath().startsWith("http")) {
 
             boolean OSSdeleteRes = iossService.delete(remotePath.substring(aliyunConfig.getUrlPrefix().length()));
             if (OSSdeleteRes)
@@ -206,8 +206,8 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         }
 
         if (cloudDiskConfig.getType().equals("OSS")) {
-            UploadResult OSSsrcUploadResult = iossService.upload(srcFile, "cloudDisk/audio");
-            UploadResult OSSdstUploadResult = iossService.upload(dstFile, "cloudDisk/audio");
+            UploadResult OSSsrcUploadResult = iossService.upload("cloudDisk/audio",srcFile );
+            UploadResult OSSdstUploadResult = iossService.upload("cloudDisk/audio",dstFile);
 
             if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
 
@@ -218,8 +218,8 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
                 logger.error("非htmlSupAudio音乐源文件或目标文件上传到OSS失败");
             }
         } else {
-            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
-            String showFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + ".";
+            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
+            String showFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + ".";
 
             FileInputStream srcStream = new FileInputStream(srcFile);
             final boolean FTPsrcUploadresult = FtpUtil.uploadFile("/" + remoteFilePath, srcStream);
@@ -291,8 +291,8 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         }
 
         if (cloudDiskConfig.getType().equals("OSS")) {
-            UploadResult OSSsrcUploadResult = iossService.upload(srcFile, "cloudDisk/video");
-            UploadResult OSSdstUploadResult = iossService.upload(dstFile, "cloudDisk/video");
+            UploadResult OSSsrcUploadResult = iossService.upload("cloudDisk/video",srcFile);
+            UploadResult OSSdstUploadResult = iossService.upload("cloudDisk/video",dstFile );
 
             if ((OSSsrcUploadResult.getStatus().equals("done")) && (OSSdstUploadResult.getStatus().equals("done"))) {
                 logger.info("非htmlSupVideo音乐源文件和转码文件上传到OSS完毕");
@@ -302,8 +302,8 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
                 logger.error("非htmlSupVideo音乐源文件或目标文件上传失败");
             }
         } else {
-            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
-            String showFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + ".";
+            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
+            String showFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + ".";
 
             FileInputStream srcStream = new FileInputStream(srcFile);
             final boolean FTPsrcUploadresult = FtpUtil.uploadFile("/" + remoteFilePath, srcStream);
@@ -344,7 +344,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         String insertRemotePath = null;
         String insertShowPath = null;
 
-        final UploadResult OSSimgUploadRes = iossService.upload(originalFile.getInputStream(), fileItem.getMyFileName(), "cloudDisk/imgs");
+        final UploadResult OSSimgUploadRes = iossService.upload(originalFile.getInputStream(), "cloudDisk/imgs",fileItem.getMyFileName());
 
         if (OSSimgUploadRes.getStatus().equals("done")) {
             logger.info("图片文件上传到OSS完毕");
@@ -372,7 +372,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
 
         //htmlSupAudio insertPostfix
         if (cloudDiskConfig.getType().equals("OSS")) {
-            final UploadResult OSSfileUploadRes = iossService.upload(originalFile.getInputStream(), fileItem.getMyFileName(), "cloudDisk/audio");
+            final UploadResult OSSfileUploadRes = iossService.upload(originalFile.getInputStream(), "cloudDisk/audio", fileItem.getMyFileName());
 
             if (OSSfileUploadRes.getStatus().equals("done")) {
                 logger.info("htmlSupAudio或者htmlSupVideo文件上传到OSS完毕");
@@ -382,7 +382,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
                 logger.error("htmlSupAudio或者htmlSupVideo文件上传到OSS失败");
             }
         } else {
-            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
+            String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
 
             boolean FTPfileUploadRes = FtpUtil.uploadFile("/" + remoteFilePath, originalFile.getInputStream());
 
@@ -409,7 +409,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
         String insertRemotePath = null;
         String insertShowPath = null;
 
-        String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getUploadTime() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
+        String remoteFilePath = fileItem.getUserId() + "/" + fileItem.getParentFolderId() + "/" + UUID.randomUUID().toString() + "." + fileItem.getPostfix();
         //提交到FTP服务器
         boolean FTPfilesUploadResult = FtpUtil.uploadFile("/" + remoteFilePath, originalFile.getInputStream());
         if (FTPfilesUploadResult) {
@@ -435,7 +435,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     public void transeferFile(MyFile shareFile, MyFile fileItem) {
         String insertRemotePath = null;
         String insertShowPath = null;
-        if (cloudDiskConfig.getType().equals("OSS") || shareFile.getType() == 2) {
+        if (shareFile.getMyFilePath().startsWith("http")) {
             //提交到OSS服务器
             UploadResult OSStransferRes = iossService.transfer(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()),
                     StringUtils.substringBeforeLast(shareFile.getMyFilePath().substring(aliyunConfig.getUrlPrefix().length()), "/"));

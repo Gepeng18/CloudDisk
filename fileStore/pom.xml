@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>site.pyyf</groupId>
-    <artifactId>pyyf-cloud</artifactId>
+    <artifactId>fileStore</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>cloudDisk</name>
     <description>Demo project for Spring Boot</description>

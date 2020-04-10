@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import site.pyyf.fileStore.service.IMediaTranfer;
-import site.pyyf.fileStore.utils.Audio.AudioTransfer;
-import site.pyyf.fileStore.utils.Video.VideoTransfer;
+import site.pyyf.fileStore.utils.AudioTransfer;
+import site.pyyf.fileStore.utils.VideoTransfer;
 
 import java.io.File;
 

@@ -4,9 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import site.pyyf.fileStore.config.AliyunConfig;
 import site.pyyf.fileStore.config.CloudDiskConfig;
-import site.pyyf.fileStore.mapper.IFileFolderMapper;
-import site.pyyf.fileStore.mapper.IMyFileMapper;
-import site.pyyf.fileStore.mapper.IUserMapper;
+import site.pyyf.fileStore.mapper.*;
 import site.pyyf.fileStore.service.IEbookContentService;
 import site.pyyf.fileStore.service.IMediaTranfer;
 import site.pyyf.fileStore.service.IOSSService;
@@ -34,9 +32,15 @@ public class BaseService {
 
     @Autowired
     protected IUserMapper userMapper;
+
     @Autowired
     protected IMyFileMapper myFileMapper;
     @Autowired
     protected IFileFolderMapper fileFolderMapper;
 
+    @Autowired
+    protected IEbookContentMapper iebookContentMapper;
+
+    @Autowired
+    protected IEbookMapper ilibraryMapper;
 }

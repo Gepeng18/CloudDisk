@@ -4,10 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.DigestUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 public class CloudDiskUtil {
+
+    static SimpleDateFormat dstDateFormat = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss");
+    static SimpleDateFormat srcDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.UK);
 
     // 生成随机字符串
     public static String generateUUID() {
@@ -78,16 +85,7 @@ public class CloudDiskUtil {
         return count;
     }
 
-
-
-    public static void main(String[] args) {
-        String bookName;
-        String path = "1.md";
-        if(path.contains("\\"))
-            bookName= StringUtils.substringAfterLast(path,"\\");
-        else
-            bookName=path;
-        System.out.println(bookName);
+    public static String formatBaseDataString(String s) throws ParseException {
+        return dstDateFormat.format(srcDateFormat.parse(s));
     }
-
 }

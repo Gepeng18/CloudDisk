@@ -14,6 +14,8 @@ import site.pyyf.fileStore.entity.UploadResult;
 import site.pyyf.fileStore.service.IOSSService;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 
@@ -33,12 +35,12 @@ public class OSSServiceImpl implements IOSSService {
             "mp4", "wmv", "flv",
             "mp3", "wma","flac"};
 
-    private String getFilePath(String fileName, String suffix) {
-
-        return suffix + "/" + fileName;
+    private String getFilePath( String suffix,String fileName) {
+        final String dateSuffix = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").format(new Date());
+        return suffix +"/"+ dateSuffix + "/" + fileName ;
     }
 
-    public UploadResult upload(File file, String suffix) {
+    public UploadResult upload(String suffix,File file) {
         String fileName = file.getName();
         // 校验文件格式
         boolean isLegal = false;
@@ -57,10 +59,10 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
 
-        String remotePath = getFilePath(fileName, suffix);
+        String absolutePath = getFilePath(suffix, fileName);
         // 上传到阿里云
         try {
-            ossClient.putObject(aliyunConfig.getBucketName(), remotePath, new FileInputStream(file));
+            ossClient.putObject(aliyunConfig.getBucketName(), absolutePath, new FileInputStream(file));
             logger.info("上传OSS成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,11 +73,11 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
         fileUploadResult.setStatus("done");
-        fileUploadResult.setUrl(this.aliyunConfig.getUrlPrefix() + remotePath);
+        fileUploadResult.setUrl(this.aliyunConfig.getUrlPrefix() + absolutePath);
         return fileUploadResult;
     }
 
-    public UploadResult upload(InputStream inputStream, String fileName, String suffix) {
+    public UploadResult upload(InputStream inputStream,  String suffix,String fileName) {
         // 校验文件格式
         boolean isLegal = false;
         for (String type : SUP_TYPE) {
@@ -92,10 +94,10 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
 
-        String remotePath = getFilePath(fileName, suffix);
+        String absolutePath = getFilePath(suffix, fileName);
         // 上传到阿里云
         try {
-            ossClient.putObject(aliyunConfig.getBucketName(), remotePath, inputStream);
+            ossClient.putObject(aliyunConfig.getBucketName(), absolutePath, inputStream);
             logger.info("上传OSS成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -105,7 +107,7 @@ public class OSSServiceImpl implements IOSSService {
             return fileUploadResult;
         }
         fileUploadResult.setStatus("done");
-        fileUploadResult.setUrl(this.aliyunConfig.getUrlPrefix() + remotePath);
+        fileUploadResult.setUrl(this.aliyunConfig.getUrlPrefix() + absolutePath);
         return fileUploadResult;
     }
 
@@ -148,7 +150,7 @@ public class OSSServiceImpl implements IOSSService {
             logger.error("OSS转存过程中下载失败");
             return new UploadResult("", "error");
         }
-        return upload(tmpFile, dstSuffix);
+        return upload(dstSuffix,tmpFile );
 
 
     }

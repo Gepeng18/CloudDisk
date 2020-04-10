@@ -4,11 +4,8 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import site.pyyf.fileStore.mapper.IebookContentMapper;
-import site.pyyf.fileStore.entity.EbookConent;
 import site.pyyf.fileStore.service.IEbookContentService;
 
 import javax.annotation.PostConstruct;
@@ -17,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 //import site.pyyf.dao.IebookMapper;
 
 @Service
-public class EbookContentService implements IEbookContentService {
-private static final Logger logger= LoggerFactory.getLogger(EbookContentService.class);
+public class EbookContentService  extends  BaseService implements IEbookContentService {
+    private static final Logger logger = LoggerFactory.getLogger(EbookContentService.class);
     // 代码缓存
     private Cache<String, Object> markdownCache;
 
@@ -37,15 +34,12 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
                 .build();
     }
 
-    @Autowired
-    public IebookContentMapper iebookContentMapper;
-
-    public String selectContentByContentId(String contentId){
+    public String selectContentByContentId(String contentId) {
         //这里引入caffeine在内存中存储文件内容
-        String caffeineKey = "markdown:"+contentId;
+        String caffeineKey = "markdown:" + contentId;
         // 根据key查询一个缓存，如果没有返回NULL
-        String cacheContent = (String)markdownCache.getIfPresent(caffeineKey);
-        if(cacheContent!=null){
+        String cacheContent = (String) markdownCache.getIfPresent(caffeineKey);
+        if (cacheContent != null) {
             logger.info("查询markdown内容时,caffeine缓存击中");
             return cacheContent;
         }
@@ -55,11 +49,11 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
         return cacheContent;
     }
 
-    public void updateContentByContentId(String contentId,String content){
+    public void updateContentByContentId(String contentId, String content) {
         logger.info("内容改变，修改缓存内容");
-        String caffeineKey = "markdown:"+contentId;
-        markdownCache.put(caffeineKey,content);
-        iebookContentMapper.updateContentByContentId(contentId,content);
+        String caffeineKey = "markdown:" + contentId;
+        markdownCache.put(caffeineKey, content);
+        iebookContentMapper.updateContentByContentId(contentId, content);
     }
 
     public int selectEbookIdByContentId(String contentId) {
@@ -67,7 +61,7 @@ private static final Logger logger= LoggerFactory.getLogger(EbookContentService.
     }
 
     public void deleteByFileId(int fileId) {
-       iebookContentMapper.deleteByFileId(fileId);
+        iebookContentMapper.deleteByFileId(fileId);
     }
 }
 

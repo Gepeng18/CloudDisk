@@ -7,7 +7,7 @@ import site.pyyf.fileStore.entity.EbookConent;
 import java.util.List;
 
 @Mapper
-public interface IebookContentMapper {
+public interface IEbookContentMapper {
 
     String selectContentByContentId(String content_id);
 

@@ -10,7 +10,7 @@ import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
 import site.pyyf.fileStore.service.impl.EbooksServiceImpl;
 import site.pyyf.fileStore.utils.CloudDiskUtil;
-import site.pyyf.fileStore.utils.markdown.MarkdownToHtmlUtils;
+import site.pyyf.fileStore.utils.MarkdownToHtmlUtil;
 
 import java.util.Arrays;
 
@@ -35,7 +35,7 @@ public class EBookContentController extends BaseController {
     @RequestMapping(value = "/ebook/getcontent", method = RequestMethod.POST)
     public String getcontent(@RequestParam("contentId") String contentId) {
         String content = iEbookContentService.selectContentByContentId(contentId);
-        String htmlContent = MarkdownToHtmlUtils.markdownToHtmlExtensions(content);
+        String htmlContent = MarkdownToHtmlUtil.markdownToHtmlExtensions(content);
         StringBuilder processedContent = new StringBuilder();
         int i = 0;
         char buf;
@@ -51,7 +51,7 @@ public class EBookContentController extends BaseController {
             i++;
         }
 
-        StringBuilder newCode = ifilePreviewService.addHtmlShowStyle(ifilePreviewService.addHtmlCompileModule(processedContent, "java"), Arrays.asList("java", "cpp", "python", "html"));
+        StringBuilder newCode = iCodeService.addHtmlShowStyle(iCodeService.addHtmlCompileModule(processedContent, "java"), Arrays.asList("java", "cpp", "python", "html"));
         return CloudDiskUtil.getJSONString(200, newCode.toString());
     }
 

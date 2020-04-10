@@ -18,10 +18,7 @@ import site.pyyf.fileStore.utils.FtpUtil;
 import site.pyyf.fileStore.utils.QRCodeUtil;
 import site.pyyf.fileStore.utils.RedisKeyUtil;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
@@ -66,10 +63,10 @@ public class ShareController extends BaseController {
                     if (!f.exists()) {
                         //文件不存在,开始生成二维码并保存文件
                         OutputStream os = new FileOutputStream(f);
-                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/cloud.png"), os, true);
+                        QRCodeUtil.encode(url, new URL("https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/cloud.png"), os, true);
                         os.close();
                     }
-                    UploadResult upload = iossService.upload(f, "cloudDisk/QrCode");
+                    UploadResult upload = iossService.upload("cloudDisk/QrCode",f );
 
                     map.put("imgPath", upload.getUrl());
                     map.put("url", url);
@@ -90,7 +87,7 @@ public class ShareController extends BaseController {
      * @Param [fId]
      **/
     @GetMapping("/file/linearDownload")
-    public void linearDownload(Integer f, String p, String t) {
+    public void linearDownload(Integer f, String p, String t) throws IOException {
         //获取文件信息
         MyFile myFile = iMyFileService.getFileByFileId(f);
         String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
@@ -103,31 +100,55 @@ public class ShareController extends BaseController {
         if (myFile == null) {
             return;
         }
-        String remotePath = myFile.getMyFilePath();
+        String filePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
-        System.out.println("文件位置" + remotePath + fileName);
-        try {
+        logger.info("文件位置" + filePath + fileName);
 
-            //去FTP上拉取
-            OutputStream os = new BufferedOutputStream(response.getOutputStream());
+        OutputStream os = null;
+        try {
+            os = new BufferedOutputStream(response.getOutputStream());
             logger.info("开始下载");
             response.setCharacterEncoding("utf-8");
             // 设置返回类型
             response.setContentType("multipart/form-data");
             // 文件名转码一下，不然会出现中文乱码
             response.setHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
-            boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
-            logger.info("下载完成");
-            if (flag) {
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
-                os.flush();
-                os.close();
-                logger.info("文件下载成功!  ----->>>>>  " + myFile.getMyFileName());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        if (filePath.startsWith("http")) {
+            //配置是OSS或者是图片则从OSS中下载，因为图片始终存放在OSS中
+            try {
+                logger.info("开始下载");
+                iossService.download(filePath.substring(aliyunConfig.getUrlPrefix().length()), os);
+                iMyFileService.updateFile(
+                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                logger.info("文件从OSS下载成功");
+            } catch (Exception e) {
+                e.printStackTrace();
+                logger.info("文件从OSS下载失败");
+                os.close();
+                return;
+            }
+        } else {
+            //去FTP上拉取
+            logger.info("开始下载");
+            boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + filePath, os);
+            if (FTPdownLoadRes){
+                logger.info("文件从FTP下载成功");
+                iMyFileService.updateFile(
+                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+            }
+            else {
+                logger.info("文件从FTP下载失败!" + myFile);
+                os.close();
+                return;
+            }
+        }
+        os.flush();
+        os.close();
+
     }
 
 
@@ -206,18 +227,13 @@ public class ShareController extends BaseController {
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
         User user = iUserService.getUserByUserId(loginUser.getUserId());
         //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = null;
-        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
-
-        //当前目录为其他目录
-        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
+        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
                 logger.error("当前文件已存在!上传失败...");
                 return 501;
             }
         }
-
 
         Integer sizeInt = Math.toIntExact(shareFile.getSize() / 1024);
         //是否仓库放不下该文件

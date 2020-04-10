@@ -78,6 +78,7 @@ public interface IUserMapper {
     int update(User user);
 
 
+    /*原UserMapper中的*/
     /**
      * @Description 添加文件仓库（用户注册时调用）
      * @Author xw

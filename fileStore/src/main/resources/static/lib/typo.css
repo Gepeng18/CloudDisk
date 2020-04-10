@@ -1,9 +1,11 @@
 @charset "utf-8";
-
+/*typo排版工具*/
+/*有些属性和semantic冲突，所以需要额外制定*/
 .typo p {
   font-size: 16px;
   font-weight: 300;
   line-height: 1.8;
+  /*text-align：justify 两端对齐开启*/
   text-align: justify;
 }
 

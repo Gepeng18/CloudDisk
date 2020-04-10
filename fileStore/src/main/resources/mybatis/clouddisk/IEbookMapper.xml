@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.pyyf.fileStore.mapper.IEbookMapper">
+    <sql id="selectFields">
+        ebook_id,ebook_name,file_id,header
+    </sql>
+
+    <sql id="insertFields">
+        ebook_name,file_id,header
+    </sql>
+    <update id="updateEbookNameByFileId">
+        update ebook
+        set ebook_name=#{ebookName}
+        where file_id=#{fileId}
+    </update>
+    <delete id="deleteByFileId">
+        delete
+        from ebook
+        where file_id=#{fileId}
+
+    </delete>
+    <select id="selectByFileId" resultType="site.pyyf.fileStore.entity.Ebook">
+        select
+        <include refid="selectFields"></include>
+        from ebook
+        where file_id=#{fileId}
+    </select>
+
+    <select id="selectHeaderByFileId" resultType="java.lang.String">
+            select header
+            from ebook
+            where file_id = #{fileId}
+
+    </select>
+
+    <insert id="insertEbook">
+        insert into ebook(<include refid="insertFields"></include>)
+        values(#{ebookName},#{fileId},#{header})
+    </insert>
+
+</mapper>

@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import site.pyyf.fileStore.mapper.IebookContentMapper;
+import site.pyyf.fileStore.mapper.IEbookContentMapper;
 import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
 import site.pyyf.fileStore.entity.EbookConent;
@@ -33,7 +33,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
     private static Logger logger = LoggerFactory.getLogger(ResolveHeaderServiceImpl.class);
 
     @Autowired
-    private IebookContentMapper iebookContentMapper;
+    private IEbookContentMapper iebookContentMapper;
 
     @Autowired
     private IEbooksService iEbooksService;
@@ -55,6 +55,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
                 records.remove("" + level);
             /* ------------------- 更新记录和插入节点 ----------------- */
             root.addSubNode(head);
+            root.setHasSub(true);
             records.put("" + level, head);
             return;
         }
@@ -75,6 +76,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
         /* ------------------- 更新记录和插入节点 ----------------- */
         Header preList = records.get("" + preLevel);
         preList.addSubNode(head);
+        preList.setHasSub(true);
         records.put("" + level, head);
     }
 

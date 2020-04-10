@@ -29,7 +29,7 @@ public class BaseController {
     @Autowired
     protected IMediaTranfer iMediaTranfer;
     @Autowired
-    protected IFilePreviewService ifilePreviewService;
+    protected ICodePreviewService iCodeService;
     @Autowired
     protected IFileStoreService iFileStoreService;
     @Autowired

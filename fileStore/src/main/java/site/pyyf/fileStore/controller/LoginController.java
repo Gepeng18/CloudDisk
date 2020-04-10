@@ -1,7 +1,7 @@
 package site.pyyf.fileStore.controller;
 
+import org.slf4j.LoggerFactory;
 import site.pyyf.fileStore.entity.User;
-import site.pyyf.fileStore.utils.LogUtils;
 import com.qq.connect.QQConnectException;
 import com.qq.connect.api.OpenID;
 import com.qq.connect.api.qzone.UserInfo;
@@ -25,7 +25,7 @@ import java.util.Date;
 @Controller
 public class LoginController extends BaseController {
 
-    private Logger logger = LogUtils.getInstance(LoginController.class);
+    private static final Logger logger= LoggerFactory.getLogger(LoginController.class);
 
     /**
      * @Description 免登陆用户入口
@@ -105,7 +105,7 @@ public class LoginController extends BaseController {
             } else {
                 accessToken = accessTokenObj.getAccessToken();
                 tokenExpireIn = accessTokenObj.getExpireIn();
-                logger.error("accessToken" + accessToken);
+                logger.info("accessToken" + accessToken);
                 request.getSession().setAttribute("demo_access_token", accessToken);
                 request.getSession().setAttribute("demo_token_expirein", String.valueOf(tokenExpireIn));
                 // 利用获取到的accessToken 去获取当前用的openid -------- start
@@ -148,8 +148,7 @@ public class LoginController extends BaseController {
                 }
             }
         } catch (QQConnectException e) {
-        } finally {
-            logger.error("登录成功!");
+            e.printStackTrace();
         }
         return "登录失败!请查看日志信息...";
     }
