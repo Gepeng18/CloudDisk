@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import site.pyyf.fileStore.entity.EbookContent;
 import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
-import site.pyyf.fileStore.service.impl.EbooksServiceImpl;
 import site.pyyf.fileStore.utils.CloudDiskUtil;
 import site.pyyf.fileStore.utils.MarkdownToHtmlUtil;
 
@@ -17,13 +17,11 @@ import java.util.Arrays;
 @Controller
 public class EBookContentController extends BaseController {
 
-    @Autowired
-    private EbooksServiceImpl iLibraryService;
-
     @RequestMapping(path = "/ebook/getbook/{fileId}")
     public String getEbook(@PathVariable(value = "fileId") int fileId, Model model) {
 
-        Ebook ebook = iLibraryService.selectByFileId(fileId);
+        //搜到只会有一个
+        Ebook ebook = iEbookService.queryAll(Ebook.builder().fileId(fileId).build()).get(0);
         //Feature.OrderedField表示解析时按照顺序解析，不要打乱List中元素相对顺序
         Header directory = JSONObject.parseObject(ebook.getHeader(), Header.class, Feature.OrderedField);
         model.addAttribute("headers", directory);
@@ -34,7 +32,8 @@ public class EBookContentController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/ebook/getcontent", method = RequestMethod.POST)
     public String getcontent(@RequestParam("contentId") String contentId) {
-        String content = iEbookContentService.selectContentByContentId(contentId);
+        //搜到只会有一个
+        String content = iEbookContentService.queryAll(EbookContent.builder().contentId(contentId).build()).get(0).getContent();
         String htmlContent = MarkdownToHtmlUtil.markdownToHtmlExtensions(content);
         StringBuilder processedContent = new StringBuilder();
         int i = 0;
@@ -58,7 +57,7 @@ public class EBookContentController extends BaseController {
     @RequestMapping(value = "/ebook/goupdate", method = RequestMethod.POST)
     public String goUpdatePage(@RequestParam("contentId") String contentId,
                                Model model) {
-        String content = iEbookContentService.selectContentByContentId(contentId);
+        String content = iEbookContentService.queryAll(EbookContent.builder().contentId(contentId).build()).get(0).getContent();
         model.addAttribute("content", content);
         model.addAttribute("contentId", contentId);
         return "ebook/update";
@@ -68,8 +67,8 @@ public class EBookContentController extends BaseController {
     public String updateContent(@RequestParam("content") String content,
                                 @RequestParam("contentId") String contentId,
                                 Model model) {
-        iEbookContentService.updateContentByContentId(contentId, content);
-        int ebookId = iEbookContentService.selectEbookIdByContentId(contentId);
+        iEbookContentService.update(EbookContent.builder().contentId(contentId).content(content).build() );
+        int ebookId = iEbookContentService.queryAll(EbookContent.builder().contentId(contentId).build()).get(0).getFileId();
         return "redirect:/ebook/getbook/" + ebookId;
     }
 

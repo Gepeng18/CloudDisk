@@ -15,13 +15,11 @@ import lombok.*;
 @NoArgsConstructor
 @Data
 @Builder
-@Setter
-@Getter
 public class MyFile implements Serializable {
     /**
     * 文件ID
     */
-    private Integer myFileId;
+    private Integer id;
     /**
     * 文件名
     */

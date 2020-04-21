@@ -14,11 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import site.pyyf.fileStore.mapper.IEbookContentMapper;
-import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
-import site.pyyf.fileStore.entity.EbookConent;
-import site.pyyf.fileStore.service.IEbooksService;
+import site.pyyf.fileStore.entity.EbookContent;
+import site.pyyf.fileStore.entity.Header;
+import site.pyyf.fileStore.mapper.IEbookContentMapper;
+import site.pyyf.fileStore.service.IEbookService;
 import site.pyyf.fileStore.service.IResolveHeaderService;
 import site.pyyf.fileStore.utils.FtpUtil;
 
@@ -36,9 +36,9 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
     private IEbookContentMapper iebookContentMapper;
 
     @Autowired
-    private IEbooksService iEbooksService;
+    private IEbookService iEbooksService;
 
-    private List<EbookConent> allContent = new ArrayList<>();
+    private List<EbookContent> allContent = new ArrayList<>();
     private boolean jugleFirstLevelHeader = false;
     private int fileId;
     private int firstLevelHeader;
@@ -127,7 +127,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
                 if (root.getSubNodes().size() > 0) {
                     /* ------------------- 插入内容表(插入上一次的） ----------------- */
                     String content = preContent.toString();
-                    EbookConent ebookConent = new EbookConent();
+                    EbookContent ebookConent = new EbookContent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setFileId(fileId);
                     ebookConent.setContent(content);
@@ -154,7 +154,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
 
                     /* -------------------  插入内容表(插入上一次的）----------------- */
                     String content = preContent.toString();
-                    EbookConent ebookConent = new EbookConent();
+                    EbookContent ebookConent = new EbookContent();
                     ebookConent.setContentId(preContentId);
                     ebookConent.setContent(content);
                     ebookConent.setFileId(fileId);
@@ -200,7 +200,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
 
         /* ------------------- 插入内容表 ----------------- */
         String content = preContent.toString();
-        EbookConent ebookConent = new EbookConent();
+        EbookContent ebookConent = new EbookContent();
         ebookConent.setContentId(preContentId);
         ebookConent.setContent(content);
         ebookConent.setFileId(this.fileId);
@@ -209,7 +209,7 @@ public class ResolveHeaderServiceImpl implements IResolveHeaderService//存储�
 
         /* ------------------- 将标题的所有内容插入标题表中 ----------------- */
         eBook.setHeader(JSON.toJSONString(root));
-        iEbooksService.insertEbook(eBook);
+        iEbooksService.insert(eBook);
 
         logger.info("markdown文件处理完毕");
 

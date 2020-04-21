@@ -14,15 +14,15 @@ public class RedisKeyUtil {
     }
 
     // 某个用户的某个文件夹下的文件
-    // show:files:userID:fileID: -> list(Myfile)
-    public static String getUserFilesKey(String userID, String fileID) {
-        return PREFIX_SHOWFILES + SPLIT + userID + SPLIT + fileID;
+    // show:files:folderID: -> list(Myfile)
+    public static String getFilesKey(String fileID) {
+        return PREFIX_SHOWFILES + SPLIT  + SPLIT + fileID;
     }
 
     // 某个用户的某个文件夹下的文件夹
-    // show:files:userID:folderID: -> list(Folder)
-    public static String getUserFoldersKey(String userID, String folderID) {
-         return PREFIX_SHOWFOLDERS + SPLIT + userID + SPLIT + folderID;
+    // show:files:folderID: -> list(Folder)
+    public static String getFoldersKey( String folderID) {
+         return PREFIX_SHOWFOLDERS + SPLIT + SPLIT + folderID;
 
     }
 }

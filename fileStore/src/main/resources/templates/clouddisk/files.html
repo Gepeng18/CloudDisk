@@ -6,8 +6,7 @@
           name="viewport">
     <title>鹏圆云盘-我的文件</title>
     <th:block th:replace="commons/cloudDisk-fragments::fileSystemCss"></th:block>
-    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.3/cloudDisk/css/videoPlayer.css" media="all" rel="stylesheet"
-           type="text/css" crossorigin="anonymous"/>
+    <link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.4/cloudDisk/css/videoPlayer.css" media="all" rel="stylesheet"
     <style>
         body {
             /*背景图片*/
@@ -70,23 +69,23 @@
                                 <nav aria-label="breadcrumb" class="empty-space">
                                     <ol class="breadcrumb">
                                         <li class="breadcrumb-item"><a
-                                                th:href="@{/files(fId=${nowFolder.fileFolderId})}"
+                                                th:href="@{/files(fId=${nowFolder.id})}"
                                                 title="刷新"><i
                                                 class="icon ion-refresh"></i></a>
                                         </li>
-                                        <li th:class="${nowFolder.fileFolderId == 0?'breadcrumb-item active':'breadcrumb-item'}">
-                                                            <span th:if="${nowFolder.fileFolderId == 0}"
+                                        <li th:class="${nowFolder.fileFolderName == '根文件夹'?'breadcrumb-item active':'breadcrumb-item'}">
+                                                            <span th:if="${nowFolder.fileFolderName == '根文件夹'}"
                                                                   th:text="根目录"></span><a style="font-weight: bold"
-                                                                                          th:if="${nowFolder.fileFolderId != 0}"
+                                                                                          th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                                                                           href="files">根目录</a></li>
                                         <li th:each="l:${location}" class="breadcrumb-item"><a
                                                 style="font-weight: bold"
-                                                th:href="@{/files(fId=${l.fileFolderId},fName=${l.fileFolderName})}"
+                                                th:href="@{/files(fId=${l.id},fName=${l.fileFolderName})}"
                                                 th:text="${l.fileFolderName}"></a></li>
-                                        <li th:if="${nowFolder.fileFolderId != 0}"
+                                        <li th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                             class="breadcrumb-item active" aria-current="page"
                                             th:text="${nowFolder.fileFolderName}"></li>
-                                        <li th:if="${nowFolder.fileFolderId != 0}"
+                                        <li th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                             class="breadcrumb-item"><a
                                                 th:href="@{/files(fId=${nowFolder.parentFolderId})}"
                                                 title="返回上一层"><i
@@ -110,11 +109,11 @@
 <!--                                            遍历文件夹-->
                                             <tr th:each="folder:${folders}" class="files-items folders">
 
-                                                <td><span style="display: none" th:text="${folder.fileFolderId}"></span><img
+                                                <td><span style="display: none" th:text="${folder.id}"></span><img
                                                         src="https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/directory.png"
                                                         height="30px" alt="Cinque Terre"></td>
                                                 <td>
-                                                    <a th:href="@{/files(fId=${folder.fileFolderId},fName=${folder.fileFolderName})}"
+                                                    <a th:href="@{/files(fId=${folder.id},fName=${folder.fileFolderName})}"
                                                        style="font-weight: 700;color: black"
                                                        th:text="${folder.fileFolderName}"></a>
                                                 </td>
@@ -123,14 +122,14 @@
                                                 <td style="font-weight: 300">-</td>
                                                 <td style="font-weight: 300">-</td>
                                                 <td style="font-weight: 300"
-                                                    th:text="${#dates.format(folder.time,'yyyy-MM-dd HH:mm')}"></td>
+                                                    th:text="${#dates.format(folder.createTime,'yyyy-MM-dd HH:mm')}"></td>
                                             </tr>
 
 <!--                                            遍历文件-->
 
                                             <tr th:each="f:${files}" class="files-items files">
                                                 <td>
-                                                    <span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
+                                                    <span id="fileId" style="display: none" th:text="${f.getId()}"></span>
                                                     <span id="showPath" style="display: none" th:text="${f.getShowPath()}"></span>
 
                                                     <img th:src="@{https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/{language}.png(language=${f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1)})}"
@@ -204,7 +203,7 @@
                         </div>
                     </div>
                 </div>
-                <span id="nowF" style="display: none" th:text="${nowFolder.fileFolderId}"></span>
+                <span id="nowF" style="display: none" th:text="${nowFolder.id}"></span>
                 <span id="preF" style="display: none" th:text="${nowFolder.parentFolderId}"></span>
                 <span id="tarFolder" style="display: none"></span>
                 <span id="tarFile" style="display: none"></span>
@@ -222,6 +221,26 @@
                         </div>
                     </div>
                 </div>
+                <!-- 分页 -->
+                <nav class="mt-5" th:if="${page.rows>0}" th:fragment="pagination">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{${page.path}(current=1)}">首页</a>
+                        </li>
+                        <li th:class="|page-item ${page.current==1?'disabled':''}|">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.current-1})}">上一页</a></li>
+                        <li th:class="|page-item ${i==page.current?'active':''}|"
+                            th:each="i:${#numbers.sequence(page.from,page.to)}">
+                            <a class="page-link" th:href="@{${page.path}(current=${i})}" th:text="${i}">1</a>
+                        </li>
+                        <li th:class="|page-item ${page.current==page.total?'disabled':''}|">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>
+                        </li>
+                    </ul>
+                </nav>
             </section>
         </div>
         <div th:replace="commons/bar::#footer"></div>
@@ -243,9 +262,8 @@
 
                 <!--                        <input type="hidden" name="absolute_path" th:value="${absolute_path}">-->
                 <div class="modal-body">
-
                     <div class="form-group">
-                        <input type="hidden" id="fileFolderId" name="fileFolderId" th:value="${nowFolder.fileFolderId}">
+                        <input type="hidden" id="fileFolderId" name="fileFolderId" th:value="${nowFolder.id}">
                         <label for="pwd" class="col-form-label">您需要保存的资源</label>
                         <input type="text" class="form-control" id="pwd" name="pwd">
                     </div>
@@ -290,23 +308,23 @@
                             <nav aria-label="breadcrumb" class="empty-space">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item"><a
-                                            th:href="@{/upload(fId=${nowFolder.fileFolderId})}"
+                                            th:href="@{/upload(fId=${nowFolder.id})}"
                                             title="刷新"><i
                                             class="icon ion-refresh"></i></a>
                                     </li>
-                                    <li th:class="${nowFolder.fileFolderId == 0?'breadcrumb-item active':'breadcrumb-item'}">
-                                                            <span th:if="${nowFolder.fileFolderId == 0}"
+                                    <li th:class="${nowFolder.fileFolderName == '根文件夹'?'breadcrumb-item active':'breadcrumb-item'}">
+                                                            <span th:if="${nowFolder.fileFolderName == '根文件夹'}"
                                                                   th:text="根目录"></span><a style="font-weight: bold"
-                                                                                          th:if="${nowFolder.fileFolderId != 0}"
+                                                                                          th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                                                                           href="upload">根目录</a></li>
                                     <li th:each="l:${location}" class="breadcrumb-item"><a
                                             style="font-weight: bold"
-                                            th:href="@{/upload(fId=${l.fileFolderId},fName=${l.fileFolderName})}"
+                                            th:href="@{/upload(fId=${l.id},fName=${l.fileFolderName})}"
                                             th:text="${l.fileFolderName}"></a></li>
-                                    <li th:if="${nowFolder.fileFolderId != 0}"
+                                    <li th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                         class="breadcrumb-item active" aria-current="page"
                                         th:text="${nowFolder.fileFolderName}"></li>
-                                    <li th:if="${nowFolder.fileFolderId != 0}"
+                                    <li th:if="${nowFolder.fileFolderName != '根文件夹'}"
                                         class="breadcrumb-item"><a
                                             th:href="@{/upload(fId=${nowFolder.parentFolderId})}"
                                             title="返回上一层"><i

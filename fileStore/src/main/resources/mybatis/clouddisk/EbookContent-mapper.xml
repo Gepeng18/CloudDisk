@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.pyyf.fileStore.mapper.IEbookContentMapper">
+
+    <!--ebook_content的映射结果集-->
+    <resultMap type="site.pyyf.fileStore.entity.EbookContent" id="EbookContentMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="contentId" column="content_id" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="fileId" column="file_id" jdbcType="INTEGER"/>
+    </resultMap>
+    
+    <!--全部字段-->
+    <sql id="allColumn"> id, content_id, content, file_id </sql>
+    
+    <!--添加语句的字段列表-->
+    <sql id="insertColumn">
+        <if test="contentId != null and contentId != ''">
+                content_id,
+        </if>
+        <if test="content != null and content != ''">
+                content,
+        </if>
+        <if test="fileId != null">
+                file_id,
+        </if>
+    </sql>
+    
+    <!--添加语句的值列表-->
+        <sql id="insertValue">
+        <if test="contentId != null and contentId != ''">
+                #{contentId},
+        </if>
+        <if test="content != null and content != ''">
+                #{content},
+        </if>
+        <if test="fileId != null">
+                #{fileId},
+        </if>
+    </sql>
+    
+    <!--通用对EbookContent各个属性的值的非空判断-->
+    <sql id="commonsValue">
+        <if test="contentId != null and contentId != ''">
+                and content_id = #{contentId}
+        </if>
+        <if test="content != null and content != ''">
+                and content = #{content}
+        </if>
+        <if test="fileId != null">
+                and file_id = #{fileId}
+        </if>
+    </sql>
+    
+        <!--更新时通用对EbookContent各个属性的值的非空判断-->
+    <sql id="updateValue">
+        <if test="contentId != null and contentId != ''">
+                content_id = #{contentId},
+        </if>
+        <if test="content != null and content != ''">
+                content = #{content},
+        </if>
+        <if test="fileId != null">
+                file_id = #{fileId},
+        </if>
+    </sql>
+    
+    <!--传入ebookContent时对EbookContent各个属性的值的非空判断-->
+    <sql id="EbookContentValue">
+        <if test="ebookContent.contentId != null and ebookContent.contentId != ''">
+                and content_id = #{ebookContent.contentId}
+        </if>
+        <if test="ebookContent.content != null and ebookContent.content != ''">
+                and content = #{ebookContent.content}
+        </if>
+        <if test="ebookContent.fileId != null">
+                and file_id = #{ebookContent.fileId}
+        </if>
+    </sql>
+    
+    <!--新增ebook_content:哪个字段不为空就添加哪列数据,返回自增主键-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into ebook_content
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="insertColumn"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="insertValue"/>
+        </trim>
+    </insert>
+   
+    <!--删除ebook_content:通过主键-->
+    <delete id="deleteById">
+        delete from ebook_content
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+    
+    <!--查询单个ebook_content-->
+    <select id="queryById" resultMap="EbookContentMap">
+        select
+        <include refid="allColumn"></include>
+        from ebook_content
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询数据-->
+    <select id="queryAll" resultMap="EbookContentMap">
+        select
+          <include refid="allColumn"></include>
+        from ebook_content
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="commonsValue"></include>
+        </trim>
+    </select>
+    
+    <!--通过实体作为筛选条件查询数量-->
+    <select id="queryCount" resultType="java.lang.Integer">
+        select
+          count(*)
+        from ebook_content
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="commonsValue"></include>
+        </trim>
+    </select>
+    
+    <!--通过实体作为筛选条件分页查询-->
+    <select id="querySomeByLimit" resultMap="EbookContentMap">
+        select
+          <include refid="allColumn"></include>
+        from ebook_content
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="EbookContentValue"></include>
+        </trim>
+        limit #{offset}, #{limit}
+    </select>
+
+	<!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="EbookContentMap">
+        select
+          <include refid="allColumn"></include>
+        from ebook_content
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update ebook_content
+        <trim prefix="set" prefixOverrides="and" suffixOverrides=",">
+            <include refid="updateValue"></include>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <insert id="insertAllEbookContent" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into ebook_content
+        (<include refid="insertColumn"></include>)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.contentId},
+            #{item.content},
+            #{item.fileId}
+            )
+        </foreach>
+    </insert>
+
+
+</mapper>

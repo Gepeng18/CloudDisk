@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 /**
  * (FileFolder)文件夹实体类
@@ -14,15 +15,14 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Setter
-@Getter
+@Accessors(chain = true)
 @Builder
 public class FileFolder implements Serializable {
 
     /**
     * 文件夹ID
     */
-    private Integer fileFolderId;
+    private Integer id;
     /**
     * 文件夹名称
     */
@@ -32,12 +32,13 @@ public class FileFolder implements Serializable {
     */
     private Integer parentFolderId;
     /**
-    * 所属文件仓库ID
+    * 所属用户ID
     */
     private Integer userId;
+
     /**
-    * 创建时间
-    */
-    private Date time;
+     * 创建时间
+     */
+    private Date createTime;
 
 }

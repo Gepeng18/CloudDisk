@@ -7,18 +7,15 @@ import java.io.*;
 
 public interface IOSSService {
 
+    UploadResult upload( String suffix,File file);
 
-    public UploadResult upload( String suffix,File file);
+    UploadResult upload(InputStream inputStream, String fileName, String suffix);
 
-    public UploadResult upload(InputStream inputStream, String fileName, String suffix);
+    void download(String absolutePath, OutputStream out);
 
+    UploadResult transfer(String srcPath, String dstSuffix);
 
-    public void download(String absolutePath, OutputStream out);
-
-    public UploadResult transfer(String srcPath, String dstSuffix);
-
-
-    public boolean delete(String srcPath);
+    boolean delete(String srcPath);
 
 }
 

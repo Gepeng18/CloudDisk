@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import site.pyyf.fileStore.entity.Event;
-import site.pyyf.fileStore.entity.FileFolder;
-import site.pyyf.fileStore.entity.MyFile;
-import site.pyyf.fileStore.entity.User;
+import site.pyyf.fileStore.entity.*;
 import site.pyyf.fileStore.service.IResolveHeaderService;
 import site.pyyf.fileStore.utils.CloudDiskConstant;
 import site.pyyf.fileStore.utils.FtpUtil;
@@ -55,16 +52,16 @@ public class FileStoreController extends BaseController implements CloudDiskCons
     @PostMapping("/uploadFile")
     @ResponseBody
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile originalFile) throws Exception {
-        Map<String, Object> resultMap = new HashMap<>();
 
+        Map<String, Object> resultMap = new HashMap<>();
         List<String> htmlSupAudio = new ArrayList<>(Arrays.asList("mp3", "flac", "wav"));
         List<String> htmlSupVideo = new ArrayList<>(Arrays.asList("mp4"));
         Integer folderId = Integer.valueOf(request.getHeader("id"));
 
         //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folderId);
+        List<MyFile> myFiles = iMyFileService.queryAll(MyFile.builder().parentFolderId(folderId).build() );
 
-        myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folderId);
+        myFiles = iMyFileService.queryAll(MyFile.builder().parentFolderId(folderId).build());
 
         String name = originalFile.getOriginalFilename().replaceAll(" ", "");
         for (int i = 0; i < myFiles.size(); i++) {
@@ -81,7 +78,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
             return resultMap;
         }
 
-        User user = iUserService.getUserById(loginUser.getUserId());
+        User user = iUserService.queryById(loginUser.getId());
         long size = originalFile.getSize();
         String insertSize = StringUtils.substringBeforeLast(String.valueOf(size / 1024.0), ".");
         Integer sizeInt = Math.toIntExact(originalFile.getSize() / 1024);
@@ -96,7 +93,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
         int insertType = iFileStoreService.getType(insertPostfix);
 
         MyFile fileItem = MyFile.builder()
-                .myFileName(name).userId(user.getUserId())
+                .myFileName(name).userId(user.getId())
                 .downloadTime(0).uploadTime(new Date()).parentFolderId(folderId).
                         size(Integer.valueOf(insertSize)).type(insertType).postfix(insertPostfix).build();
 
@@ -120,15 +117,18 @@ public class FileStoreController extends BaseController implements CloudDiskCons
         }
 
         //向数据库文件表写入数据
-        iMyFileService.addFileByUserId(fileItem);
+        iMyFileService.insert(fileItem);
         //更新仓库表的当前大小
-        iUserService.addSize(user.getUserId(), Integer.valueOf(fileItem.getSize()));
+        iUserService.update(User.builder()
+                .id(user.getId())
+                .currentSize(iUserService.queryById(user.getId()).getCurrentSize() + fileItem.getSize())
+                .build());
 
         //如果是markdown，则再传一份到library表中
         if (fileItem.getPostfix().equals("md"))
-            iResolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getMyFileId());
+            iResolveHeaderService.readFile(originalFile.getInputStream(), originalFile.getOriginalFilename(), fileItem.getId());
 
-        String userFilesKey = RedisKeyUtil.getUserFilesKey(String.valueOf(loginUser.getUserId()), String.valueOf(folderId));
+        String userFilesKey = RedisKeyUtil.getFilesKey( String.valueOf(folderId));
         logger.info("文件上传成功，向缓存中增加一个文件");
         redisTemplate.opsForList().rightPush(userFilesKey, fileItem);
 
@@ -156,7 +156,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
             return;
         }
         //获取文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.queryById(fId);
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
         response.setCharacterEncoding("utf-8");
@@ -195,8 +195,8 @@ public class FileStoreController extends BaseController implements CloudDiskCons
             }
         }
 
-        iMyFileService.updateFile(
-                MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+        iMyFileService.update(
+                MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
         try {
             os.flush();
             os.close();
@@ -217,20 +217,23 @@ public class FileStoreController extends BaseController implements CloudDiskCons
     public String deleteFile(@RequestParam(value = "fId") Integer fId,
                              @RequestParam(value = "folder") Integer folderId) {
         //获得文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.queryById(fId);
 
         //删除真正的文件
-        Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getUserId())
+        Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getId())
                 .entityType(0).entityInfo(JSON.toJSONString(myFile)).build();
         eventProducer.fireEvent(deletingEvent);
 
         // 删除成功,清理数据库
         // 返回空间
-        iUserService.subSize(myFile.getUserId(), Integer.valueOf(myFile.getSize()));
+        iUserService.update(User.builder()
+                .id(myFile.getUserId())
+                .currentSize(iUserService.queryById(myFile.getUserId()).getCurrentSize() + myFile.getSize())
+                .build());
         // 删除文件表对应的数据
-        iMyFileService.deleteByFileId(fId);
+        iMyFileService.deleteById(fId);
 
-        clearFilesCache(loginUser.getUserId(), folderId);
+        clearFilesCache(folderId);
         logger.info("文件删除成功，文件缓存删除。。。。");
 
         return "redirect:/files?fId=" + folderId;
@@ -245,7 +248,7 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      **/
     @GetMapping("/deleteFolder")
     public String deleteFolder(@RequestParam Integer fId) {
-        FileFolder folder = iFileFolderService.getFileFolderByFileFolderId(fId);
+        FileFolder folder = iFileFolderService.queryById(fId);
 
         //强制删除
         deleteFolderF(folder);
@@ -261,36 +264,39 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      **/
     public void deleteFolderF(FileFolder folder) {
 
-        clearFoldersCache(loginUser.getUserId(), folder.getParentFolderId());
+        clearFoldersCache(folder.getParentFolderId());
         logger.info("文件夹删除成功，文件夹缓存删除。。。。");
 
         //删除当前文件夹的所有的文件
-        List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), folder.getFileFolderId());
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).parentFolderId(folder.getId()).build() );
         if (files.size() != 0) {
-            clearFoldersCache(loginUser.getUserId(), files.get(0).getParentFolderId());
+            clearFoldersCache(files.get(0).getParentFolderId());
             logger.info("文件夹删除成功，文件夹缓存删除。。。。");
             for (int i = 0; i < files.size(); i++) {
                 MyFile thisFile = files.get(i);
 
                 //删除真正的文件
-                Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getUserId())
+                Event deletingEvent = Event.builder().topic(TOPIC_DELETE).userId(loginUser.getId())
                         .entityType(0).entityInfo(JSON.toJSONString(thisFile)).build();
                 eventProducer.fireEvent(deletingEvent);
 
                 //删除成功,返回空间
-                iUserService.subSize(thisFile.getUserId(), Integer.valueOf(thisFile.getSize()));
+                iUserService.update(User.builder()
+                        .id(thisFile.getUserId())
+                        .currentSize(iUserService.queryById(thisFile.getUserId()).getCurrentSize() - thisFile.getSize())
+                        .build());
                 //删除文件表对应的数据
-                iMyFileService.deleteByFileId(thisFile.getMyFileId());
+                iMyFileService.deleteById(thisFile.getId());
             }
         }
         //获得当前文件夹下的所有子文件夹
-        List<FileFolder> folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), folder.getFileFolderId());
+        List<FileFolder> folders = iFileFolderService.queryAll(FileFolder.builder().userId(loginUser.getId()).parentFolderId(folder.getId()).build());
         if (folders.size() != 0) {
             for (int i = 0; i < folders.size(); i++) {
                 deleteFolderF(folders.get(i));
             }
         }
-        iFileFolderService.deleteFileFolderById(folder.getFileFolderId());
+        iFileFolderService.deleteById(folder.getId());
     }
 
     /**
@@ -303,12 +309,12 @@ public class FileStoreController extends BaseController implements CloudDiskCons
     @PostMapping("/addFolder")
     public String addFolder(FileFolder folder, Map<String, Object> map) {
         //设置文件夹信息
-        folder.setUserId(loginUser.getUserId());
-        folder.setTime(new Date());
+        folder.setUserId(loginUser.getId()).setCreateTime(new Date());
+
         //获得当前目录下的所有文件夹,检查当前文件夹是否已经存在
         List<FileFolder> fileFolders = null;
         //向用户的其他目录添加文件夹
-        fileFolders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), folder.getParentFolderId());
+        fileFolders = iFileFolderService.queryAll(FileFolder.builder().userId(loginUser.getId()).id(folder.getParentFolderId()).build());
 
         for (int i = 0; i < fileFolders.size(); i++) {
             FileFolder fileFolder = fileFolders.get(i);
@@ -318,10 +324,10 @@ public class FileStoreController extends BaseController implements CloudDiskCons
             }
         }
         //向数据库写入数据
-        Integer integer = iFileFolderService.addFileFolder(folder);
+        Integer integer = iFileFolderService.insert(folder);
         logger.info("添加文件夹成功!" + folder);
 
-        String userFoldersKey = RedisKeyUtil.getUserFoldersKey(String.valueOf(loginUser.getUserId()), String.valueOf(folder.getParentFolderId()));
+        String userFoldersKey = RedisKeyUtil.getFoldersKey( String.valueOf(folder.getParentFolderId()));
         logger.info("向缓存中增加一个文件夹");
         redisTemplate.opsForList().rightPush(userFoldersKey, folder);
 
@@ -338,22 +344,22 @@ public class FileStoreController extends BaseController implements CloudDiskCons
     @PostMapping("/updateFolder")
     public String updateFolder(FileFolder folder, Map<String, Object> map) {
         //获得文件夹的数据库信息
-        FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(folder.getFileFolderId());
+        FileFolder fileFolder = iFileFolderService.queryById(folder.getId());
         fileFolder.setFileFolderName(folder.getFileFolderName());
         //获得当前目录下的所有文件夹,用于检查文件夹是否已经存在
-        List<FileFolder> fileFolders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), fileFolder.getParentFolderId());
+        List<FileFolder> fileFolders = iFileFolderService.queryAll(FileFolder.builder().userId(loginUser.getId()).parentFolderId(fileFolder.getParentFolderId()).build() );
         for (int i = 0; i < fileFolders.size(); i++) {
             FileFolder folder1 = fileFolders.get(i);
-            if (folder1.getFileFolderName().equals(folder.getFileFolderName()) && folder1.getFileFolderId() != folder.getFileFolderId()) {
+            if (folder1.getFileFolderName().equals(folder.getFileFolderName()) && folder1.getId() != folder.getId()) {
                 logger.info("重命名文件夹失败!文件夹已存在...");
                 return "redirect:/files?error=2&fId=" + fileFolder.getParentFolderId();
             }
         }
         //向数据库写入数据
-        Integer integer = iFileFolderService.updateFileFolderById(fileFolder);
+        FileFolder result = iFileFolderService.update(fileFolder);
         logger.info("重命名文件夹成功!" + folder);
 
-        clearFoldersCache(loginUser.getUserId(), fileFolder.getParentFolderId());
+        clearFoldersCache(fileFolder.getParentFolderId());
         logger.info("文件夹缓存清除成功");
         return "redirect:/files?fId=" + fileFolder.getParentFolderId();
     }
@@ -367,26 +373,24 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      **/
     @PostMapping("/updateFileName")
     public String updateFileName(MyFile file) {
-        MyFile myFile = iMyFileService.getFileByFileId(file.getMyFileId());
+        MyFile myFile = iMyFileService.queryById(file.getId());
         if (myFile != null) {
             String oldName = myFile.getMyFileName();
             String newName = file.getMyFileName();
             if (!oldName.equals(newName)) {
-                Integer integer = iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).myFileName(newName).build());
-                if (integer == 1) {
-                    if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
-                        iLibraryService.updateEbookNameByFileId(myFile.getMyFileId(), newName);
-                    }
-                    logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
-                } else {
-                    logger.error("修改文件名失败!原文件名:" + oldName + "  新文件名:" + newName);
+                MyFile result = iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).myFileName(newName).build());
+
+                if (StringUtils.substringAfterLast(file.getMyFileName(), ".").equals("md")) {
+                    iEbookService.update(Ebook.builder().fileId(myFile.getId()).ebookName(newName).build());
                 }
+                logger.info("修改文件名成功!原文件名:" + oldName + "  新文件名:" + newName);
+
 
             }
         }
 
-        clearFilesCache(loginUser.getUserId(), myFile.getParentFolderId());
+        clearFilesCache(myFile.getParentFolderId());
         logger.info("文件缓存清除成功");
 
         return "redirect:/files?fId=" + myFile.getParentFolderId();
@@ -414,8 +418,8 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      * @return void
      * @Description 删除文件夹的所有文件夹的Redis缓存
      */
-    private void clearFoldersCache(Integer userId, Integer folderId) {
-        String userFoldersKey = RedisKeyUtil.getUserFoldersKey(String.valueOf(userId), String.valueOf(folderId));
+    private void clearFoldersCache(Integer folderId) {
+        String userFoldersKey = RedisKeyUtil.getFoldersKey(String.valueOf(folderId));
         redisTemplate.delete(userFoldersKey);
     }
 
@@ -426,8 +430,8 @@ public class FileStoreController extends BaseController implements CloudDiskCons
      * @return void
      * @Description 删除文件夹的所有文件的Redis缓存
      */
-    private void clearFilesCache(Integer userId, Integer folderId) {
-        String userFilesKey = RedisKeyUtil.getUserFilesKey(String.valueOf(userId), String.valueOf(folderId));
+    private void clearFilesCache(Integer folderId) {
+        String userFilesKey = RedisKeyUtil.getFilesKey(String.valueOf(folderId));
         redisTemplate.delete(userFilesKey);
     }
 

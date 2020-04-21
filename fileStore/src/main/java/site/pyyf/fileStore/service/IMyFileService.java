@@ -1,75 +1,110 @@
 package site.pyyf.fileStore.service;
 
-
-
 import site.pyyf.fileStore.entity.MyFile;
 import site.pyyf.fileStore.entity.UserStatistics;
 
 import java.util.List;
 
 /**
- * @InterfaceName: MyFileService
- * @Description: 文件业务层接口
- * @author: xw
- * @date 2020/1/26 22:15
- * @Version: 1.0
- **/
+ * @Description (MyFile)表服务接口
+ *
+ * @author "Gepeng"
+ * @since 2020-04-21 15:53:16
+ */
 public interface IMyFileService {
 
     /**
-     * @Description 根据文件的id删除文件
-     * @Author xw
-     * @Date 2020/2/9 15:49
-     * @Param [myFileId]
-     * @Return Integer
+     * @Description 通过ID查询单条数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFileId 主键
+     * @return 实例对象
      */
-    Integer deleteByFileId(Integer myFileId);
-
+    MyFile queryById(Integer myFileId);
+    
+     /**
+     * @Description 查询全部数据
+     * @author makejava
+     * @date 2020-04-21 15:53:16
+     * @return 对象列表
+     */
+    List<MyFile> queryAll();
+    
+    /**
+     * @Description 实体作为筛选条件查询数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFile 实例对象
+     * @return 对象列表
+     */
+    List<MyFile> queryAll(MyFile myFile);
+   
+    /**
+     * @Description 查询实体数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @return 数量
+     */
+    int queryCount();
+    
+    /**
+     * @Description 实体作为筛选条件查询数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFile 实例对象
+     * @return 数量
+     */
+    int queryCount(MyFile myFile);
+   
+   
+    /**
+     * @Description 查询多条数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param offset 查询起始位置
+     * @param limit 查询条数
+     * @return 对象列表
+     */
+    List<MyFile> queryAllByLimit(int offset, int limit);
 
     /**
-     * @Description 添加文件
-     * @Author xw
-     * @Date 2020/2/9 15:50
-     * @Param [myFile]
-     * @Return Integer
+     * @Description 实体作为筛选条件查询指定行
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFile 实例对象
+     * @param offset 查询起始位置
+     * @param limit 查询条数
+     * @return 对象列表
      */
-    Integer addFileByUserId(MyFile myFile);
+    List<MyFile> queryAllByLimit(MyFile myFile,int offset, int limit);
+
+    
+    /**
+     * @Description 新增数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFile 实例对象
+     * @return 影响行数
+     */
+    int insert(MyFile myFile);
 
     /**
-     * @Description 根据文件id获得文件
-     * @Author xw
-     * @Date 2020/2/9 22:00
-     * @Param [myFileId]
-     * @Return com.molihub.entity.MyFile
+     * @Description 修改数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFile 实例对象
+     * @return 实例对象
      */
-
-    MyFile getFileByFileId(Integer myFileId);
-    /**
-     * @Description 根据文件id修改文件
-     * @Author xw
-     * @Date 2020/2/9 15:55
-     * @Param [record]
-     * @Return Integer
-     */
-    Integer updateFile(MyFile record);
+    MyFile update(MyFile myFile);
 
     /**
-     * @Description 根据父文件夹和用户ID获取文件夹下的文件
-     * @Author xw
-     * @Date 2020/2/9 16:34
-     * @Param [parentFolderId] 文件夹id
-     * @Return com.molihub.entity.FileFolder
+     * @Description 通过主键删除数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:53:16
+     * @param myFileId 主键
+     * @return 是否成功
      */
-    List<MyFile> getFilesByUserIdAndParentFolderId(Integer userId,Integer parentFolderId);
-
-    /**
-     * @Description 根据类别获取文件
-     * @Author xw
-     * @Date 10:13 2020/2/26
-     * @Param [userId, type]
-     * @return java.util.List<com.moti.entity.MyFile>
-     **/
-    List<MyFile> getFilesByType(Integer userId,Integer type);
+    boolean deleteById(Integer myFileId);
 
     /**
      * @Description 获取仓库的统计信息
@@ -79,5 +114,4 @@ public interface IMyFileService {
      * @return com.molihub.entity.UserStatistics
      **/
     UserStatistics getCountStatistics(Integer userId);
-
 }

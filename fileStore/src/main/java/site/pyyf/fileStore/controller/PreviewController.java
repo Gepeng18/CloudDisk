@@ -30,7 +30,7 @@ public class PreviewController extends BaseController {
     public void videoShow(@RequestParam(value = "fId") Integer fId,
                           HttpServletResponse response) {
         //获取文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.queryById(fId);
 
         //可以将条件合并，但为方便理解这里没有合并
         if(myFile.getShowPath().equals("")||myFile.getShowPath()==null)
@@ -49,8 +49,8 @@ public class PreviewController extends BaseController {
             boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             logger.info("下载完成");
             if (flag) {
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 os.flush();
                 os.close();
                 logger.info("文件下载成功!  ----->>>>>  " + myFile.getMyFileName());
@@ -66,7 +66,7 @@ public class PreviewController extends BaseController {
     public void mp3Show(@RequestParam(value = "fId") Integer fId, HttpServletResponse response) {
 
         //获取文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.queryById(fId);
 
         //可以将条件合并，但为方便理解这里没有合并
         if(myFile.getShowPath().equals("")||myFile.getShowPath()==null)
@@ -85,8 +85,8 @@ public class PreviewController extends BaseController {
             // 文件名转码一下，不然会出现中文乱码
             boolean flag = FtpUtil.downloadFile("/" + remotePath, os);
             if (flag) {
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 os.flush();
                 os.close();
                 logger.info("文件下载成功!  ----->>>>>  " + myFile.getMyFileName());
@@ -108,7 +108,7 @@ public class PreviewController extends BaseController {
         supportPreviewLang.put("py", "python");
 
 
-        MyFile file = iMyFileService.getFileByFileId(id);
+        MyFile file = iMyFileService.queryById(id);
         String fileName = file.getMyFileName();
         String suffix = StringUtils.substringAfterLast(fileName, ".");
         if (suffix.equals("md"))
@@ -143,7 +143,7 @@ public class PreviewController extends BaseController {
     public void downloadFile(@RequestParam(value = "fId") Integer fId) {
 
         //获取文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(fId);
+        MyFile myFile = iMyFileService.queryById(fId);
         String remotePath = myFile.getMyFilePath();
         String fileName = myFile.getMyFileName();
         try {
@@ -160,8 +160,8 @@ public class PreviewController extends BaseController {
 
             if (flag) {
                 logger.info("文件下载成功!  ----->>>>>  " + myFile.getMyFileName());
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 os.flush();
                 os.close();
             }

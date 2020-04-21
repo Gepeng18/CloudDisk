@@ -50,11 +50,11 @@ public class ShareController extends BaseController {
         Map<String, Object> map = new HashMap<>();
         map.put("imgPath", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2654852821,3851565636&fm=26&gp=0.jpg");
         if (id != null) {
-            MyFile file = iMyFileService.getFileByFileId(id);
+            MyFile file = iMyFileService.queryById(id);
             if (file != null) {
                 try {
                     String rootPath = this.getClass().getResource("/").getPath().replaceAll("^\\/", "") + "user_img";
-                    url = url + "/file/linearDownload?t=" + UUID.randomUUID().toString().substring(0, 10) + "&f=" + file.getMyFileId() + "&p=" + file.getUploadTime().getTime() + "" + file.getSize();
+                    url = url + "/file/linearDownload?t=" + UUID.randomUUID().toString().substring(0, 10) + "&f=" + file.getId() + "&p=" + file.getUploadTime().getTime() + "" + file.getSize();
                     File targetFile = new File(rootPath, "");
                     if (!targetFile.exists()) {
                         targetFile.mkdirs();
@@ -89,7 +89,7 @@ public class ShareController extends BaseController {
     @GetMapping("/file/linearDownload")
     public void linearDownload(Integer f, String p, String t) throws IOException {
         //获取文件信息
-        MyFile myFile = iMyFileService.getFileByFileId(f);
+        MyFile myFile = iMyFileService.queryById(f);
         String pwd = myFile.getUploadTime().getTime() + "" + myFile.getSize();
         if (t == null) {
             return;
@@ -122,8 +122,8 @@ public class ShareController extends BaseController {
             try {
                 logger.info("开始下载");
                 iossService.download(filePath.substring(aliyunConfig.getUrlPrefix().length()), os);
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
                 logger.info("文件从OSS下载成功");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -137,8 +137,8 @@ public class ShareController extends BaseController {
             boolean FTPdownLoadRes = FtpUtil.downloadFile("/" + filePath, os);
             if (FTPdownLoadRes){
                 logger.info("文件从FTP下载成功");
-                iMyFileService.updateFile(
-                        MyFile.builder().myFileId(myFile.getMyFileId()).downloadTime(myFile.getDownloadTime() + 1).build());
+                iMyFileService.update(
+                        MyFile.builder().id(myFile.getId()).downloadTime(myFile.getDownloadTime() + 1).build());
             }
             else {
                 logger.info("文件从FTP下载失败!" + myFile);
@@ -188,11 +188,11 @@ public class ShareController extends BaseController {
         String[] split = typeAndFid.split("-");
         if (split[0].equals("folder")) {
             //分享的是文件夹
-            FileFolder fileFolder = iFileFolderService.getFileFolderByFileFolderId(Integer.valueOf(split[1]));
+            FileFolder fileFolder = iFileFolderService.queryById(Integer.valueOf(split[1]));
             int result = transferSaveFolder(fileFolder, toFileFolderId);
             return CloudDiskUtil.getJSONString(result, map.get(result));
         } else if (split[0].equals("file")) {
-            MyFile shareFile = iMyFileService.getFileByFileId(Integer.valueOf(split[1]));
+            MyFile shareFile = iMyFileService.queryById(Integer.valueOf(split[1]));
             int result = transferSaveFile(shareFile, toFileFolderId);
             return CloudDiskUtil.getJSONString(result, map.get(result));
 
@@ -204,30 +204,32 @@ public class ShareController extends BaseController {
 
     //将文件夹fileFolder放到fileFolderId中
     public int transferSaveFolder(FileFolder fileFolder, Integer toFileFolderId) {
-        User user = iUserService.getUserByUserId(loginUser.getUserId());
+        User user = iUserService.queryById(loginUser.getId());
 
-        List<MyFile> files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), fileFolder.getFileFolderId());
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).parentFolderId(fileFolder.getId()).build());
         //设置文件夹信息
         FileFolder thisFolder = FileFolder.builder()
-                .fileFolderName(fileFolder.getFileFolderName()).parentFolderId(toFileFolderId).userId(user.getUserId())
-                .time(new Date()).build();
-        iFileFolderService.addFileFolder(thisFolder);
+                .fileFolderName(fileFolder.getFileFolderName())
+                .parentFolderId(toFileFolderId)
+                .createTime(new Date())
+                .userId(user.getId()).build();
+        iFileFolderService.insert(thisFolder);
         for (MyFile file : files) {
-            transferSaveFile(file, thisFolder.getFileFolderId());
+            transferSaveFile(file, thisFolder.getId());
         }
 
-        List<FileFolder> folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), fileFolder.getFileFolderId());
+        List<FileFolder> folders = iFileFolderService.queryAll(FileFolder.builder().userId(loginUser.getId()).parentFolderId(fileFolder.getId()).build());
         for (FileFolder folder : folders) {
-            transferSaveFolder(folder, thisFolder.getFileFolderId());
+            transferSaveFolder(folder, thisFolder.getId());
         }
         return 200;
     }
 
     //将shareFile放在fileFolderId中
     public int transferSaveFile(MyFile shareFile, Integer toFileFolderId) {
-        User user = iUserService.getUserByUserId(loginUser.getUserId());
+        User user = iUserService.queryById(loginUser.getId());
         //获取当前目录下的所有文件，用来判断是否已经存在
-        List<MyFile> myFiles = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), toFileFolderId);
+        List<MyFile> myFiles = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).parentFolderId(toFileFolderId).build());
         for (int i = 0; i < myFiles.size(); i++) {
             if (myFiles.get(i).getMyFileName().equals(shareFile.getMyFileName())) {
                 logger.error("当前文件已存在!上传失败...");
@@ -245,7 +247,7 @@ public class ShareController extends BaseController {
 
         //文件转存成功后则需要插入数据库
         MyFile insertFile = MyFile.builder().parentFolderId(toFileFolderId)
-                .myFileName(shareFile.getMyFileName()).userId(loginUser.getUserId())
+                .myFileName(shareFile.getMyFileName()).userId(loginUser.getId())
                 .downloadTime(0).uploadTime(new Date()).size(shareFile.getSize())
                 .type(shareFile.getType()).postfix(shareFile.getPostfix()).build();
 
@@ -256,16 +258,20 @@ public class ShareController extends BaseController {
             return 504;
         }
         //向数据库文件表写入数据
-        iMyFileService.addFileByUserId(insertFile);
+        iMyFileService.insert(insertFile);
         //更新仓库表的当前大小
-        iUserService.addSize(user.getUserId(), shareFile.getSize());
+        //更新仓库表的当前大小
+        iUserService.update(User.builder()
+                .id(user.getId())
+                .currentSize(iUserService.queryById(user.getId()).getCurrentSize() + shareFile.getSize())
+                .build());
         logger.info("转存文件插入数据库成功");
 
 
         //如果是markdown，则再传一份到library表中
         if (insertFile.getPostfix().equals(".md")) {
             try {
-                iResolveHeaderService.readFile(insertFile.getMyFilePath(), insertFile.getMyFileName(), insertFile.getMyFileId());
+                iResolveHeaderService.readFile(insertFile.getMyFilePath(), insertFile.getMyFileName(), insertFile.getId());
                 logger.info("文件转存过程中markdown转化成功");
                 return 200;
             } catch (Exception e) {

@@ -1,12 +1,8 @@
 package site.pyyf.fileStore.service.impl;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.commons.lang3.StringUtils;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -83,7 +79,7 @@ public class FileStoreServiceImpl extends BaseService implements IFileStoreServi
     @Override
     public StringBuilder getFileContentByMyFile(MyFile file) {
         //这里引入caffeine在内存中存储文件内容
-        String caffeineKey = "code:"+file.getMyFileId();
+        String caffeineKey = "code:"+file.getId();
         // 根据key查询一个缓存，如果没有返回NULL
         String cacheCode = (String)previewCodeCache.getIfPresent(caffeineKey);
         if(cacheCode!=null){

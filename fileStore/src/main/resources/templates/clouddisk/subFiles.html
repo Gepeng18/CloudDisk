@@ -6,8 +6,9 @@
 		  name="viewport">
 	<title>鹏圆云盘-我的文件</title>
 	<th:block th:replace="commons/cloudDisk-fragments::fileSystemCss"></th:block>
-	<link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.3/cloudDisk/css/videoPlayer.css" media="all" rel="stylesheet"
-		  type="text/css" crossorigin="anonymous"/>
+
+	<link href="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.4/cloudDisk/css/videoPlayer.css" media="all" rel="stylesheet"
+
 	<style>
 		body {
 			/*背景图片*/
@@ -57,7 +58,7 @@
 
 											<tr th:each="f:${files}" class="files-items files">
 												<td>
-													<span id="fileId" style="display: none" th:text="${f.myFileId}"></span>
+													<span id="fileId" style="display: none" th:text="${f.getId()}"></span>
 													<span id="showPath" style="display: none" th:text="${f.getShowPath()}"></span>
 
 													<img th:src="@{https://pyyf.oss-cn-hangzhou.aliyuncs.com/community/icons/{language}.png(language=${f.getMyFileName().substring(f.getMyFileName().indexOf('.') + 1)})}"

@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="site.pyyf.fileStore.mapper.IMyFileMapper">
+
+    <!--my_file的映射结果集-->
+    <resultMap type="site.pyyf.fileStore.entity.MyFile" id="MyFileMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="myFileName" column="my_file_name" jdbcType="VARCHAR"/>
+        <result property="showPath" column="show_path" jdbcType="VARCHAR"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="myFilePath" column="my_file_path" jdbcType="VARCHAR"/>
+        <result property="downloadTime" column="download_time" jdbcType="INTEGER"/>
+        <result property="uploadTime" column="upload_time" jdbcType="TIMESTAMP"/>
+        <result property="parentFolderId" column="parent_folder_id" jdbcType="INTEGER"/>
+        <result property="size" column="size" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="postfix" column="postfix" jdbcType="VARCHAR"/>
+    </resultMap>
+    
+    <!--全部字段-->
+    <sql id="allColumn"> id, my_file_name, show_path, user_id, my_file_path, download_time, upload_time, parent_folder_id, size, type, postfix </sql>
+    
+    <!--添加语句的字段列表-->
+    <sql id="insertColumn">
+        <if test="myFileName != null and myFileName != ''">
+                my_file_name,
+        </if>
+        <if test="showPath != null and showPath != ''">
+                show_path,
+        </if>
+        <if test="userId != null">
+                user_id,
+        </if>
+        <if test="myFilePath != null and myFilePath != ''">
+                my_file_path,
+        </if>
+        <if test="downloadTime != null">
+                download_time,
+        </if>
+        <if test="uploadTime != null">
+                upload_time,
+        </if>
+        <if test="parentFolderId != null">
+                parent_folder_id,
+        </if>
+        <if test="size != null">
+                size,
+        </if>
+        <if test="type != null">
+                type,
+        </if>
+        <if test="postfix != null and postfix != ''">
+                postfix,
+        </if>
+    </sql>
+    
+    <!--添加语句的值列表-->
+        <sql id="insertValue">
+        <if test="myFileName != null and myFileName != ''">
+                #{myFileName},
+        </if>
+        <if test="showPath != null and showPath != ''">
+                #{showPath},
+        </if>
+        <if test="userId != null">
+                #{userId},
+        </if>
+        <if test="myFilePath != null and myFilePath != ''">
+                #{myFilePath},
+        </if>
+        <if test="downloadTime != null">
+                #{downloadTime},
+        </if>
+        <if test="uploadTime != null">
+                #{uploadTime},
+        </if>
+        <if test="parentFolderId != null">
+                #{parentFolderId},
+        </if>
+        <if test="size != null">
+                #{size},
+        </if>
+        <if test="type != null">
+                #{type},
+        </if>
+        <if test="postfix != null and postfix != ''">
+                #{postfix},
+        </if>
+    </sql>
+    
+    <!--通用对MyFile各个属性的值的非空判断-->
+    <sql id="commonsValue">
+        <if test="myFileName != null and myFileName != ''">
+                and my_file_name = #{myFileName}
+        </if>
+        <if test="showPath != null and showPath != ''">
+                and show_path = #{showPath}
+        </if>
+        <if test="userId != null">
+                and user_id = #{userId}
+        </if>
+        <if test="myFilePath != null and myFilePath != ''">
+                and my_file_path = #{myFilePath}
+        </if>
+        <if test="downloadTime != null">
+                and download_time = #{downloadTime}
+        </if>
+        <if test="uploadTime != null">
+                and upload_time = #{uploadTime}
+        </if>
+        <if test="parentFolderId != null">
+                and parent_folder_id = #{parentFolderId}
+        </if>
+        <if test="size != null">
+                and size = #{size}
+        </if>
+        <if test="type != null">
+                and type = #{type}
+        </if>
+        <if test="postfix != null and postfix != ''">
+                and postfix = #{postfix}
+        </if>
+    </sql>
+    
+        <!--更新时通用对MyFile各个属性的值的非空判断-->
+    <sql id="updateValue">
+        <if test="myFileName != null and myFileName != ''">
+                my_file_name = #{myFileName},
+        </if>
+        <if test="showPath != null and showPath != ''">
+                show_path = #{showPath},
+        </if>
+        <if test="userId != null">
+                user_id = #{userId},
+        </if>
+        <if test="myFilePath != null and myFilePath != ''">
+                my_file_path = #{myFilePath},
+        </if>
+        <if test="downloadTime != null">
+                download_time = #{downloadTime},
+        </if>
+        <if test="uploadTime != null">
+                upload_time = #{uploadTime},
+        </if>
+        <if test="parentFolderId != null">
+                parent_folder_id = #{parentFolderId},
+        </if>
+        <if test="size != null">
+                size = #{size},
+        </if>
+        <if test="type != null">
+                type = #{type},
+        </if>
+        <if test="postfix != null and postfix != ''">
+                postfix = #{postfix},
+        </if>
+    </sql>
+    
+    <!--传入myFile时对MyFile各个属性的值的非空判断-->
+    <sql id="MyFileValue">
+        <if test="myFile.myFileName != null and myFile.myFileName != ''">
+                and my_file_name = #{myFile.myFileName}
+        </if>
+        <if test="myFile.showPath != null and myFile.showPath != ''">
+                and show_path = #{myFile.showPath}
+        </if>
+        <if test="myFile.userId != null">
+                and user_id = #{myFile.userId}
+        </if>
+        <if test="myFile.myFilePath != null and myFile.myFilePath != ''">
+                and my_file_path = #{myFile.myFilePath}
+        </if>
+        <if test="myFile.downloadTime != null">
+                and download_time = #{myFile.downloadTime}
+        </if>
+        <if test="myFile.uploadTime != null">
+                and upload_time = #{myFile.uploadTime}
+        </if>
+        <if test="myFile.parentFolderId != null">
+                and parent_folder_id = #{myFile.parentFolderId}
+        </if>
+        <if test="myFile.size != null">
+                and size = #{myFile.size}
+        </if>
+        <if test="myFile.type != null">
+                and type = #{myFile.type}
+        </if>
+        <if test="myFile.postfix != null and myFile.postfix != ''">
+                and postfix = #{myFile.postfix}
+        </if>
+    </sql>
+    
+    <!--新增my_file:哪个字段不为空就添加哪列数据,返回自增主键-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into my_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <include refid="insertColumn"/>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <include refid="insertValue"/>
+        </trim>
+    </insert>
+   
+    <!--删除my_file:通过主键-->
+    <delete id="deleteById">
+        delete from my_file
+        <where>
+            id = #{id}
+        </where>
+    </delete>
+    
+    <!--查询单个my_file-->
+    <select id="queryById" resultMap="MyFileMap">
+        select
+        <include refid="allColumn"></include>
+        from my_file
+        <where>
+            id = #{id}
+        </where>
+    </select>
+
+    <!--通过实体作为筛选条件查询数据-->
+    <select id="queryAll" resultMap="MyFileMap">
+        select
+          <include refid="allColumn"></include>
+        from my_file
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="commonsValue"></include>
+        </trim>
+    </select>
+    
+    <!--通过实体作为筛选条件查询数量-->
+    <select id="queryCount" resultType="java.lang.Integer">
+        select
+          count(*)
+        from my_file
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="commonsValue"></include>
+        </trim>
+    </select>
+    
+    <!--通过实体作为筛选条件分页查询-->
+    <select id="querySomeByLimit" resultMap="MyFileMap">
+        select
+          <include refid="allColumn"></include>
+        from my_file
+        <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
+            <include refid="MyFileValue"></include>
+        </trim>
+        limit #{offset}, #{limit}
+    </select>
+
+	<!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MyFileMap">
+        select
+          <include refid="allColumn"></include>
+        from my_file
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update my_file
+        <trim prefix="set" prefixOverrides="and" suffixOverrides=",">
+            <include refid="updateValue"></include>
+        </trim>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <select id="getCountStatistics" resultType="site.pyyf.fileStore.entity.UserStatistics">
+       select sum(type = 1) doc,sum(type = 2) image,sum(type = 3) video,
+          sum(type = 4) music,sum(type = 5) other,count(*) fileCount from my_file
+          where user_id = #{id}
+  </select>
+
+</mapper>

@@ -2,7 +2,6 @@ package site.pyyf.fileStore.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import site.pyyf.fileStore.entity.MyFile;
-
 /**
  * @InterfaceName: MyFileService
  * @Description: 用户业务层接口
@@ -11,14 +10,13 @@ import site.pyyf.fileStore.entity.MyFile;
  * @Version: 1.0
  **/
 public interface IFileStoreService {
-
     StringBuilder getFileContentByMyFile(MyFile file);
 
     void deleteFile(MyFile myFile);
 
     int getType(String type) ;
 
-    void uploadTAudioFile(MultipartFile originalFile,MyFile fileItem) throws Exception;
+    void uploadTAudioFile(MultipartFile originalFile, MyFile fileItem) throws Exception;
 
     void uploadTVideoFile(MultipartFile originalFile,MyFile fileItem) throws Exception;
 

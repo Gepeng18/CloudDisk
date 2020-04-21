@@ -20,7 +20,7 @@ public class User implements Serializable {
     /**
     * 用户ID
     */
-    private Integer userId;
+    private Integer id;
     /**
     * 用户的openid
     */
@@ -30,14 +30,15 @@ public class User implements Serializable {
     * 用户名
     */
     private String userName;
-    /**
-     * 头像地址
-     */
-    private String imagePath;
+
     /**
     * 注册时间
     */
     private Date registerTime;
+    /**
+     * 头像地址
+     */
+    private String imagePath;
     /**
      * 当前容量（单位KB）
      */
@@ -46,5 +47,10 @@ public class User implements Serializable {
      * 最大容量（单位KB）
      */
     private Integer maxSize;
+
+    /**
+     * 根文件夹
+     */
+    private Integer rootFolder;
 
 }

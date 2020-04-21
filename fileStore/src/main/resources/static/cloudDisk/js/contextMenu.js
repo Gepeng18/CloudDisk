@@ -213,7 +213,9 @@ $(".files").contextMenu({
                 let html = $('.flag td').eq(1).html($('' +
                     "<form id='updateFileNameForm' action='updateFileName' method='post'>" +
                     "<input id='updateFileName' name='myFileName' autocomplete='off' type='text' onblur='checkUpdateFile()' value='" + name + "'>" +
-                    "<input type='hidden' name='myFileId' value='" + id + "'>" +
+
+                    "<input type='hidden' name='id' value='" + id + "'>" +
+
                     "</form>" +
                     ''));
             }

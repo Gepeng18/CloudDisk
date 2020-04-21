@@ -1,78 +1,107 @@
 package site.pyyf.fileStore.service;
 
-
 import site.pyyf.fileStore.entity.FileFolder;
-import site.pyyf.fileStore.entity.MyFile;
-
 import java.util.List;
 
 /**
- * @Description 文件夹业务层接口
- * @Author xw
- * @Date 15:21 2020/2/26
- * @Param  * @param null
- * @return
- **/
+ * @Description (FileFolder)表服务接口
+ *
+ * @author "Gepeng"
+ * @since 2020-04-21 15:45:29
+ */
 public interface IFileFolderService {
 
-
     /**
-     * @Description 根据文件夹的id删除文件夹
-     * @Author xw
-     * @Date 2020/2/9 16:38
-     * @Param [fileFolderId] 文件夹的id
-     * @Return java.lang.Integer
+     * @Description 通过ID查询单条数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolderId 主键
+     * @return 实例对象
      */
-    Integer deleteFileFolderById(Integer fileFolderId);
-
-    /**
-     * @Description 增加文件夹
-     * @Author xw
-     * @Date 2020/2/9 16:37
-     * @Param [fileFolder] 文件夹对象
-     * @Return java.lang.Integer
+    FileFolder queryById(Integer fileFolderId);
+    
+     /**
+     * @Description 查询全部数据
+     * @author makejava
+     * @date 2020-04-21 15:45:29
+     * @return 对象列表
      */
-    Integer addFileFolder(FileFolder fileFolder);
-
-
+    List<FileFolder> queryAll();
+    
     /**
-     * Created by "gepeng" on 2020-03-81 08:50:27.
-     * @Description 根据父文件夹和用户ID获得获取文件夹下的文件夹 带redis缓存的
-     * @param [puserId, arentFolderId]
-     * @return java.util.List<site.pyyf.fileStore.entity.FileFolder>
+     * @Description 实体作为筛选条件查询数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolder 实例对象
+     * @return 对象列表
      */
-    List<FileFolder> getFileFoldersByUserIdAndParentFolderId(Integer userId,Integer parentFolderId);
-
+    List<FileFolder> queryAll(FileFolder fileFolder);
+   
     /**
-     * @Description 根据文件夹的id获取文件夹
-     * @Author xw
-     * @Date 2020/2/9 22:23
-     * @Param [fileFolderId]
-     * @Return com.molihub.entity.FileFolder
+     * @Description 查询实体数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @return 数量
      */
-    FileFolder getFileFolderByFileFolderId(Integer fileFolderId);
-
+    int queryCount();
+    
     /**
-<<<<<<< HEAD
-=======
-     * @Description 根据仓库Id获得仓库根目录下的所有文件夹
-     * @Author xw
-     * @Date 23:46 2020/2/9
-     * @Param [userId]
-     * @return java.util.List<com.molihub.entity.FileFolder>
-     **/
-    List<FileFolder> getRootFoldersByUserId(Integer userId);
-
-    /**
->>>>>>> 92c711a204ae08a936e2073da2b82198610d3895
-     * @Description 根据文件夹的id修改文件夹信息
-     * @Author xw
-     * @Date 2020/2/9 16:39
-     * @Param [fileFolder] 文件夹对象
-     * @Return java.lang.Integer
+     * @Description 实体作为筛选条件查询数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolder 实例对象
+     * @return 数量
      */
-    Integer updateFileFolderById(FileFolder fileFolder);
+    int queryCount(FileFolder fileFolder);
+   
+   
+    /**
+     * @Description 查询多条数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param offset 查询起始位置
+     * @param limit 查询条数
+     * @return 对象列表
+     */
+    List<FileFolder> queryAllByLimit(int offset, int limit);
 
+    /**
+     * @Description 实体作为筛选条件查询指定行
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolder 实例对象
+     * @param offset 查询起始位置
+     * @param limit 查询条数
+     * @return 对象列表
+     */
+    List<FileFolder> queryAllByLimit(FileFolder fileFolder,int offset, int limit);
 
+    
+    /**
+     * @Description 新增数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolder 实例对象
+     * @return 影响行数
+     */
+    int insert(FileFolder fileFolder);
+
+    /**
+     * @Description 修改数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolder 实例对象
+     * @return 实例对象
+     */
+    FileFolder update(FileFolder fileFolder);
+
+    /**
+     * @Description 通过主键删除数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:29
+     * @param fileFolderId 主键
+     * @return 是否成功
+     */
+    boolean deleteById(Integer fileFolderId);
 
 }

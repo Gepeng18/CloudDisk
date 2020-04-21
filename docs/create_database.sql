@@ -11,7 +11,7 @@ create table if not exists ebook_content
 
 create table if not exists ebook
 (
-    ebook_id int auto_increment comment '书ID'
+    id int auto_increment comment '书ID'
         primary key,
     ebook_name varchar(100) null comment '书名',
     file_id int comment '对应的文件ID',
@@ -20,12 +20,11 @@ create table if not exists ebook
 
 create table if not exists file_folder
 (
-    file_folder_id int auto_increment comment '文件夹ID'
+    id int auto_increment comment '文件夹ID'
         primary key,
     file_folder_name varchar(255) null comment '文件夹名称',
     parent_folder_id int default 0 null comment '父文件夹ID',
     user_id int null comment '所属用户ID',
-    time datetime null comment '创建时间'
 )
     charset=utf8;
 
@@ -33,7 +32,7 @@ create table if not exists file_folder
 
 create table if not exists my_file
 (
-    my_file_id int auto_increment comment '文件ID'
+    id int auto_increment comment '文件ID'
         primary key,
     my_file_name varchar(255) null comment '文件名',
     show_path varchar(255) null comment '在线预览路径',
@@ -58,14 +57,15 @@ create table if not exists site_setting
 
 create table if not exists user
 (
-    user_id int unsigned auto_increment comment '用户ID'
+    id int unsigned auto_increment comment '用户ID'
         primary key,
     open_id varchar(255) null comment '用户的openid',
     user_name varchar(50) null comment '用户名',
     register_time datetime null comment '注册时间',
     image_path varchar(255) default '' null comment '头像地址',
     current_size int default 0 null comment '当前容量（单位KB）',
-    max_size int default 1048576 null comment '最大容量（单位KB）'
+    max_size int default 1048576 null comment '最大容量（单位KB）',
+    root_folder int not null comment '根文件夹ID'
 )
     charset=utf8;
 

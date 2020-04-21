@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import site.pyyf.fileStore.entity.FileFolder;
 import site.pyyf.fileStore.entity.MyFile;
+import site.pyyf.fileStore.entity.Page;
 import site.pyyf.fileStore.entity.UserStatistics;
 
 import java.util.ArrayList;
@@ -35,7 +36,12 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/files")
     public String toUserPage(@RequestParam(value = "fId", defaultValue = "0") Integer fId,
-                             Integer error, Map<String, Object> map) {
+                             Integer error, Map<String, Object> map, Page page) {
+        if(fId == 0)
+            fId = iUserService.queryById(loginUser.getId()).getRootFolder();
+
+        page.setRows(iFileFolderService.queryCount(FileFolder.builder().parentFolderId(fId).build())+iMyFileService.queryCount(MyFile.builder().userId(loginUser.getId()).parentFolderId(fId).build()));
+        page.setPath("/files?fId="+fId);
         //判断是否包含错误信息
         if (error != null) {
             if (error == 1) {
@@ -55,22 +61,22 @@ public class SystemController extends BaseController {
         List<FileFolder> location = new ArrayList<>();
 
         //当前为具体目录
-        folders = iFileFolderService.getFileFoldersByUserIdAndParentFolderId(loginUser.getUserId(), fId);
-        files = iMyFileService.getFilesByUserIdAndParentFolderId(loginUser.getUserId(), fId);
-        nowFolder = iFileFolderService.getFileFolderByFileFolderId(fId);
-        if (fId == 0) {
-            location.add(nowFolder);
-        } else {
-            //遍历查询当前目录
-            FileFolder temp = nowFolder;
-            while (temp.getParentFolderId() != 0) {
-                temp = iFileFolderService.getFileFolderByFileFolderId(temp.getParentFolderId());
-                location.add(temp);
-            }
+        folders = iFileFolderService.queryAll(FileFolder.builder().parentFolderId(fId).build());
+        files = iMyFileService.queryAll(MyFile.builder().parentFolderId(fId).build());
+        nowFolder = iFileFolderService.queryById(fId);
+
+        //遍历查询当前目录
+        FileFolder temp = nowFolder;
+        while (temp.getParentFolderId() != 0) {
+            temp = iFileFolderService.queryById(temp.getParentFolderId());
+            location.add(temp);
         }
+
         Collections.reverse(location);
+        if(location.size()>0)
+            location.remove(0);
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("folders", folders);
         map.put("files", files);
@@ -90,9 +96,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/doc-files")
     public String toDocFilePage(Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 1);
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).type(1).build());
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri", "doc");
@@ -108,9 +114,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/image-files")
     public String toImageFilePage(Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 2);
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).type(2).build());
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri", "image");
@@ -126,9 +132,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/video-files")
     public String toVideoFilePage(Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 3);
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).type(3).build());
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri", "video");
@@ -144,9 +150,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/music-files")
     public String toMusicFilePage(Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 4);
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).type(4).build());
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri", "music");
@@ -162,9 +168,9 @@ public class SystemController extends BaseController {
      **/
     @GetMapping("/other-files")
     public String toOtherFilePage(Map<String, Object> map) {
-        List<MyFile> files = iMyFileService.getFilesByType(loginUser.getUserId(), 5);
+        List<MyFile> files = iMyFileService.queryAll(MyFile.builder().userId(loginUser.getId()).type(5).build());
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
         map.put("statistics", statistics);
         map.put("files", files);
         map.put("currUri", "other");
@@ -181,8 +187,8 @@ public class SystemController extends BaseController {
     @GetMapping("/index")
     public String index(Map<String, Object> map) {
         //获得统计信息
-        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getUserId());
-        statistics.setUser(iUserService.getUserById(loginUser.getUserId()));
+        UserStatistics statistics = iMyFileService.getCountStatistics(loginUser.getId());
+        statistics.setUser(iUserService.queryById(loginUser.getId()));
         map.put("statistics", statistics);
         return "clouddisk/index";
     }

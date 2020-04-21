@@ -36,8 +36,33 @@ public class ProcessMdToEbook {
     }
 
 
-    public static void main(String[] args) throws Exception {
+    public static void processFile(File file) throws Exception {
+            if(!StringUtils.substringAfterLast(file.getName(),".").equals("md"))
+                return;
+            String filePath = file.getAbsolutePath();
+            String ossSuffix = "post/img";
+            String formatDate = new SimpleDateFormat("yyyy/MM/dd/HH/mm/ss").format(new Date());
+            String ossPath = "https://pyyf.oss-cn-hangzhou.aliyuncs.com";
 
+            replacePath(ossPath,ossSuffix,formatDate,filePath,false);
+            uploadDir(ossSuffix,formatDate,filePath);
+    }
+
+    public static void processDir(File dir) throws Exception {
+
+        for(File file:dir.listFiles()){
+            if(file.isDirectory())
+                processDir(file);
+            else
+                processFile(file);
+        }
+
+    }
+
+
+    public static void main(String[] args) throws Exception {
+        final File thidDir = new File(".\\..");
+        processDir(thidDir);
         String filePath = "G:\\OneDrive\\笔记\\JAVA\\JVM--内存分区.md";
 
         String ossSuffix = "post/img";

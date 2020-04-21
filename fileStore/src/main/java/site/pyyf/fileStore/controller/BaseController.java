@@ -31,13 +31,11 @@ public class BaseController {
     @Autowired
     protected ICodePreviewService iCodeService;
     @Autowired
-    protected IFileStoreService iFileStoreService;
+    protected IFileFolderService iFileFolderService;
     @Autowired
     protected IMyFileService iMyFileService;
     @Autowired
-    protected IFileFolderService iFileFolderService;
-    @Autowired
-    protected IEbooksService iLibraryService;
+    protected IEbookService iEbookService;
     @Autowired
     protected IOSSService iossService;
     @Autowired
@@ -48,7 +46,8 @@ public class BaseController {
     protected RedisTemplate redisTemplate;
     @Autowired
     protected EventProducer eventProducer;
-
+    @Autowired
+    protected IFileStoreService iFileStoreService;
 
     protected HttpServletRequest request;
     protected HttpServletResponse response;

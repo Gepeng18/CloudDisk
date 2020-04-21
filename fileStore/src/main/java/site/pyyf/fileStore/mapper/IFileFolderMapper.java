@@ -1,111 +1,107 @@
 package site.pyyf.fileStore.mapper;
 
-import site.pyyf.fileStore.entity.FileFolder;
-import site.pyyf.fileStore.entity.MyFile;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import site.pyyf.fileStore.entity.FileFolder;
 
 import java.util.List;
 
 /**
- * @InterfaceName: FileFolderMapper
- * @Description: 与文件夹相关的数据库操作
- * @author: xw
- * @date 2020/1/26 21:55
- * @Version: 1.0
- **/
+ * @Description (FileFolder)表数据库访问层
+ *
+ * @author "Gepeng"
+ * @since 2020-04-21 15:45:28
+ */
 @Mapper
 public interface IFileFolderMapper {
 
     /**
-     * @Description 根据文件夹的id删除文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param [fileFolderId]
-     * @return java.lang.Integer
-     **/
-    Integer deleteFileFolderById(Integer fileFolderId);
+     * @Description 通过ID查询单条数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolderId 主键
+     * @return 实例对象
+     */
+    FileFolder queryById(Integer fileFolderId);
 
     /**
-     * @Description 根据父文件夹的id删除文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param [parentFolderId]
-     * @return java.lang.Integer
-     **/
-    Integer deleteFileFolderByParentFolderId(Integer parentFolderId);
+     * @Description 查询指定行数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param offset 查询起始位置
+     * @param limit 查询条数
+     * @return 对象列表
+     */
+    List<FileFolder> queryAllByLimit(@Param("offset") int offset, @Param("limit") int limit);
 
     /**
-     * @Description 根据仓库的id删除文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param [userId]
-     * @return java.lang.Integer
-     **/
-    Integer deleteFileFolderByUserId(Integer userId);
+     * @Description 查询全部数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @return 对象列表
+     */
+    List<FileFolder> queryAll();
 
     /**
-     * @Description 增加文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param [fileFolder]
-     * @return java.lang.Integer
-     **/
-    Integer addFileFolder(FileFolder fileFolder);
+     * @Description 通过实体作为筛选条件查询数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolder 实例对象
+     * @return 对象列表
+     */
+    List<FileFolder> queryAll(FileFolder fileFolder);
 
     /**
-     * @Description 根据文件夹的id获取文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param [fileFolderId]
-     * @return com.moti.entity.FileFolder
-     **/
-    FileFolder getFileFolderById(Integer fileFolderId);
+     * @Description 通过实体数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @return 数量
+     */
+    int queryCount();
+    
+     /**
+     * @Description 通过实体作为筛选条件查询数量
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolder 实例对象
+     * @return 数量
+     */
+    int queryCount(FileFolder fileFolder);
 
     /**
-     * @Description 根据父文件夹的id获取文件夹
-     * @Author xw
-     * @Date 15:18 2020/2/26
-     * @Param  * @param null
-     * @return
-     **/
-    List<FileFolder> getFileFoldersByParentFolderIdAndUserId(Integer userId,Integer parentFolderId);
-
-    /**
-     * @Description 根据仓库的id获取文件夹
-     * @Author xw
-     * @Date 15:19 2020/2/26
-     * @Param [userId]
-     * @return java.util.List<com.moti.entity.FileFolder>
-     **/
-    List<FileFolder> getFileFolderByUserId(Integer userId);
+     * @Description 通过实体作为筛选条件查询指定行
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolder 实例对象
+     * @return 对象列表
+     */
+    List<FileFolder> querySomeByLimit(@Param("fileFolder") FileFolder fileFolder, @Param("offset") int offset, @Param("limit") int limit);
     
     /**
-     * @Description 获得仓库的文件夹数量
-     * @Author xw
-     * @Date 21:56 2020/2/10
-     * @Param [userId]
-     * @return java.lang.Integer
-     **/
-    Integer getFileFolderCountByUserId(Integer userId);
+     * @Description 新增数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolder 实例对象
+     * @return 影响行数
+     */
+    int insert(FileFolder fileFolder);
 
     /**
-     * @Description 根据仓库Id获得仓库根目录下的所有文件夹
-     * @Author xw
-     * @Date 23:49 2020/2/9
-     * @Param [userId]
-     * @return java.util.List<com.molihub.entity.FileFolder>
-     **/
-    List<FileFolder> getRootFoldersByUserId(Integer userId);
+     * @Description 修改数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolder 实例对象
+     * @return 影响行数
+     */
+    int update(FileFolder fileFolder);
 
     /**
-     * @Description 根据文件夹的id修改文件夹信息
-     * @Author xw
-     * @Date 15:19 2020/2/26
-     * @Param [fileFolder]
-     * @return java.lang.Integer
-     **/
-    Integer updateFileFolderById(FileFolder fileFolder);
-
-
+     * @Description 通过主键删除数据
+     * @author "Gepeng18"
+     * @date 2020-04-21 15:45:28
+     * @param fileFolderId 主键
+     * @return 影响行数
+     */
+    int deleteById(Integer fileFolderId);
 
 }

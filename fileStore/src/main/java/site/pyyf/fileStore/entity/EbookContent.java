@@ -1,15 +1,13 @@
 package site.pyyf.fileStore.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EbookConent {
+public class EbookContent {
     private int id;
     private String contentId;
     private String content;
