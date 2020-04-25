@@ -25,6 +25,7 @@ create table if not exists file_folder
     file_folder_name varchar(255) null comment '文件夹名称',
     parent_folder_id int default 0 null comment '父文件夹ID',
     user_id int null comment '所属用户ID',
+    create_time timestamp not null comment '创建时间'
 )
     charset=utf8;
 
