@@ -23,6 +23,8 @@ import javax.servlet.http.HttpSession;
 public class BaseController {
 
     @Autowired
+    protected ICodePreviewService iCodePreviewService;
+    @Autowired
     protected AliyunConfig aliyunConfig;
     @Autowired
     protected CloudDiskConfig cloudDiskConfig;

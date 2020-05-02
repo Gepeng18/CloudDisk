@@ -2,6 +2,7 @@ package site.pyyf.fileStore.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import site.pyyf.fileStore.entity.EbookContent;
 import site.pyyf.fileStore.entity.Header;
 import site.pyyf.fileStore.entity.Ebook;
+import site.pyyf.fileStore.service.ICodePreviewService;
 import site.pyyf.fileStore.utils.CloudDiskUtil;
 import site.pyyf.fileStore.utils.MarkdownToHtmlUtil;
 
@@ -25,6 +27,13 @@ public class EBookContentController extends BaseController {
         //Feature.OrderedField表示解析时按照顺序解析，不要打乱List中元素相对顺序
         Header directory = JSONObject.parseObject(ebook.getHeader(), Header.class, Feature.OrderedField);
         model.addAttribute("headers", directory);
+
+        //前端根据这里判断是否在点击有子节点的目录的item时向后端请求，
+        //如果是md则需要请求，是proj则不需要请求
+        if ("md".equals(StringUtils.substringAfterLast(ebook.getEbookName(), ".")))
+            model.addAttribute("mode", 0);
+        else if ("proj".equals(StringUtils.substringAfterLast(ebook.getEbookName(), ".")))
+            model.addAttribute("mode", 1);
         return "ebook/ebook";
     }
 
@@ -34,6 +43,7 @@ public class EBookContentController extends BaseController {
     public String getcontent(@RequestParam("contentId") String contentId) {
         //搜到只会有一个
         String content = iEbookContentService.queryAll(EbookContent.builder().contentId(contentId).build()).get(0).getContent();
+        content = iCodePreviewService.addQuotationMarks("java", new StringBuilder(content));
         String htmlContent = MarkdownToHtmlUtil.markdownToHtmlExtensions(content);
         StringBuilder processedContent = new StringBuilder();
         int i = 0;
@@ -67,7 +77,7 @@ public class EBookContentController extends BaseController {
     public String updateContent(@RequestParam("content") String content,
                                 @RequestParam("contentId") String contentId,
                                 Model model) {
-        iEbookContentService.update(EbookContent.builder().contentId(contentId).content(content).build() );
+        iEbookContentService.update(EbookContent.builder().contentId(contentId).content(content).build());
         int ebookId = iEbookContentService.queryAll(EbookContent.builder().contentId(contentId).build()).get(0).getFileId();
         return "redirect:/ebook/getbook/" + ebookId;
     }

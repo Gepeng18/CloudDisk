@@ -7,9 +7,9 @@
 <body>
 
 <th:block th:fragment="setting">
-    <span id="maxShowSize">40</span>
-    <span id="showType">OSS</span>
-    <span id="domain"></span>
+    <span id="maxShowSize" style="display:none;">40</span>
+    <span id="showType" style="display:none;">OSS</span>
+    <span id="domain" style="display:none;"></span>
 </th:block>
 
 
@@ -52,7 +52,7 @@
 
     <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.5/lib/context-menu/js/jquery.contextMenu.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.5/lib/xcConfirm/js/xcConfirm.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.5/cloudDisk/js/contextMenu.js"></script>
+    <script th:src="@{/cloudDisk/js/contextMenu.js}"></script>
 
     <!--    播放器-->
     <script src="https://cdn.jsdelivr.net/gh/Gepeng18/communityCDN@v0.1.5/lib/mediaelement-4.2.x/build/mediaelement-and-player.js"></script>

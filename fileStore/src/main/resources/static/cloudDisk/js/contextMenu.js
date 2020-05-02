@@ -67,7 +67,7 @@ $(".files").contextMenu({
                 let id = $('#tarFile').html();
                 let name = $('.flag td a').html();
                 var domain = $("#domain").html();
-                var supLang = ["md", "java", "css", "cpp", "py", "php", "html"];
+                var supLang = ["md", "java", "css", "cpp", "py", "php", "html","proj"];
                 var supImg = ["png", "jpg", "jpeg", "bmp", "gif"];
                 var supVideo = ["mp4", "wmv", "flv"];
                 var supAudio = ["mp3", "wma", "flac"];

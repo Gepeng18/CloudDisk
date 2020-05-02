@@ -9,75 +9,82 @@
         <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="fileId" column="file_id" jdbcType="INTEGER"/>
     </resultMap>
-    
+
     <!--全部字段-->
     <sql id="allColumn"> id, content_id, content, file_id </sql>
-    
+
     <!--添加语句的字段列表-->
     <sql id="insertColumn">
         <if test="contentId != null and contentId != ''">
-                content_id,
+        content_id,
         </if>
         <if test="content != null and content != ''">
-                content,
+            content,
         </if>
         <if test="fileId != null">
-                file_id,
+            file_id,
         </if>
     </sql>
-    
+
+    <!--添加语句的全部字段-->
+    <sql id="insertAllColumn">
+        content_id,
+        content,
+        file_id
+    </sql>
+
     <!--添加语句的值列表-->
-        <sql id="insertValue">
+    <sql id="insertValue">
         <if test="contentId != null and contentId != ''">
-                #{contentId},
+            #{contentId},
         </if>
         <if test="content != null and content != ''">
-                #{content},
+            #{content},
         </if>
         <if test="fileId != null">
-                #{fileId},
+            #{fileId},
         </if>
     </sql>
-    
+
     <!--通用对EbookContent各个属性的值的非空判断-->
     <sql id="commonsValue">
         <if test="contentId != null and contentId != ''">
-                and content_id = #{contentId}
+            and content_id = #{contentId}
         </if>
         <if test="content != null and content != ''">
-                and content = #{content}
+            and content = #{content}
         </if>
         <if test="fileId != null">
-                and file_id = #{fileId}
+            and file_id = #{fileId}
         </if>
     </sql>
-    
-        <!--更新时通用对EbookContent各个属性的值的非空判断-->
+
+    <!--更新时通用对EbookContent各个属性的值的非空判断-->
     <sql id="updateValue">
         <if test="contentId != null and contentId != ''">
-                content_id = #{contentId},
+            content_id = #{contentId},
         </if>
         <if test="content != null and content != ''">
-                content = #{content},
+            content = #{content},
         </if>
         <if test="fileId != null">
-                file_id = #{fileId},
+            file_id = #{fileId},
         </if>
     </sql>
-    
+
     <!--传入ebookContent时对EbookContent各个属性的值的非空判断-->
     <sql id="EbookContentValue">
         <if test="ebookContent.contentId != null and ebookContent.contentId != ''">
-                and content_id = #{ebookContent.contentId}
+            and content_id = #{ebookContent.contentId}
         </if>
         <if test="ebookContent.content != null and ebookContent.content != ''">
-                and content = #{ebookContent.content}
+            and content = #{ebookContent.content}
         </if>
         <if test="ebookContent.fileId != null">
-                and file_id = #{ebookContent.fileId}
+            and file_id = #{ebookContent.fileId}
         </if>
     </sql>
-    
+
     <!--新增ebook_content:哪个字段不为空就添加哪列数据,返回自增主键-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
         insert into ebook_content
@@ -88,7 +95,7 @@
             <include refid="insertValue"/>
         </trim>
     </insert>
-   
+
     <!--删除ebook_content:通过主键-->
     <delete id="deleteById">
         delete from ebook_content
@@ -96,7 +103,7 @@
             id = #{id}
         </where>
     </delete>
-    
+
     <!--查询单个ebook_content-->
     <select id="queryById" resultMap="EbookContentMap">
         select
@@ -110,27 +117,27 @@
     <!--通过实体作为筛选条件查询数据-->
     <select id="queryAll" resultMap="EbookContentMap">
         select
-          <include refid="allColumn"></include>
+        <include refid="allColumn"></include>
         from ebook_content
         <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
             <include refid="commonsValue"></include>
         </trim>
     </select>
-    
+
     <!--通过实体作为筛选条件查询数量-->
     <select id="queryCount" resultType="java.lang.Integer">
         select
-          count(*)
+        count(*)
         from ebook_content
         <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
             <include refid="commonsValue"></include>
         </trim>
     </select>
-    
+
     <!--通过实体作为筛选条件分页查询-->
     <select id="querySomeByLimit" resultMap="EbookContentMap">
         select
-          <include refid="allColumn"></include>
+        <include refid="allColumn"></include>
         from ebook_content
         <trim prefix="where" prefixOverrides="and" suffixOverrides=",">
             <include refid="EbookContentValue"></include>
@@ -138,10 +145,10 @@
         limit #{offset}, #{limit}
     </select>
 
-	<!--查询指定行数据-->
+    <!--查询指定行数据-->
     <select id="queryAllByLimit" resultMap="EbookContentMap">
         select
-          <include refid="allColumn"></include>
+        <include refid="allColumn"></include>
         from ebook_content
         limit #{offset}, #{limit}
     </select>
@@ -159,7 +166,7 @@
 
     <insert id="insertAllEbookContent" parameterType="java.util.List" useGeneratedKeys="false">
         insert into ebook_content
-        (<include refid="insertColumn"></include>)
+        (<include refid="insertAllColumn"></include>)
         values
         <foreach collection="list" item="item" index="index" separator=",">
             (

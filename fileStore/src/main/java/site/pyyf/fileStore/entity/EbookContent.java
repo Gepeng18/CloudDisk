@@ -8,8 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EbookContent {
-    private int id;
+    private Integer id;
     private String contentId;
     private String content;
-    private int fileId;
+    private Integer fileId;
 }

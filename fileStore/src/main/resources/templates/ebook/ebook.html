@@ -23,10 +23,14 @@
     </style>
 </head>
 <body>
-<!--<div class="navbar navbar-duomi navbar-static-top" role="navigation">-->
-<!--    <div class="container-fluid">-->
-<!--    </div>-->
-<!--</div>-->
+
+<th:block th:replace="commons/cloudDisk-fragments::setting">
+
+</th:block>
+
+<!--0表电子书 1表项目-->
+<span id="mode" th:text="${mode}" style="display: none"></span>
+
 <div class="container-fluid">
 
     <form id="goupdate" th:action="@{/ebook/goupdate}" method="post">
@@ -62,21 +66,12 @@
 
             </div>
 
-
-            <!--                <div >-->
-            <!--                    <button type="submit"-->
-            <!--                            class="btn btn-success">-->
-            <!--                        <i class="fa fa-edit"></i>&nbsp; 编辑-->
-            <!--                    </button>-->
-            <!--                </div>-->
-
-
             <ul id="main-nav" class="nav nav-tabs nav-stacked"
                 style="position: fixed;margin-top: 50px;overflow:scroll;">
                 <li th:each="header:${headers.getSubNodes()}" style="text-align:left">
                     <!--                       onclick="window.location.href='/content?uuid=${header.getValue().getUuid()}'"-->
                     <a th:href="@{|#${header.getContentId()}|}"
-                       th:onclick="getContent([[${header.getContentId()}]])" class="nav-header collapsed"
+                       th:onclick="getContent([[${header.getContentId()}]],[[${header.hasSub}]])" class="nav-header collapsed"
                        data-toggle="collapse" >
                         <i th:id="${header.getContentId()}+'parent'"  class="fa fa-angle-right" th:if="${header.hasSub}"></i>
                         <p style="display: inline;" th:if="!${header.hasSub}">&nbsp;</p>
@@ -121,7 +116,7 @@
     })
 </script>
 <script>
-    function getContent(contentId) {
+    function getContent(contentId,hasSub) {
         var element = contentId+"parent";
         if($("#"+element).hasClass("fa fa-angle-right"))
             $("#"+element).removeClass("fa fa-angle-right").addClass("fa fa-angle-down");
@@ -132,6 +127,11 @@
 
         formData.append('contentId', contentId);
         var domain = $("#domain").html();
+
+        //如果是项目并且点击的是文件夹
+        if($('#mode').html()==1 && hasSub==true)
+            return ;
+
         $.ajax({
             url: domain+'/ebook/getcontent',
             type: 'POST',

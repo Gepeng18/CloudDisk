@@ -111,7 +111,7 @@ public class PreviewController extends BaseController {
         MyFile file = iMyFileService.queryById(id);
         String fileName = file.getMyFileName();
         String suffix = StringUtils.substringAfterLast(fileName, ".");
-        if (suffix.equals("md"))
+        if (suffix.equals("md") || suffix.equals("proj"))
             return "redirect:/ebook/getbook/" + id;
         if (supportPreviewLang.containsKey(suffix)) {
             if (suffix.equals("java")) {
