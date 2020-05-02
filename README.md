@@ -19,9 +19,11 @@ CloudDisk是一款云盘应用程序，前端基于Bootstrap和jquery进行开�
 ## CloudDisk环境搭建：
 参考： http://wd.pyyf.site/blog/3
 
-
-
 ## 更新日志
+2020.5.2
+- 修改了一些BUG，同时增加工程代码展示页面，即可以查看JAVA工程代码，见[工程代码展示页](#工程代码展示页)
+- 然而此功能有待完善，目前还需后台上传工程代码
+
 2020.4.9
 - 上传全部前端资源
 - 将OSS的上传路径加上日期，防止文件名相同造成覆盖（OSS路径中无用户信息和文件夹信息，所以会重复）
@@ -109,30 +111,32 @@ CloudDisk是一款云盘应用程序，前端基于Bootstrap和jquery进行开�
 
 ##### 完整页面
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/总界面.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/完整页面.png)
 
-
-
-##### 在线预览
-
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/音乐播放1.png)
 
 ##### 音乐播放
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/音乐播放2.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/音乐播放.png)
 
 ##### 代码预览
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/代码展示.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/代码预览.png)
 
 ##### 图片预览
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/图片预览.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/图片预览.png)
 
 ##### 图片播放
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/图片浏览.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/图片播放.png)
 
 ##### 视频播放
 
-![](https://github.com/Gepeng18/CloudDisk/blob/master/imgs/视频播放.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/视频播放.png)
+
+##### 工程代码展示页
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/项目展示.png)
+
+##### 分享与转存
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/分享.png)
+![](http://pyyf.oss-cn-hangzhou.aliyuncs.com/post/img/2020/04/25/11/12/37/保存.png)
