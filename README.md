@@ -2,7 +2,7 @@
 # CloudDisk
 CloudDisk是一款云盘应用程序，前端基于Bootstrap和jquery进行开发，后端采用springboot开发，同时使用redis和caffeine作为缓存，kafka作为消息队列进行异步事件调用。
 
-本项目基于[莫提网盘](https://github.com/373675032/moti-cloud) 进行二次开发
+
 ## CloudDisk功能
 - 支持分享功能，可以分享文件和文件夹给其他的本网盘使用者
 - java代码提供在线编译系统
@@ -103,8 +103,13 @@ CloudDisk是一款云盘应用程序，前端基于Bootstrap和jquery进行开�
 
 
 
-
-
+依赖：
+- 本项目参考[莫提网盘](https://github.com/373675032/moti-cloud)
+- 前端基于bootstrap4进行构建
+- 代码展示页采用editormd进行渲染
+- 电子书/工程页面采用后端解析markdown交给前端进行渲染(由于不会使用ajax&editormd异步渲染页面)
+- 视频和音乐播放器采用mediaelement
+- 图片预览采用viewerjs-1.5.0
 
 
 ## 项目截图
